@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BB Analytics 360</title>
+    <title>Business Intelligence - Big Bola</title>
     <link rel="icon" type="image/png" href="https://i.postimg.cc/PJSBFV7L/panel.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -167,7 +167,7 @@
     <!-- Contenedor de login -->
     <div class="login-container" id="loginContainer">
         <img src="https://i.postimg.cc/hGqNYsNp/Isotipo-Perfiles-Marmol01-Photoroom.png" alt="Big Bola Casinos" class="logo">
-        <h1>BB Analytics 360</h1>
+        <h1>Centro de Business Intelligence</h1>
         <p>Ingresa con tu correo corporativo</p>
         
         <div class="login-form">
@@ -176,7 +176,7 @@
                 <input type="email" id="email" placeholder="usuario@bigbola.com" required>
             </div>
             <button class="btn" id="loginBtn">
-                <i class="fas fa-sign-in-alt"></i> Ingresar a Analytics 360
+                <i class="fas fa-sign-in-alt"></i> Ingresar al Centro de BI
             </button>
         </div>
         
@@ -200,7 +200,6 @@
             "promociones": "https://app.powerbi.com/reportEmbed?reportId=373b28bf-5d1b-46a0-b98b-4b3e378520c4&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c",
             "proyectos": "https://app.powerbi.com/reportEmbed?reportId=c2e5834e-4e3d-418c-a9dc-43e33d79a62e&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c",
             "rtp": "https://app.powerbi.com/reportEmbed?reportId=01ac285e-618f-43de-be89-d62b1a46374c&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c",
-			"bolipoints": "https://app.powerbi.com/reportEmbed?reportId=74438490-c641-4240-930f-b55782ba7d39&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c",
             "diccionario": "https://app.powerbi.com/reportEmbed?reportId=95918a25-c06b-411a-a346-f462b03e557b&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c",
             "seguimiento_auditores": "https://app.powerbi.com/reportEmbed?reportId=f298656f-f4fb-4110-9580-321f04c0cfd6&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c",
 			"logs_bi": "https://app.powerbi.com/reportEmbed?reportId=36b35095-427f-4ded-82d4-27ce644ddeac&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c"
@@ -217,10 +216,9 @@
             "promociones": "Promociones",
             "proyectos": "Proyectos BI",
             "rtp": "RTP",
-			"bolipoints": "Canje de BoliPoints",
             "diccionario": "Diccionario KPI's",
             "seguimiento_auditores": "Seguimiento de Auditores",
-			"logs_bi": "Logs BB Analytics 360"
+			"logs_bi": "Logs Centro de Dashboards"
         };
 
         // Mapeo de íconos para dashboards
@@ -234,7 +232,6 @@
             "promociones": "fas fa-gift",
             "proyectos": "fas fa-project-diagram",
             "rtp": "fas fa-coins",
-			"bolipoints": "fas fa-ticket-alt",
             "diccionario": "fas fa-book",
             "logs_bi": "fas fa-clipboard-list",
             "seguimiento_auditores": "fas fa-user-check"
@@ -955,7 +952,7 @@
         async function loadPermissions() {
             try {
                 // Usar la ruta absoluta de GitHub Pages
-                const jsonUrl = 'https://raw.githubusercontent.com/franciscozamoramx/bbanalytics360/refs/heads/main/PERMISSION_FILES_BI/permissions.json';
+                const jsonUrl = 'https://raw.githubusercontent.com/franciscozamoramx/centro-dashboards/refs/heads/main/PERMISSION_FILES_BI/permissions.json';
                 
                 console.log('Cargando permisos desde:', jsonUrl);
                 
@@ -1040,7 +1037,7 @@
                 document.getElementById('dashboardsCount').textContent = currentUserPermissions.length;
                 document.getElementById('userInfo').style.display = 'block';
                 
-                showStatus('Acceso concedido. Abriendo Analytics 360...', 'success');
+                showStatus('Acceso concedido. Abriendo Centro de BI...', 'success');
                 
                 console.log('=== LOGIN EXITOSO ===');
                 console.log('Usuario:', currentUser);
@@ -1057,7 +1054,7 @@
                 // Registrar intento fallido de login
                 logger.log('login_failed', null, email);
                 
-                showStatus('No tienes permisos para acceder a BB Analytics 360 o el correo no está registrado.', 'error');
+                showStatus('No tienes permisos para acceder al Centro de BI o el correo no está registrado.', 'error');
             }
         }
 
@@ -1164,8 +1161,8 @@
                         <div class="mobile-sidebar-header">
                             <img src="https://i.postimg.cc/hGqNYsNp/Isotipo-Perfiles-Marmol01-Photoroom.png" alt="Big Bola Casinos" class="mobile-sidebar-logo">
                             <div class="mobile-sidebar-title">
-                                <div>BB</div>
-                                <div>Analytics 360</div>
+                                <div>Centro de</div>
+                                <div>Business Intelligence</div>
                             </div>
                             <div class="user-info" style="margin-top: 10px; font-size: 12px;">
                                 Usuario: ${currentUser}
@@ -1447,7 +1444,7 @@
             
             function openWhatsApp() {
                 const phoneNumber = '+524421974414';
-                const message = 'Hola, necesito ayuda en BB Analytics 360';
+                const message = 'Hola, necesito ayuda en el Centro de Business Intelligence';
                 const url = 'https://wa.me/' + phoneNumber + '?text=' + encodeURIComponent(message);
                 window.open(url, '_blank');
             }
@@ -1893,8 +1890,8 @@
                             <div class="sidebar-header">
                                 <img src="https://i.postimg.cc/hGqNYsNp/Isotipo-Perfiles-Marmol01-Photoroom.png" alt="Big Bola Casinos" class="sidebar-logo">
                                 <div class="sidebar-title">
-                                    <div>BB</div>
-                                    <div>Analytics 360</div>
+                                    <div>Centro de</div>
+                                    <div>Business Intelligence</div>
                                 </div>
                                 <div class="user-info">
                                     Usuario: ${currentUser}
@@ -2090,7 +2087,7 @@
                             // 📱 FUNCIONES DE LA APLICACIÓN
                             function openWhatsApp() {
                                 const phoneNumber = '+524421974414';
-                                const message = 'Hola, necesito ayuda en el BB Analytics 360';
+                                const message = 'Hola, necesito ayuda en el Centro de Business Intelligence';
                                 const url = 'https://wa.me/' + phoneNumber + '?text=' + encodeURIComponent(message);
                                 window.open(url, '_blank');
                             }
