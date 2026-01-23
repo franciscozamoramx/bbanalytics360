@@ -181,7 +181,7 @@
                 <input type="email" id="email" placeholder="usuario@bigbola.com" required>
             </div>
             <button class="btn" id="loginBtn">
-                <i class="fas fa-sign-in-alt"></i> Ingresar a Analytics 360
+                <i class="fas fa-sign-in-alt"></i> Ingresar a BB Analytics 360
             </button>
         </div>
         
@@ -208,7 +208,7 @@
             "diccionario": "https://app.powerbi.com/reportEmbed?reportId=95918a25-c06b-411a-a346-f462b03e557b&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c",
             "seguimiento_auditores": "https://app.powerbi.com/reportEmbed?reportId=f298656f-f4fb-4110-9580-321f04c0cfd6&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c",
             "logs_bi": "https://app.powerbi.com/reportEmbed?reportId=36b35095-427f-4ded-82d4-27ce644ddeac&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c",
-            "bolipoits": "https://app.powerbi.com/reportEmbed?reportId=74438490-c641-4240-930f-b55782ba7d39&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c"
+            "bolipoits": "https://app.powerbi.com/reportEmbed?reportId=YOUR_BOLIPOITS_REPORT_ID&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c"
         };
 
         // Mapeo de nombres de dashboards
@@ -225,7 +225,7 @@
             "diccionario": "Diccionario KPI's",
             "seguimiento_auditores": "Seguimiento de Auditores",
             "logs_bi": "Logs BB Analytics 360",
-            "bolipoits": "Canje de Bolipoits"
+            "bolipoits": "Bolipoits"
         };
 
         // Mapeo de íconos para dashboards
@@ -242,7 +242,7 @@
             "diccionario": "fas fa-book",
             "logs_bi": "fas fa-clipboard-list",
             "seguimiento_auditores": "fas fa-user-check",
-            "bolipoits": "fas fa-ticket-simple"
+            "bolipoits": "fas fa-chart-pie"
         };
 
         // ==================== AIRTABLE LOGGER COMPLETO ====================
@@ -381,7 +381,7 @@
                         "Dispositivo": logEntry.deviceType,
                         "IP": logEntry.ip,
                         "UserAgent": logEntry.userAgent.substring(0, 300),
-                        "SesionID": logEntry.sessionId  // ¡CORREGIDO! "SesionID" no "SessionID"
+                        "SesionID": logEntry.sessionId
                     }
                 };
                 
@@ -762,93 +762,25 @@
                 }
             });
 
-            // SISTEMA MEJORADO PARA CAPTURAR LOGOUTS
-            // Variable para rastrear sesiones activas
-            let activeSessions = {};
-            
-            // Función mejorada para procesar mensajes de logout
-            function processLogoutMessage(eventData) {
-                // Verificar si ya procesamos este logout recientemente
-                const lastLogoutProcessed = sessionStorage.getItem('last_logout_processed');
-                const now = Date.now();
-                
-                if (lastLogoutProcessed && (now - parseInt(lastLogoutProcessed)) < 1000) {
-                    console.log('🔄 Logout ya procesado recientemente, ignorando...');
-                    return;
-                }
-                
-                // Marcar como procesado
-                sessionStorage.setItem('last_logout_processed', now.toString());
-                
-                console.log('🚪 Procesando logout:', eventData.user);
-                
-                // Registrar en Airtable
-                logger.log('logout', null, eventData.user, { 
-                    logoutType: eventData.logoutType || 'unknown',
-                    sessionId: eventData.sessionId || 'unknown',
-                    source: 'dashboard_message'
-                });
-                
-                // También guardar como log urgente
-                logger.saveUrgentLog({
-                    timestamp: new Date().toISOString(),
-                    user: eventData.user,
-                    action: 'logout',
-                    logoutType: eventData.logoutType || 'unknown',
-                    sessionId: eventData.sessionId || 'unknown',
-                    ip: userIP || 'unknown',
-                    deviceType: 'desktop'
-                });
-                
-                // Remover de sesiones activas
-                if (eventData.user && activeSessions) {
-                    delete activeSessions[eventData.user];
-                }
-                
-                return true;
-            }
-            
             // Escuchar mensajes desde la ventana del dashboard
             window.addEventListener('message', function(event) {
                 if (event.data && event.data.type === 'logout') {
-                    // Procesar logout con sistema mejorado (evita duplicados)
-                    processLogoutMessage(event.data);
+                    console.log('🚪 Logout recibido desde dashboard:', event.data.user);
+                    
+                    // Registrar logout solo si viene del botón "Salir"
+                    logger.log('logout', null, event.data.user, { 
+                        logoutType: event.data.logoutType || 'button_click',
+                        sessionId: event.data.sessionId || 'unknown',
+                        source: 'dashboard_button'
+                    });
                 }
                 
                 if (event.data && event.data.type === 'log_dashboard_view') {
                     // Registrar acceso desde la ventana del dashboard
                     logger.log('dashboard_view', event.data.dashboardKey, event.data.user);
                     console.log('📊 Log recibido desde dashboard:', event.data.dashboardKey);
-                    
-                    // Actualizar sesión activa
-                    if (event.data.user) {
-                        activeSessions[event.data.user] = {
-                            lastActivity: Date.now(),
-                            sessionId: event.data.sessionId || currentSessionId
-                        };
-                    }
                 }
             });
-            
-            // Detectar sesiones huérfanas (usuarios que cerraron sin logout)
-            setInterval(() => {
-                const now = Date.now();
-                const timeout = 300000; // 5 minutos sin actividad
-                
-                Object.keys(activeSessions).forEach(user => {
-                    const session = activeSessions[user];
-                    if (now - session.lastActivity > timeout) {
-                        console.log(`⏰ Sesión huérfana detectada: ${user}`);
-                        // Registrar logout por timeout
-                        logger.log('logout', null, user, {
-                            logoutType: 'session_timeout',
-                            sessionId: session.sessionId,
-                            timeoutReason: 'inactivity'
-                        });
-                        delete activeSessions[user];
-                    }
-                });
-            }, 60000); // Verificar cada minuto
         });
 
         // Función para cargar los permisos desde el JSON
@@ -1296,53 +1228,12 @@
             const mobileExitBtn = document.getElementById('mobileExitBtn');
             
             let isSidebarOpen = false;
-            window.mobileLogoutRegistered = false;
             
             // 🔒 Bloquear clic derecho SOLO en el menú móvil
             mobileSidebar.addEventListener('contextmenu', function(e) {
                 e.preventDefault();
                 return false;
             });
-            
-            // 🚪 FUNCIÓN MEJORADA PARA REGISTRAR LOGOUT MÓVIL (EVITA DUPLICADOS)
-            function registerMobileLogout(logoutType = 'button_click') {
-                if (window.mobileLogoutRegistered) {
-                    console.log('⚠️ Logout móvil ya registrado, ignorando...');
-                    return true;
-                }
-                
-                try {
-                    console.log('🚪 Registrando logout móvil:', logoutType);
-                    
-                    // Marcar inmediatamente que ya se registró logout
-                    window.mobileLogoutRegistered = true;
-                    
-                    const logoutData = {
-                        user: currentUser,
-                        action: 'logout',
-                        logoutType: logoutType,
-                        timestamp: new Date().toISOString(),
-                        sessionId: currentSessionId,
-                        deviceType: 'mobile',
-                        registeredAt: Date.now()
-                    };
-                    
-                    // Guardar en localStorage
-                    localStorage.setItem('last_logout_mobile', JSON.stringify(logoutData));
-                    
-                    // Enviar al logger
-                    logger.log('logout', null, currentUser, { 
-                        logoutType: logoutType,
-                        device: 'mobile'
-                    });
-                    
-                    return true;
-                    
-                } catch (error) {
-                    console.error('Error registrando logout móvil:', error);
-                    return false;
-                }
-            }
             
             function openWhatsApp() {
                 const phoneNumber = '+524421974414';
@@ -1381,6 +1272,25 @@
                 }
             }
             
+            // 🚪 FUNCIÓN SIMPLIFICADA PARA REGISTRAR LOGOUT MÓVIL
+            function registerMobileLogout() {
+                try {
+                    console.log('🚪 Registrando logout móvil por botón');
+                    
+                    // Enviar al logger
+                    logger.log('logout', null, currentUser, { 
+                        logoutType: 'button_click',
+                        device: 'mobile'
+                    });
+                    
+                    return true;
+                    
+                } catch (error) {
+                    console.error('Error registrando logout móvil:', error);
+                    return false;
+                }
+            }
+            
             mobileToggleBtn.addEventListener('click', toggleSidebar);
             mobileOverlay.addEventListener('click', toggleSidebar);
             
@@ -1410,22 +1320,13 @@
                 openWhatsApp();
             });
             
-            // Botón de cerrar sesión (MEJORADO)
+            // Botón de cerrar sesión (SIMPLE)
             mobileExitBtn.addEventListener('click', function() {
                 if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-                    registerMobileLogout('button_click');
+                    registerMobileLogout();
                     setTimeout(() => {
                         window.location.reload();
                     }, 500);
-                }
-            });
-            
-            // CAPTURAR CIERRE DE VENTANA MÓVIL (MEJORADO)
-            window.addEventListener('beforeunload', function(event) {
-                // Solo registrar logout si no fue por el botón "Cerrar Sesión"
-                if (!window.mobileLogoutRegistered) {
-                    console.log('⚠️ Ventana móvil cerrando, registrando logout...');
-                    registerMobileLogout('window_close');
                 }
             });
             
@@ -1803,7 +1704,6 @@
                         
                         // Variable global para controlar logout
                         window.logoutRegistered = false;
-                        window.beaconSent = false;
                         
                         document.addEventListener('DOMContentLoaded', function() {
                             const toggleBtn = document.getElementById('toggleBtn');
@@ -1856,54 +1756,37 @@
                                 }
                             }
                             
-                            // 🚪 FUNCIÓN UNIFICADA PARA REGISTRAR LOGOUT (EVITA DUPLICADOS)
-                            function registerLogout(logoutType = 'button_click') {
+                            // 🚪 FUNCIÓN SIMPLIFICADA PARA REGISTRAR LOGOUT
+                            function registerLogout() {
                                 if (window.logoutRegistered) {
                                     console.log('⚠️ Logout ya registrado, ignorando...');
                                     return true;
                                 }
                                 
                                 try {
-                                    console.log('🚪 Registrando logout:', logoutType);
+                                    console.log('🚪 Registrando logout por botón');
                                     
                                     // Marcar inmediatamente que ya se registró logout
                                     window.logoutRegistered = true;
                                     
-                                    // 1. Crear datos de logout una sola vez
+                                    // Crear datos de logout
                                     const logoutData = {
                                         user: currentUser,
                                         action: 'logout',
-                                        logoutType: logoutType,
+                                        logoutType: 'button_click',
                                         timestamp: new Date().toISOString(),
                                         sessionId: currentSessionId,
                                         deviceType: 'desktop',
                                         registeredAt: Date.now()
                                     };
                                     
-                                    // 2. Guardar en localStorage (solo una vez)
-                                    localStorage.setItem('last_logout', JSON.stringify(logoutData));
-                                    
-                                    // 3. Añadir a logs pendientes (solo una vez)
-                                    let pending = JSON.parse(localStorage.getItem('bi_logs_pending') || '[]');
-                                    // Verificar si ya existe un logout similar
-                                    const existingLogout = pending.find(log => 
-                                        log.user === currentUser && 
-                                        log.action === 'logout' && 
-                                        (Date.now() - new Date(log.timestamp).getTime()) < 5000 // Últimos 5 segundos
-                                    );
-                                    
-                                    if (!existingLogout) {
-                                        pending.push(logoutData);
-                                        localStorage.setItem('bi_logs_pending', JSON.stringify(pending));
-                                    }
-                                    
-                                    // 4. Enviar mensaje al padre (login page) - una sola vez
+                                    // Enviar mensaje al padre (login page)
                                     if (window.opener && !window.opener.closed) {
                                         try {
                                             window.opener.postMessage({
                                                 type: 'logout',
                                                 ...logoutData,
-                                                source: 'dashboard_window'
+                                                source: 'dashboard_button'
                                             }, '*');
                                             
                                             console.log('📤 Mensaje de logout enviado al padre');
@@ -1912,27 +1795,7 @@
                                         }
                                     }
                                     
-                                    // 5. Enviar con Beacon API (si está disponible)
-                                    if (navigator.sendBeacon && !window.beaconSent) {
-                                        try {
-                                            const beaconData = new Blob(
-                                                [JSON.stringify({
-                                                    ...logoutData,
-                                                    type: 'logout_beacon'
-                                                })], 
-                                                {type: 'application/json'}
-                                            );
-                                            
-                                            window.beaconSent = true;
-                                            const targetUrl = window.opener ? window.opener.location.href : window.location.href;
-                                            navigator.sendBeacon(targetUrl, beaconData);
-                                            console.log('📡 Beacon API enviado');
-                                        } catch (beaconError) {
-                                            console.warn('Beacon API falló:', beaconError);
-                                        }
-                                    }
-                                    
-                                    console.log('✅ Logout registrado exitosamente:', logoutType);
+                                    console.log('✅ Logout registrado exitosamente');
                                     return true;
                                     
                                 } catch (error) {
@@ -1980,7 +1843,7 @@
                             function logout() {
                                 if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
                                     // Registrar logout por botón
-                                    const registered = registerLogout('button_click');
+                                    const registered = registerLogout();
                                     
                                     if (registered) {
                                         // Cerrar después de un breve delay para permitir el logging
@@ -1990,7 +1853,7 @@
                                             } catch (error) {
                                                 console.warn('No se pudo cerrar ventana:', error);
                                             }
-                                        }, 200);
+                                        }, 500);
                                     } else {
                                         alert('Error registrando logout. La ventana se cerrará de todos modos.');
                                         setTimeout(() => window.close(), 100);
@@ -2032,19 +1895,6 @@
                             // Botón de salir
                             exitBtn.addEventListener('click', logout);
                             
-                            // ⭐ CAPTURAR CIERRE DE VENTANA (VERSIÓN MEJORADA)
-                            window.addEventListener('beforeunload', function(event) {
-                                // Solo registrar logout si NO fue por el botón "Salir"
-                                if (!window.logoutRegistered) {
-                                    console.log('⚠️ Ventana cerrando (beforeunload)');
-                                    
-                                    // Registrar logout por cierre de ventana
-                                    registerLogout('window_close');
-                                    
-                                    // NO usar event.preventDefault() para evitar problemas de bloqueo
-                                }
-                            });
-                            
                             // Evento cuando el iframe carga
                             iframe.addEventListener('load', function() {
                                 // Ocultar loading
@@ -2070,22 +1920,6 @@
                                     console.log('Pantalla completa no disponible:', err);
                                 }
                             }, 100);
-                            
-                            // Verificar si hay logout pendiente de sesiones anteriores
-                            setTimeout(() => {
-                                try {
-                                    const lastLogout = localStorage.getItem('last_logout');
-                                    if (lastLogout) {
-                                        const logoutData = JSON.parse(lastLogout);
-                                        if (logoutData.user === currentUser && !window.logoutRegistered) {
-                                            console.log('🔍 Encontrado logout pendiente de sesión anterior');
-                                            registerLogout('recovered_from_storage');
-                                        }
-                                    }
-                                } catch (error) {
-                                    console.warn('Error verificando logout pendiente:', error);
-                                }
-                            }, 2000);
                         });
                     <\/script>
                 </body>
