@@ -755,20 +755,31 @@
                 }
             });
 
-            // ⭐ NUEVO: SISTEMA MEJORADO PARA CAPTURAR LOGOUTS
+            // ⭐ SISTEMA MEJORADO PARA CAPTURAR LOGOUTS
             // Variable para rastrear sesiones activas
             let activeSessions = {};
             
             // Función mejorada para procesar mensajes de logout
             function processLogoutMessage(eventData) {
-                console.log('🚪 Procesando mensaje de logout:', eventData);
+                // Verificar si ya procesamos este logout recientemente
+                const lastLogoutProcessed = sessionStorage.getItem('last_logout_processed');
+                const now = Date.now();
                 
-                // Registrar inmediatamente en Airtable
+                if (lastLogoutProcessed && (now - parseInt(lastLogoutProcessed)) < 1000) {
+                    console.log('🔄 Logout ya procesado recientemente, ignorando...');
+                    return;
+                }
+                
+                // Marcar como procesado
+                sessionStorage.setItem('last_logout_processed', now.toString());
+                
+                console.log('🚪 Procesando logout:', eventData.user);
+                
+                // Registrar en Airtable
                 logger.log('logout', null, eventData.user, { 
-                    logoutType: eventData.logoutType || 'button_click',
+                    logoutType: eventData.logoutType || 'unknown',
                     sessionId: eventData.sessionId || 'unknown',
-                    urgent: true,
-                    source: 'window_message'
+                    source: 'dashboard_message'
                 });
                 
                 // También guardar como log urgente
@@ -776,78 +787,30 @@
                     timestamp: new Date().toISOString(),
                     user: eventData.user,
                     action: 'logout',
-                    logoutType: eventData.logoutType || 'button_click',
+                    logoutType: eventData.logoutType || 'unknown',
                     sessionId: eventData.sessionId || 'unknown',
                     ip: userIP || 'unknown',
                     deviceType: 'desktop'
                 });
                 
                 // Remover de sesiones activas
-                if (eventData.user) {
+                if (eventData.user && activeSessions) {
                     delete activeSessions[eventData.user];
                 }
                 
                 return true;
             }
             
-            // Función para enviar logs urgentes a Airtable
-            async function sendUrgentLogToAirtable(logEntry) {
-                try {
-                    const airtableRecord = {
-                        fields: {
-                            "FechaHora": logEntry.timestamp,
-                            "Usuario": logEntry.user,
-                            "Accion": logEntry.action,
-                            "Dashboard": '',
-                            "DashboardNombre": '',
-                            "Dispositivo": logEntry.deviceType,
-                            "IP": logEntry.ip || 'unknown',
-                            "UserAgent": navigator.userAgent.substring(0, 300),
-                            "SesionID": logEntry.sessionId || 'unknown',
-                            "DetallesExtra": JSON.stringify({ 
-                                logoutType: logEntry.logoutType || 'unknown',
-                                urgent: true,
-                                sentVia: 'urgent_api'
-                            })
-                        }
-                    };
-                    
-                    const url = `https://api.airtable.com/v0/${AIRTABLE_CONFIG.baseId}/${AIRTABLE_CONFIG.tableName}`;
-                    
-                    // Enviar inmediatamente con keepalive para mayor confiabilidad
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${AIRTABLE_CONFIG.apiKey}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(airtableRecord),
-                        keepalive: true  // Esto ayuda a que se envíe incluso si la página se cierra
-                    });
-                    
-                    if (!response.ok) {
-                        console.error('❌ Error enviando log urgente:', response.status);
-                        // Guardar como pendiente urgente
-                        logger.saveUrgentLog(logEntry);
-                        return false;
-                    }
-                    
-                    console.log('✅ Log urgente enviado exitosamente');
-                    return true;
-                    
-                } catch (error) {
-                    console.error('Error en sendUrgentLogToAirtable:', error);
-                    // Guardar como pendiente urgente
-                    logger.saveUrgentLog(logEntry);
-                    return false;
-                }
-            }
-            
-            // Escuchar mensajes desde la ventana del dashboard (MEJORADO)
+            // Escuchar mensajes desde la ventana del dashboard (VERSIÓN OPTIMIZADA)
             window.addEventListener('message', function(event) {
+                if (event.data && event.data.type === 'logout') {
+                    // Procesar logout con sistema mejorado (evita duplicados)
+                    processLogoutMessage(event.data);
+                }
+                
                 if (event.data && event.data.type === 'log_dashboard_view') {
                     // Registrar acceso desde la ventana del dashboard
-                    logger.log('dashboard_view', event.data.dashboardKey, event.data.user);
+                    logger.log('dashboard_view', event.data.dashboardKey, eventData.user);
                     console.log('📊 Log recibido desde dashboard:', event.data.dashboardKey);
                     
                     // Actualizar sesión activa
@@ -858,76 +821,9 @@
                         };
                     }
                 }
-                
-                if (event.data && event.data.type === 'logout') {
-                    // Procesar logout con sistema mejorado
-                    processLogoutMessage(event.data);
-                }
-                
-                // ⭐ NUEVO: Manejar mensajes urgentes de logout
-                if (event.data && event.data.type === 'logout_urgent') {
-                    console.log('🚨 Logout URGENTE recibido:', event.data);
-                    processLogoutMessage(event.data);
-                    
-                    // Enviar inmediatamente con API urgente
-                    sendUrgentLogToAirtable({
-                        timestamp: new Date().toISOString(),
-                        user: event.data.user,
-                        action: 'logout',
-                        logoutType: event.data.logoutType || 'window_close',
-                        sessionId: eventData.sessionId || 'unknown',
-                        deviceType: 'desktop',
-                        ip: userIP || 'unknown'
-                    });
-                }
-                
-                // ⭐ NUEVO: Manejar beacons (para cierre con X)
-                if (event.data && (event.data.type === 'logout_beacon' || event.data.urgent === true)) {
-                    console.log('📡 Beacon logout recibido:', event.data);
-                    processLogoutMessage(event.data);
-                }
             });
             
-            // ⭐ NUEVO: También escuchar eventos de storage (para logs guardados localmente)
-            window.addEventListener('storage', function(event) {
-                if (event.key === 'last_logout' && event.newValue) {
-                    try {
-                        const logoutData = JSON.parse(event.newValue);
-                        console.log('💾 Logout recuperado de localStorage:', logoutData);
-                        processLogoutMessage(logoutData);
-                    } catch (error) {
-                        console.error('Error procesando logout de storage:', error);
-                    }
-                }
-            });
-            
-            // ⭐ NUEVO: Verificar logs urgentes pendientes al cargar la página
-            function checkPendingUrgentLogs() {
-                try {
-                    const urgentKey = 'bi_logs_urgent';
-                    const urgentLogs = JSON.parse(localStorage.getItem(urgentKey) || '[]');
-                    
-                    if (urgentLogs.length > 0) {
-                        console.log(`🔄 Procesando ${urgentLogs.length} logs urgentes pendientes`);
-                        
-                        urgentLogs.forEach(log => {
-                            if (log.action === 'logout') {
-                                processLogoutMessage(log);
-                            }
-                        });
-                        
-                        // Limpiar logs urgentes procesados
-                        localStorage.setItem(urgentKey, JSON.stringify([]));
-                    }
-                } catch (error) {
-                    console.error('Error verificando logs urgentes:', error);
-                }
-            }
-            
-            // Verificar logs urgentes al cargar
-            setTimeout(checkPendingUrgentLogs, 2000);
-            
-            // ⭐ NUEVO: Detectar sesiones huérfanas (usuarios que cerraron sin logout)
+            // Detectar sesiones huérfanas (usuarios que cerraron sin logout)
             setInterval(() => {
                 const now = Date.now();
                 const timeout = 300000; // 5 minutos sin actividad
@@ -1393,7 +1289,7 @@
             const mobileExitBtn = document.getElementById('mobileExitBtn');
             
             let isSidebarOpen = false;
-            let mobileLogoutLogged = false;
+            window.mobileLogoutRegistered = false;
             
             // 🔒 Bloquear clic derecho SOLO en el menú móvil
             mobileSidebar.addEventListener('contextmenu', function(e) {
@@ -1401,39 +1297,38 @@
                 return false;
             });
             
-            // 🚪 FUNCIÓN MEJORADA PARA REGISTRAR LOGOUT MÓVIL
+            // 🚪 FUNCIÓN MEJORADA PARA REGISTRAR LOGOUT MÓVIL (EVITA DUPLICADOS)
             function registerMobileLogout(logoutType = 'button_click') {
-                if (mobileLogoutLogged) return true;
+                if (window.mobileLogoutRegistered) {
+                    console.log('⚠️ Logout móvil ya registrado, ignorando...');
+                    return true;
+                }
                 
                 try {
+                    console.log('🚪 Registrando logout móvil:', logoutType);
+                    
+                    // Marcar inmediatamente que ya se registró logout
+                    window.mobileLogoutRegistered = true;
+                    
                     const logoutData = {
                         user: currentUser,
                         action: 'logout',
                         logoutType: logoutType,
                         timestamp: new Date().toISOString(),
                         sessionId: currentSessionId,
-                        deviceType: 'mobile'
+                        deviceType: 'mobile',
+                        registeredAt: Date.now()
                     };
                     
-                    console.log('🚪 Registrando logout móvil:', logoutType);
-                    
-                    // 1. Guardar en localStorage inmediatamente
+                    // Guardar en localStorage
                     localStorage.setItem('last_logout_mobile', JSON.stringify(logoutData));
                     
-                    let pending = JSON.parse(localStorage.getItem('bi_logs_pending') || '[]');
-                    pending.push(logoutData);
-                    localStorage.setItem('bi_logs_pending', JSON.stringify(pending));
-                    
-                    // 2. Enviar al logger
+                    // Enviar al logger
                     logger.log('logout', null, currentUser, { 
                         logoutType: logoutType,
                         device: 'mobile'
                     });
                     
-                    // 3. Guardar como urgente
-                    logger.saveUrgentLog(logoutData);
-                    
-                    mobileLogoutLogged = true;
                     return true;
                     
                 } catch (error) {
@@ -1518,42 +1413,12 @@
                 }
             });
             
-            // ⭐ CAPTURAR CIERRE DE VENTANA MÓVIL (MEJORADO)
+            // CAPTURAR CIERRE DE VENTANA MÓVIL (MEJORADO)
             window.addEventListener('beforeunload', function(event) {
                 // Solo registrar logout si no fue por el botón "Cerrar Sesión"
-                if (!mobileLogoutLogged) {
+                if (!window.mobileLogoutRegistered) {
                     console.log('⚠️ Ventana móvil cerrando, registrando logout...');
                     registerMobileLogout('window_close');
-                    
-                    // Intentar enviar beacon si está disponible
-                    try {
-                        const logoutData = {
-                            user: currentUser,
-                            action: 'logout',
-                            logoutType: 'window_close',
-                            timestamp: new Date().toISOString(),
-                            sessionId: currentSessionId,
-                            urgent: true
-                        };
-                        
-                        const beaconData = new Blob(
-                            [JSON.stringify(logoutData)], 
-                            {type: 'application/json'}
-                        );
-                        
-                        if (navigator.sendBeacon) {
-                            navigator.sendBeacon(window.location.href, beaconData);
-                        }
-                    } catch (error) {
-                        console.warn('Beacon móvil falló:', error);
-                    }
-                }
-            });
-            
-            // También capturar evento unload como respaldo
-            window.addEventListener('unload', function() {
-                if (!mobileLogoutLogged) {
-                    registerMobileLogout('window_close_unload');
                 }
             });
             
@@ -1922,8 +1787,9 @@
                         const currentUser = "${currentUser}";
                         const currentSessionId = "${currentSessionId}";
                         
-                        // Variable para controlar si ya se registró logout
-                        let logoutLogged = false;
+                        // Variable global para controlar logout
+                        window.logoutRegistered = false;
+                        window.beaconSent = false;
                         
                         document.addEventListener('DOMContentLoaded', function() {
                             const toggleBtn = document.getElementById('toggleBtn');
@@ -1976,9 +1842,9 @@
                                 }
                             }
                             
-                            // 🚪 FUNCIÓN MEJORADA PARA REGISTRAR LOGOUT (SOLUCIÓN 6)
+                            // 🚪 FUNCIÓN UNIFICADA PARA REGISTRAR LOGOUT (EVITA DUPLICADOS)
                             function registerLogout(logoutType = 'button_click') {
-                                if (logoutLogged) {
+                                if (window.logoutRegistered) {
                                     console.log('⚠️ Logout ya registrado, ignorando...');
                                     return true;
                                 }
@@ -1986,7 +1852,10 @@
                                 try {
                                     console.log('🚪 Registrando logout:', logoutType);
                                     
-                                    // 1. Guardar en localStorage inmediatamente (más confiable)
+                                    // Marcar inmediatamente que ya se registró logout
+                                    window.logoutRegistered = true;
+                                    
+                                    // 1. Crear datos de logout una sola vez
                                     const logoutData = {
                                         user: currentUser,
                                         action: 'logout',
@@ -1994,92 +1863,66 @@
                                         timestamp: new Date().toISOString(),
                                         sessionId: currentSessionId,
                                         deviceType: 'desktop',
-                                        storedAt: Date.now()
+                                        registeredAt: Date.now()
                                     };
                                     
-                                    // Guardar en múltiples lugares para asegurar
+                                    // 2. Guardar en localStorage (solo una vez)
                                     localStorage.setItem('last_logout', JSON.stringify(logoutData));
                                     
+                                    // 3. Añadir a logs pendientes (solo una vez)
                                     let pending = JSON.parse(localStorage.getItem('bi_logs_pending') || '[]');
-                                    pending.push(logoutData);
-                                    localStorage.setItem('bi_logs_pending', JSON.stringify(pending));
+                                    // Verificar si ya existe un logout similar
+                                    const existingLogout = pending.find(log => 
+                                        log.user === currentUser && 
+                                        log.action === 'logout' && 
+                                        (Date.now() - new Date(log.timestamp).getTime()) < 5000 // Últimos 5 segundos
+                                    );
                                     
-                                    // 2. Enviar con Beacon API (funciona durante beforeunload)
-                                    if (navigator.sendBeacon) {
+                                    if (!existingLogout) {
+                                        pending.push(logoutData);
+                                        localStorage.setItem('bi_logs_pending', JSON.stringify(pending));
+                                    }
+                                    
+                                    // 4. Enviar mensaje al padre (login page) - una sola vez
+                                    if (window.opener && !window.opener.closed) {
+                                        try {
+                                            window.opener.postMessage({
+                                                type: 'logout',
+                                                ...logoutData,
+                                                source: 'dashboard_window'
+                                            }, '*');
+                                            
+                                            console.log('📤 Mensaje de logout enviado al padre');
+                                        } catch (error) {
+                                            console.warn('Error enviando mensaje al padre:', error);
+                                        }
+                                    }
+                                    
+                                    // 5. Enviar con Beacon API (si está disponible)
+                                    if (navigator.sendBeacon && !window.beaconSent) {
                                         try {
                                             const beaconData = new Blob(
                                                 [JSON.stringify({
                                                     ...logoutData,
-                                                    type: 'logout_beacon',
-                                                    urgent: true
+                                                    type: 'logout_beacon'
                                                 })], 
                                                 {type: 'application/json'}
                                             );
                                             
-                                            // Enviar al opener si está disponible, si no a la misma página
+                                            window.beaconSent = true;
                                             const targetUrl = window.opener ? window.opener.location.href : window.location.href;
-                                            const beaconSent = navigator.sendBeacon(targetUrl, beaconData);
-                                            console.log('📡 Beacon enviado:', beaconSent ? '✅' : '❌');
+                                            navigator.sendBeacon(targetUrl, beaconData);
+                                            console.log('📡 Beacon API enviado');
                                         } catch (beaconError) {
                                             console.warn('Beacon API falló:', beaconError);
                                         }
                                     }
                                     
-                                    // 3. Intentar enviar al padre de múltiples formas
-                                    try {
-                                        if (window.opener && !window.opener.closed) {
-                                            // Método 1: postMessage normal
-                                            window.opener.postMessage({
-                                                type: 'logout_urgent',
-                                                ...logoutData
-                                            }, '*');
-                                            
-                                            // Método 2: postMessage con delay (para asegurar)
-                                            setTimeout(() => {
-                                                try {
-                                                    window.opener.postMessage({
-                                                        type: 'logout',
-                                                        ...logoutData,
-                                                        retry: true
-                                                    }, '*');
-                                                } catch (e) {
-                                                    console.warn('Retry postMessage falló:', e);
-                                                }
-                                            }, 10);
-                                            
-                                            // Método 3: XMLHttpRequest sincrónico como último recurso
-                                            try {
-                                                const xhr = new XMLHttpRequest();
-                                                xhr.open('POST', window.opener.location.href, false); // Sincrónico
-                                                xhr.setRequestHeader('Content-Type', 'application/json');
-                                                xhr.send(JSON.stringify({
-                                                    type: 'logout_sync',
-                                                    ...logoutData
-                                                }));
-                                                console.log('📤 XHR sincrónico enviado');
-                                            } catch (xhrError) {
-                                                console.warn('XHR sincrónico falló:', xhrError);
-                                            }
-                                        } else {
-                                            console.warn('Opener no disponible para notificar');
-                                        }
-                                    } catch (parentError) {
-                                        console.warn('Error notificando al padre:', parentError);
-                                    }
-                                    
-                                    // 4. También guardar en sessionStorage como respaldo adicional
-                                    try {
-                                        sessionStorage.setItem('logout_attempt', JSON.stringify(logoutData));
-                                    } catch (sessionError) {
-                                        console.warn('SessionStorage falló:', sessionError);
-                                    }
-                                    
-                                    logoutLogged = true;
                                     console.log('✅ Logout registrado exitosamente:', logoutType);
                                     return true;
                                     
                                 } catch (error) {
-                                    console.error('❌ Error crítico registrando logout:', error);
+                                    console.error('❌ Error registrando logout:', error);
                                     return false;
                                 }
                             }
@@ -2175,43 +2018,16 @@
                             // Botón de salir
                             exitBtn.addEventListener('click', logout);
                             
-                            // ⭐ CAPTURAR CIERRE DE VENTANA (SOLUCIÓN 6 - MEJORADO)
+                            // ⭐ CAPTURAR CIERRE DE VENTANA (VERSIÓN MEJORADA)
                             window.addEventListener('beforeunload', function(event) {
-                                // Solo registrar logout si no fue por el botón "Salir"
-                                if (!logoutLogged) {
-                                    console.log('⚠️ Ventana cerrando (beforeunload), registrando logout...');
-                                    
-                                    // Dar tiempo para que se ejecute el registro
-                                    event.preventDefault();
+                                // Solo registrar logout si NO fue por el botón "Salir"
+                                if (!window.logoutRegistered) {
+                                    console.log('⚠️ Ventana cerrando (beforeunload)');
                                     
                                     // Registrar logout por cierre de ventana
-                                    const registered = registerLogout('window_close');
+                                    registerLogout('window_close');
                                     
-                                    if (registered) {
-                                        console.log('✅ Logout registrado antes de cerrar');
-                                    } else {
-                                        console.warn('❌ No se pudo registrar logout antes de cerrar');
-                                    }
-                                    
-                                    // Forzar un pequeño delay para asegurar el envío
-                                    const waitTime = registered ? 50 : 10;
-                                    
-                                    // Usar returnValue para mostrar mensaje (opcional)
-                                    event.returnValue = '¿Estás seguro de que quieres salir? Los cambios no guardados se perderán.';
-                                    
-                                    // Pequeño delay para permitir que Beacon API envíe los datos
-                                    setTimeout(() => {
-                                        // Limpiar returnValue para permitir el cierre
-                                        delete event.returnValue;
-                                    }, waitTime);
-                                }
-                            });
-                            
-                            // También capturar evento unload como respaldo
-                            window.addEventListener('unload', function() {
-                                if (!logoutLogged) {
-                                    console.log('⚠️ Ventana cerrando (unload), intentando registro final...');
-                                    registerLogout('window_close_unload');
+                                    // NO usar event.preventDefault() para evitar problemas de bloqueo
                                 }
                             });
                             
@@ -2241,13 +2057,13 @@
                                 }
                             }, 100);
                             
-                            // ⭐ NUEVO: Verificar si hay logout pendiente de sesiones anteriores
+                            // Verificar si hay logout pendiente de sesiones anteriores
                             setTimeout(() => {
                                 try {
                                     const lastLogout = localStorage.getItem('last_logout');
                                     if (lastLogout) {
                                         const logoutData = JSON.parse(lastLogout);
-                                        if (logoutData.user === currentUser && !logoutLogged) {
+                                        if (logoutData.user === currentUser && !window.logoutRegistered) {
                                             console.log('🔍 Encontrado logout pendiente de sesión anterior');
                                             registerLogout('recovered_from_storage');
                                         }
