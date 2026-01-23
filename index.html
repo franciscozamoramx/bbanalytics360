@@ -374,12 +374,12 @@
                 const airtableRecord = {
                     fields: {
                         "FechaHora": logEntry.timestamp,
-                        "A Usuario": logEntry.user,
+                        "Usuario": logEntry.user,
                         "Accion": logEntry.action,
                         "Dashboard": logEntry.dashboard || '',
                         "DashboardNombre": logEntry.dashboardName || '',
                         "Dispositivo": logEntry.deviceType,
-                        "A IP": logEntry.ip,
+                        "IP": logEntry.ip,
                         "UserAgent": logEntry.userAgent.substring(0, 300),
                         "SessionID": logEntry.sessionId
                         // "DetallesExtra" eliminado - no existe en la tabla
