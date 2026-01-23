@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Business Intelligence - Big Bola</title>
+    <title>BB Analytics 360 - Big Bola</title>
     <link rel="icon" type="image/png" href="https://i.postimg.cc/PJSBFV7L/panel.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -47,6 +47,11 @@
             margin-bottom: 15px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
             color: white;
+        }
+        
+        .title-highlight {
+            color: #FFD700;
+            font-weight: bold;
         }
         
         p {
@@ -167,7 +172,7 @@
     <!-- Contenedor de login -->
     <div class="login-container" id="loginContainer">
         <img src="https://i.postimg.cc/hGqNYsNp/Isotipo-Perfiles-Marmol01-Photoroom.png" alt="Big Bola Casinos" class="logo">
-        <h1>Centro de Business Intelligence</h1>
+        <h1>BB <span class="title-highlight">Analytics 360</span></h1>
         <p>Ingresa con tu correo corporativo</p>
         
         <div class="login-form">
@@ -176,7 +181,7 @@
                 <input type="email" id="email" placeholder="usuario@bigbola.com" required>
             </div>
             <button class="btn" id="loginBtn">
-                <i class="fas fa-sign-in-alt"></i> Ingresar al Centro de BI
+                <i class="fas fa-sign-in-alt"></i> Ingresar a BB Analytics 360
             </button>
         </div>
         
@@ -202,7 +207,8 @@
             "rtp": "https://app.powerbi.com/reportEmbed?reportId=01ac285e-618f-43de-be89-d62b1a46374c&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c",
             "diccionario": "https://app.powerbi.com/reportEmbed?reportId=95918a25-c06b-411a-a346-f462b03e557b&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c",
             "seguimiento_auditores": "https://app.powerbi.com/reportEmbed?reportId=f298656f-f4fb-4110-9580-321f04c0cfd6&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c",
-			"logs_bi": "https://app.powerbi.com/reportEmbed?reportId=36b35095-427f-4ded-82d4-27ce644ddeac&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c"
+            "logs_bi": "https://app.powerbi.com/reportEmbed?reportId=36b35095-427f-4ded-82d4-27ce644ddeac&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c",
+            "bolipoits": "https://app.powerbi.com/reportEmbed?reportId=YOUR_BOLIPOITS_REPORT_ID&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c"
         };
 
         // Mapeo de nombres de dashboards
@@ -218,7 +224,8 @@
             "rtp": "RTP",
             "diccionario": "Diccionario KPI's",
             "seguimiento_auditores": "Seguimiento de Auditores",
-			"logs_bi": "Logs Centro de Dashboards"
+            "logs_bi": "Logs BB Analytics 360",
+            "bolipoits": "Bolipoits"
         };
 
         // Mapeo de íconos para dashboards
@@ -234,7 +241,8 @@
             "rtp": "fas fa-coins",
             "diccionario": "fas fa-book",
             "logs_bi": "fas fa-clipboard-list",
-            "seguimiento_auditores": "fas fa-user-check"
+            "seguimiento_auditores": "fas fa-user-check",
+            "bolipoits": "fas fa-chart-pie"
         };
 
         // ==================== AIRTABLE LOGGER COMPLETO ====================
@@ -242,11 +250,11 @@
         let currentSessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         let userIP = null;
 
-        // CONFIGURACIÓN AIRTABLE - CON TUS DATOS
+        // CONFIGURACIÓN AIRTABLE
         const AIRTABLE_CONFIG = {
-            baseId: 'appyLYRPaDHgHRMfg', // TU BASE ID
-            apiKey: 'patotjwpztoSwMBKc.19277efd2f0944e48d327235c5ecd969e1ece9b46543924225445a24d0992e23', // TU TOKEN
-            tableName: 'Table 1' // Nombre de la tabla
+            baseId: 'appyLYRPaDHgHRMfg',
+            apiKey: 'patotjwpztoSwMBKc.19277efd2f0944e48d327235c5ecd969e1ece9b46543924225445a24d0992e23',
+            tableName: 'Table 1'
         };
 
         class AirtableLogger {
@@ -361,20 +369,20 @@
                 return logEntry;
             }
             
-            // Enviar a Airtable
+            // Enviar a Airtable - CORREGIDO: SIN DETALLESEXTRA
             async sendToAirtable(logEntry) {
                 const airtableRecord = {
                     fields: {
                         "FechaHora": logEntry.timestamp,
-                        "Usuario": logEntry.user,
+                        "A Usuario": logEntry.user,
                         "Accion": logEntry.action,
                         "Dashboard": logEntry.dashboard || '',
                         "DashboardNombre": logEntry.dashboardName || '',
                         "Dispositivo": logEntry.deviceType,
-                        "IP": logEntry.ip,
+                        "A IP": logEntry.ip,
                         "UserAgent": logEntry.userAgent.substring(0, 300),
-                        "SesionID": logEntry.sessionId,
-                        "DetallesExtra": JSON.stringify(logEntry.extraData || {})
+                        "SessionID": logEntry.sessionId
+                        // "DetallesExtra" eliminado - no existe en la tabla
                     }
                 };
                 
@@ -522,7 +530,7 @@
                         return;
                     }
                     
-                    const headers = ['FechaHora', 'Usuario', 'Accion', 'Dashboard', 'DashboardNombre', 'Dispositivo', 'IP', 'SesionID', 'DetallesExtra'];
+                    const headers = ['FechaHora', 'A Usuario', 'Accion', 'Dashboard', 'DashboardNombre', 'Dispositivo', 'A IP', 'SessionID', 'UserAgent'];
                     let csv = headers.join(';') + '\n';
                     
                     allLogs.forEach(log => {
@@ -535,7 +543,7 @@
                             `"${log.deviceType}"`,
                             `"${log.ip || ''}"`,
                             `"${log.sessionId}"`,
-                            `"${JSON.stringify(log.extraData || {})}"`
+                            `"${log.userAgent || ''}"`
                         ];
                         csv += row.join(';') + '\n';
                     });
@@ -544,13 +552,13 @@
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = `bi-logs-${new Date().toISOString().split('T')[0]}.csv`;
+                    a.download = `bb-analytics-logs-${new Date().toISOString().split('T')[0]}.csv`;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
                     
-                    alert(`✅ Exportados ${allLogs.length} logs`);
+                    alert(`✅ Exportados ${allLogs.length} logs de BB Analytics 360`);
                     
                 } catch (error) {
                     console.error('Error exportando:', error);
@@ -590,7 +598,7 @@
                 
                 const statsHTML = `
                     <div style="position: fixed; top: 20px; right: 20px; background: #152c6e; color: white; padding: 15px; border-radius: 10px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.3); max-width: 300px;">
-                        <h3 style="margin-bottom: 10px; color: #FFD700;">📊 Estadísticas Hoy</h3>
+                        <h3 style="margin-bottom: 10px; color: #FFD700;">📊 BB Analytics 360 - Hoy</h3>
                         <p>📈 Total accesos: <strong>${stats.totalHoy || 0}</strong></p>
                         <p>👥 Usuarios únicos: <strong>${stats.usuariosUnicos || 0}</strong></p>
                         <p>📱 Dispositivos:</p>
@@ -755,7 +763,7 @@
                 }
             });
 
-            // ⭐ SISTEMA MEJORADO PARA CAPTURAR LOGOUTS
+            // SISTEMA MEJORADO PARA CAPTURAR LOGOUTS
             // Variable para rastrear sesiones activas
             let activeSessions = {};
             
@@ -801,7 +809,7 @@
                 return true;
             }
             
-            // Escuchar mensajes desde la ventana del dashboard (VERSIÓN OPTIMIZADA)
+            // Escuchar mensajes desde la ventana del dashboard
             window.addEventListener('message', function(event) {
                 if (event.data && event.data.type === 'logout') {
                     // Procesar logout con sistema mejorado (evita duplicados)
@@ -810,7 +818,7 @@
                 
                 if (event.data && event.data.type === 'log_dashboard_view') {
                     // Registrar acceso desde la ventana del dashboard
-                    logger.log('dashboard_view', event.data.dashboardKey, eventData.user);
+                    logger.log('dashboard_view', event.data.dashboardKey, event.data.user);
                     console.log('📊 Log recibido desde dashboard:', event.data.dashboardKey);
                     
                     // Actualizar sesión activa
@@ -933,7 +941,7 @@
                 document.getElementById('dashboardsCount').textContent = currentUserPermissions.length;
                 document.getElementById('userInfo').style.display = 'block';
                 
-                showStatus('Acceso concedido. Abriendo Centro de BI...', 'success');
+                showStatus('Acceso concedido. Abriendo BB Analytics 360...', 'success');
                 
                 console.log('=== LOGIN EXITOSO ===');
                 console.log('Usuario:', currentUser);
@@ -950,7 +958,7 @@
                 // Registrar intento fallido de login
                 logger.log('login_failed', null, email);
                 
-                showStatus('No tienes permisos para acceder al Centro de BI o el correo no está registrado.', 'error');
+                showStatus('No tienes permisos para acceder a BB Analytics 360 o el correo no está registrado.', 'error');
             }
         }
 
@@ -1057,8 +1065,8 @@
                         <div class="mobile-sidebar-header">
                             <img src="https://i.postimg.cc/hGqNYsNp/Isotipo-Perfiles-Marmol01-Photoroom.png" alt="Big Bola Casinos" class="mobile-sidebar-logo">
                             <div class="mobile-sidebar-title">
-                                <div>Centro de</div>
-                                <div>Business Intelligence</div>
+                                <div>BB Analytics 360</div>
+                                <div style="font-size: 14px; margin-top: 5px;">Plataforma de Business Intelligence</div>
                             </div>
                             <div class="user-info" style="margin-top: 10px; font-size: 12px;">
                                 Usuario: ${currentUser}
@@ -1339,7 +1347,7 @@
             
             function openWhatsApp() {
                 const phoneNumber = '+524421974414';
-                const message = 'Hola, necesito ayuda en el Centro de Business Intelligence';
+                const message = 'Hola, necesito ayuda en BB Analytics 360';
                 const url = 'https://wa.me/' + phoneNumber + '?text=' + encodeURIComponent(message);
                 window.open(url, '_blank');
             }
@@ -1496,7 +1504,7 @@
                 <head>
                     <meta charset="UTF-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Business Intelligence de Big Bola Casinos</title>
+                    <title>BB Analytics 360 - Big Bola Casinos</title>
                     <link rel="icon" type="image/png" href="https://i.postimg.cc/QCN4dPG1/analisis-de-datos.png">
                     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
                     <style>
@@ -1600,6 +1608,13 @@
                             color: white;
                             text-align: center;
                             line-height: 1.2;
+                        }
+                        
+                        .sidebar-subtitle {
+                            font-size: 14px;
+                            color: #FFD700;
+                            text-align: center;
+                            margin-top: 5px;
                         }
                         
                         .user-info {
@@ -1755,8 +1770,8 @@
                             <div class="sidebar-header">
                                 <img src="https://i.postimg.cc/hGqNYsNp/Isotipo-Perfiles-Marmol01-Photoroom.png" alt="Big Bola Casinos" class="sidebar-logo">
                                 <div class="sidebar-title">
-                                    <div>Centro de</div>
-                                    <div>Business Intelligence</div>
+                                    <div>BB Analytics 360</div>
+                                    <div class="sidebar-subtitle">Plataforma de Business Intelligence</div>
                                 </div>
                                 <div class="user-info">
                                     Usuario: ${currentUser}
@@ -1930,7 +1945,7 @@
                             // 📱 FUNCIONES DE LA APLICACIÓN
                             function openWhatsApp() {
                                 const phoneNumber = '+524421974414';
-                                const message = 'Hola, necesito ayuda en el Centro de Business Intelligence';
+                                const message = 'Hola, necesito ayuda en BB Analytics 360';
                                 const url = 'https://wa.me/' + phoneNumber + '?text=' + encodeURIComponent(message);
                                 window.open(url, '_blank');
                             }
