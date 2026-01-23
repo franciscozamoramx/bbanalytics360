@@ -369,7 +369,7 @@
                 return logEntry;
             }
             
-            // Enviar a Airtable - CORREGIDO: SIN DETALLESEXTRA
+            // Enviar a Airtable - CORREGIDO CON NOMBRES EXACTOS
             async sendToAirtable(logEntry) {
                 const airtableRecord = {
                     fields: {
@@ -381,8 +381,7 @@
                         "Dispositivo": logEntry.deviceType,
                         "IP": logEntry.ip,
                         "UserAgent": logEntry.userAgent.substring(0, 300),
-                        "SessionID": logEntry.sessionId
-                        // "DetallesExtra" eliminado - no existe en la tabla
+                        "SesionID": logEntry.sessionId  // ¡CORREGIDO! "SesionID" no "SessionID"
                     }
                 };
                 
@@ -530,7 +529,7 @@
                         return;
                     }
                     
-                    const headers = ['FechaHora', 'A Usuario', 'Accion', 'Dashboard', 'DashboardNombre', 'Dispositivo', 'A IP', 'SessionID', 'UserAgent'];
+                    const headers = ['FechaHora', 'Usuario', 'Accion', 'Dashboard', 'DashboardNombre', 'Dispositivo', 'IP', 'SesionID', 'UserAgent'];
                     let csv = headers.join(';') + '\n';
                     
                     allLogs.forEach(log => {
