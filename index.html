@@ -202,7 +202,7 @@
             "rtp": "https://app.powerbi.com/reportEmbed?reportId=01ac285e-618f-43de-be89-d62b1a46374c&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c",
             "diccionario": "https://app.powerbi.com/reportEmbed?reportId=95918a25-c06b-411a-a346-f462b03e557b&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c",
             "seguimiento_auditores": "https://app.powerbi.com/reportEmbed?reportId=f298656f-f4fb-4110-9580-321f04c0cfd6&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c",
-			"logs_bi": "https://app.powerbi.com/reportEmbed?reportId=36b35095-427f-4ded-82d4-27ce644ddeac&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c"
+            "logs_bi": "https://app.powerbi.com/reportEmbed?reportId=36b35095-427f-4ded-82d4-27ce644ddeac&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c"
         };
 
         // Mapeo de nombres de dashboards
@@ -218,7 +218,7 @@
             "rtp": "RTP",
             "diccionario": "Diccionario KPI's",
             "seguimiento_auditores": "Seguimiento de Auditores",
-			"logs_bi": "Logs Centro de Dashboards"
+            "logs_bi": "Logs Centro de Dashboards"
         };
 
         // Mapeo de íconos para dashboards
@@ -1442,6 +1442,56 @@
                 }
             }
             
+            // ⭐ NUEVA FUNCIÓN PARA REGISTRAR ACCESO EN MÓVIL
+            function logMobileDashboardAccess(dashboardKey) {
+                try {
+                    const logEntry = {
+                        timestamp: new Date().toISOString(),
+                        fechaHoraLocal: new Date().toLocaleString('es-MX'),
+                        user: currentUser,
+                        action: 'dashboard_view',
+                        dashboard: dashboardKey,
+                        dashboardName: dashboardNames[dashboardKey] || dashboardKey,
+                        deviceType: 'mobile',
+                        screen: `${window.screen.width}x${window.screen.height}`,
+                        userAgent: navigator.userAgent,
+                        ip: 'detecting...',
+                        sessionId: currentSessionId,
+                        extraData: {
+                            navigation: 'menu_click',
+                            source: 'mobile_dashboard'
+                        }
+                    };
+                    
+                    // 1. Guardar en localStorage
+                    const key = 'bi_logs_local';
+                    let logs = JSON.parse(localStorage.getItem(key) || '[]');
+                    logs.push(logEntry);
+                    localStorage.setItem(key, JSON.stringify(logs));
+                    
+                    // 2. Notificar a la página de login si es posible
+                    try {
+                        // Buscar el opener original
+                        if (window.opener && !window.opener.closed) {
+                            window.opener.postMessage({
+                                type: 'log_dashboard_view',
+                                dashboardKey: dashboardKey,
+                                user: currentUser,
+                                sessionId: currentSessionId,
+                                timestamp: new Date().toISOString()
+                            }, '*');
+                        }
+                    } catch (error) {
+                        console.warn('No se pudo notificar al opener:', error);
+                    }
+                    
+                    console.log('📱 Dashboard móvil accedido:', dashboardKey);
+                    
+                } catch (error) {
+                    console.error('Error registrando acceso móvil:', error);
+                }
+            }
+            
             function openWhatsApp() {
                 const phoneNumber = '+524421974414';
                 const message = 'Hola, necesito ayuda en el Centro de Business Intelligence';
@@ -1467,8 +1517,8 @@
                 mobileIframeLoading.style.display = 'block';
                 mobileIframe.style.opacity = '0.3';
                 
-                // Registrar acceso
-                logger.log('dashboard_view', dashboardKey, currentUser);
+                // Registrar acceso - LLAMAR A LA NUEVA FUNCIÓN
+                logMobileDashboardAccess(dashboardKey);
                 
                 // Cargar el dashboard
                 mobileIframe.src = dashboardUrl;
@@ -1921,9 +1971,126 @@
                         const dashboardIcons = ${dashboardIconsJson};
                         const currentUser = "${currentUser}";
                         const currentSessionId = "${currentSessionId}";
+                        const AIRTABLE_CONFIG = {
+                            baseId: 'appyLYRPaDHgHRMfg',
+                            apiKey: 'patotjwpztoSwMBKc.19277efd2f0944e48d327235c5ecd969e1ece9b46543924225445a24d0992e23',
+                            tableName: 'Table 1'
+                        };
                         
                         // Variable para controlar si ya se registró logout
                         let logoutLogged = false;
+                        
+                        // ⭐ NUEVA FUNCIÓN: Registrar acceso directamente
+                        async function registerDashboardAccessDirectly(dashboardKey) {
+                            try {
+                                const logEntry = {
+                                    timestamp: new Date().toISOString(),
+                                    fechaHoraLocal: new Date().toLocaleString('es-MX'),
+                                    user: currentUser,
+                                    action: 'dashboard_view',
+                                    dashboard: dashboardKey,
+                                    dashboardName: dashboardNames[dashboardKey] || dashboardKey,
+                                    deviceType: 'desktop',
+                                    screen: \`\${window.screen.width}x\${window.screen.height}\`,
+                                    userAgent: navigator.userAgent,
+                                    ip: 'detecting...',
+                                    sessionId: currentSessionId,
+                                    extraData: {
+                                        navigation: 'menu_click',
+                                        source: 'dashboard_window'
+                                    }
+                                };
+                                
+                                // Guardar localmente primero
+                                saveLogLocally(logEntry);
+                                
+                                // Enviar a Airtable si hay conexión
+                                if (navigator.onLine) {
+                                    await sendToAirtableDirectly(logEntry);
+                                }
+                                
+                            } catch (error) {
+                                console.warn('Error registrando acceso directo:', error);
+                            }
+                        }
+                        
+                        // Función para guardar log localmente
+                        function saveLogLocally(logEntry) {
+                            try {
+                                const key = 'bi_logs_local';
+                                let logs = JSON.parse(localStorage.getItem(key) || '[]');
+                                logs.push(logEntry);
+                                
+                                if (logs.length > 1000) {
+                                    logs = logs.slice(-1000);
+                                }
+                                
+                                localStorage.setItem(key, JSON.stringify(logs));
+                                console.log('📝 Log guardado localmente:', logEntry.dashboardName);
+                            } catch (error) {
+                                console.error('Error guardando local:', error);
+                            }
+                        }
+                        
+                        // Función para enviar directamente a Airtable
+                        async function sendToAirtableDirectly(logEntry) {
+                            try {
+                                const airtableRecord = {
+                                    fields: {
+                                        "FechaHora": logEntry.timestamp,
+                                        "Usuario": logEntry.user,
+                                        "Accion": logEntry.action,
+                                        "Dashboard": logEntry.dashboard || '',
+                                        "DashboardNombre": logEntry.dashboardName || '',
+                                        "Dispositivo": logEntry.deviceType,
+                                        "IP": logEntry.ip,
+                                        "UserAgent": logEntry.userAgent.substring(0, 300),
+                                        "SesionID": logEntry.sessionId,
+                                        "DetallesExtra": JSON.stringify(logEntry.extraData || {})
+                                    }
+                                };
+                                
+                                const url = \`https://api.airtable.com/v0/\${AIRTABLE_CONFIG.baseId}/\${AIRTABLE_CONFIG.tableName}\`;
+                                
+                                const response = await fetch(url, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Authorization': \`Bearer \${AIRTABLE_CONFIG.apiKey}\`,
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(airtableRecord)
+                                });
+                                
+                                if (!response.ok) {
+                                    throw new Error(\`Airtable error \${response.status}\`);
+                                }
+                                
+                                console.log('✅ Log enviado directamente a Airtable');
+                            } catch (error) {
+                                console.warn('⚠️ Error enviando a Airtable, guardando como pendiente:', error.message);
+                                saveAsPending(logEntry);
+                            }
+                        }
+                        
+                        // Función para guardar como pendiente
+                        function saveAsPending(logEntry) {
+                            try {
+                                const key = 'bi_logs_pending';
+                                let pending = JSON.parse(localStorage.getItem(key) || '[]');
+                                pending.push({ 
+                                    ...logEntry, 
+                                    retries: 0
+                                });
+                                
+                                if (pending.length > 200) {
+                                    pending = pending.slice(-200);
+                                }
+                                
+                                localStorage.setItem(key, JSON.stringify(pending));
+                            } catch (error) {
+                                console.error('Error guardando pendiente:', error);
+                            }
+                        }
                         
                         document.addEventListener('DOMContentLoaded', function() {
                             const toggleBtn = document.getElementById('toggleBtn');
@@ -1957,10 +2124,10 @@
                                 sidebar.addEventListener('contextmenu', blockRightClickOnSidebar);
                             }
                             
-                            // 📊 ENVIAR LOG AL PADRE (login page)
+                            // 📊 ENVIAR LOG AL PADRE (login page) Y REGISTRAR DIRECTAMENTE
                             function logDashboardAccess(dashboardKey) {
                                 try {
-                                    // Enviar mensaje al padre para logging
+                                    // 1. Enviar mensaje al padre para logging
                                     if (window.opener && !window.opener.closed) {
                                         window.opener.postMessage({
                                             type: 'log_dashboard_view',
@@ -1970,6 +2137,10 @@
                                             timestamp: new Date().toISOString()
                                         }, '*');
                                     }
+                                    
+                                    // 2. ⭐ NUEVO: Registrar directamente usando fetch
+                                    registerDashboardAccessDirectly(dashboardKey);
+                                    
                                     console.log('📊 Dashboard accedido:', dashboardKey);
                                 } catch (error) {
                                     console.warn('Error en logging:', error);
@@ -2240,6 +2411,20 @@
                                     console.log('Pantalla completa no disponible:', err);
                                 }
                             }, 100);
+                            
+                            // ⭐ NUEVO: Registrar el dashboard inicial al cargar
+                            setTimeout(() => {
+                                // Encontrar qué dashboard se cargó inicialmente
+                                const currentIframeSrc = iframe.src;
+                                const dashboardKey = Object.keys(dashboardUrls).find(key => 
+                                    dashboardUrls[key] === currentIframeSrc
+                                );
+                                
+                                if (dashboardKey) {
+                                    console.log('📊 Dashboard inicial detectado:', dashboardKey);
+                                    logDashboardAccess(dashboardKey);
+                                }
+                            }, 1500);
                             
                             // ⭐ NUEVO: Verificar si hay logout pendiente de sesiones anteriores
                             setTimeout(() => {
