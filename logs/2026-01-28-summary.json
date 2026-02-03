@@ -1,0 +1,26 @@
+{
+  "2026-01-28-21": {
+    "hour": "2026-01-28-21",
+    "generated_at": "2026-01-28T21:26:05.911Z",
+    "total_logs_in_hour": 0,
+    "unique_users": 0,
+    "actions_summary": {},
+    "device_summary": {}
+  },
+  "2026-01-28-22": {
+    "hour": "2026-01-28-22",
+    "generated_at": "2026-01-28T22:22:40.187Z",
+    "total_logs_in_hour": 0,
+    "unique_users": 0,
+    "actions_summary": {},
+    "device_summary": {}
+  },
+  "2026-01-28-23": {
+    "hour": "2026-01-28-23",
+    "generated_at": "2026-01-28T23:22:29.938Z",
+    "total_logs_in_hour": 0,
+    "unique_users": 0,
+    "actions_summary": {},
+    "device_summary": {}
+  }
+}
