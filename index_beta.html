@@ -157,205 +157,6 @@
             color: #FFD700;
         }
 
-        /* Carrusel Styles */
-        .carrusel-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(135deg, #1a3a8f 0%, #152c6e 100%);
-            overflow: hidden;
-            padding: 20px;
-        }
-        
-        .carrusel-title {
-            color: white;
-            font-size: 32px;
-            margin-bottom: 30px;
-            text-align: center;
-            padding: 0 20px;
-        }
-        
-        .carrusel-title span {
-            color: #FFD700;
-            font-weight: bold;
-        }
-        
-        .carrusel-slider {
-            width: 90%;
-            max-width: 1200px;
-            height: 70vh;
-            position: relative;
-            overflow: hidden;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-        }
-        
-        .carrusel-slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 0.8s ease-in-out;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: transparent;
-            padding: 40px;
-            text-align: center;
-        }
-        
-        .carrusel-slide.active {
-            opacity: 1;
-        }
-        
-        .carrusel-slide img {
-            max-width: 60%;
-            max-height: 60%;
-            object-fit: contain;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-            cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            z-index: 10;
-            position: relative;
-        }
-
-        .carrusel-slide img:hover {
-            transform: scale(1.02);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
-        }
-        
-        .carrusel-slide h3 {
-            color: white;
-            font-size: 28px;
-            margin-bottom: 15px;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-        
-        .carrusel-slide p {
-            color: #FFD700;
-            font-size: 18px;
-            line-height: 1.6;
-            max-width: 800px;
-            margin: 0 auto 20px;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
-        }
-        
-        .carrusel-indicators {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 30px;
-            position: absolute;
-            bottom: 30px;
-            left: 0;
-            right: 0;
-        }
-        
-        .carrusel-indicator {
-            width: 15px;
-            height: 15px;
-            background-color: rgba(255, 255, 255, 0.4);
-            border-radius: 50%;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-        
-        .carrusel-indicator.active {
-            background-color: #FFD700;
-            transform: scale(1.3);
-        }
-        
-        .carrusel-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: rgba(21, 44, 110, 0.8);
-            color: white;
-            border: none;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            z-index: 10;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-        
-        .carrusel-nav:hover {
-            background-color: rgba(21, 44, 110, 1);
-            transform: translateY(-50%) scale(1.1);
-        }
-        
-        .carrusel-prev {
-            left: 30px;
-        }
-        
-        .carrusel-next {
-            right: 30px;
-        }
-        
-        .carrusel-dashboard-badge {
-            background-color: #152c6e;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: bold;
-            margin-top: 15px;
-            display: inline-block;
-        }
-        
-        .carrusel-slide-description {
-            font-style: italic;
-            color: #FFD700;
-            margin-top: 10px;
-            font-size: 16px;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        }
-        
-        .carrusel-permission-info {
-            color: #FFD700;
-            font-size: 16px;
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        /* Preview images for prev/next - MODIFICADO PARA VISIÓN PARCIAL */
-        .carrusel-preview {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 25%;
-            height: 50%;
-            object-fit: cover;
-            border-radius: 10px;
-            opacity: 0.7;
-            z-index: 5;
-            pointer-events: none;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-            filter: blur(1px);
-        }
-        
-        .carrusel-preview-prev {
-            left: 5%;
-        }
-        
-        .carrusel-preview-next {
-            right: 5%;
-        }
-
         @media (max-width: 600px) {
             .login-container {
                 padding: 25px;
@@ -372,35 +173,6 @@
             .btn {
                 padding: 12px 25px;
                 font-size: 16px;
-            }
-            
-            .carrusel-title {
-                font-size: 24px;
-            }
-            
-            .carrusel-slider {
-                height: 60vh;
-            }
-            
-            .carrusel-slide h3 {
-                font-size: 22px;
-            }
-            
-            .carrusel-slide p {
-                font-size: 16px;
-            }
-
-            .carrusel-preview {
-                width: 25%;
-                height: 40%;
-            }
-
-            .carrusel-preview-prev {
-                left: 2%;
-            }
-            
-            .carrusel-preview-next {
-                right: 2%;
             }
         }
     </style>
@@ -515,7 +287,6 @@
             "logs_bi": "Registro de accesos y actividad de BB Analytics 360",
             "bolipoits": "Sistema de puntos"
         };
-
 
         // ==================== AIRTABLE LOGGER COMPLETO ====================
         const LOGGING_ENABLED = true;
@@ -641,7 +412,7 @@
                 return logEntry;
             }
             
-            // Enviar a Airtable - CORREGIDO CON NOMBRES EXACTOS
+            // Enviar a Airtable - CON NOMBRES EXACTOS DE CAMPOS
             async sendToAirtable(logEntry) {
                 const airtableRecord = {
                     fields: {
@@ -715,33 +486,6 @@
                     localStorage.setItem(key, JSON.stringify(pending));
                 } catch (error) {
                     console.error('Error guardando pendiente:', error);
-                }
-            }
-            
-            // Guardar log urgente (para eventos críticos como logout)
-            saveUrgentLog(logEntry) {
-                try {
-                    // Guardar en localStorage inmediatamente
-                    const key = 'bi_logs_urgent';
-                    let urgent = JSON.parse(localStorage.getItem(key) || '[]');
-                    urgent.push({ 
-                        ...logEntry, 
-                        timestamp: new Date().toISOString(),
-                        storedAt: Date.now()
-                    });
-                    
-                    if (urgent.length > 50) {
-                        urgent = urgent.slice(-50);
-                    }
-                    
-                    localStorage.setItem(key, JSON.stringify(urgent));
-                    
-                    // También guardar en pending para sincronización normal
-                    this.saveAsPending(logEntry);
-                    
-                    console.log('🚨 Log urgente guardado:', logEntry.action);
-                } catch (error) {
-                    console.error('Error guardando log urgente:', error);
                 }
             }
             
@@ -1035,12 +779,12 @@
             });
 
             // Escuchar mensajes desde la ventana del dashboard
-            window.addEventListener('message', function(event) {
+            window.addEventListener('message', async function(event) {
                 if (event.data && event.data.type === 'logout') {
                     console.log('🚪 Logout recibido desde dashboard:', event.data.user);
                     
                     // Registrar logout solo si viene del botón "Salir"
-                    logger.log('logout', null, event.data.user, { 
+                    await logger.log('logout', null, event.data.user, { 
                         logoutType: event.data.logoutType || 'button_click',
                         sessionId: event.data.sessionId || 'unknown',
                         source: 'dashboard_button'
@@ -1049,8 +793,17 @@
                 
                 if (event.data && event.data.type === 'log_dashboard_view') {
                     // Registrar acceso desde la ventana del dashboard
-                    logger.log('dashboard_view', event.data.dashboardKey, event.data.user);
+                    await logger.log('dashboard_view', event.data.dashboardKey, event.data.user);
                     console.log('📊 Log recibido desde dashboard:', event.data.dashboardKey);
+                }
+                
+                if (event.data && event.data.type === 'dashboard_access') {
+                    // Registrar acceso a dashboard desde carrusel
+                    await logger.log('dashboard_view', event.data.dashboardKey, event.data.user, {
+                        source: 'carrusel_click',
+                        timestamp: event.data.timestamp
+                    });
+                    console.log('📊 Dashboard accedido desde carrusel:', event.data.dashboardKey);
                 }
             });
         });
@@ -1137,7 +890,7 @@
                 currentSessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                 
                 // Registrar inicio de sesión
-                logger.log('login', null, currentUser);
+                await logger.log('login', null, currentUser);
                 
                 // Mostrar información breve
                 document.getElementById('userEmail').textContent = email;
@@ -1150,6 +903,7 @@
                 console.log('Usuario:', currentUser);
                 console.log('Dashboards permitidos:', currentUserPermissions.length);
                 console.log('Lista de dashboards:', currentUserPermissions);
+                console.log('Session ID:', currentSessionId);
                 console.log('=====================');
                 
                 // Abrir directamente el dashboard después de breve delay
@@ -1159,7 +913,7 @@
                 
             } else {
                 // Registrar intento fallido de login
-                logger.log('login_failed', null, email);
+                await logger.log('login_failed', null, email);
                 
                 showStatus('No tienes permisos para acceder a BB Analytics 360 o el correo no está registrado.', 'error');
             }
@@ -1208,10 +962,10 @@
         function generateMobileDashboardHTML() {
             let menuItemsHTML = '';
             
-            // Dashboard principal
+            // Dashboard principal (carrusel integrado)
             if (currentUserPermissions.includes('principal')) {
                 menuItemsHTML += `
-                    <button class="mobile-menu-item active" data-src="${dashboardUrls.principal}">
+                    <button class="mobile-menu-item active" data-src="carrusel_integrado">
                         <i class="${dashboardIcons.principal}"></i> ${dashboardNames.principal}
                     </button>
                 `;
@@ -1251,10 +1005,6 @@
                     <i class="fab fa-whatsapp"></i> Ayuda
                 </button>
             `;
-            
-            // Determinar dashboard inicial
-            const firstDashboard = currentUserPermissions.includes('principal') ? 'principal' : currentUserPermissions[0];
-            const initialUrl = dashboardUrls[firstDashboard] || '#';
             
             return `
                 <div class="mobile-dashboard-container">
@@ -1638,52 +1388,6 @@
                         font-size: 12px;
                     }
                     
-                    /* Preview images for mobile */
-                    .carrusel-preview {
-                        position: absolute;
-                        top: 50%;
-                        transform: translateY(-50%);
-                        width: 20%;
-                        height: 30%;
-                        object-fit: cover;
-                        border-radius: 8px;
-                        opacity: 0.7;
-                        z-index: 5;
-                        pointer-events: none;
-                        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-                        filter: blur(1px);
-                    }
-                    
-                    .carrusel-preview-prev {
-                        left: 2%;
-                    }
-                    
-                    .carrusel-preview-next {
-                        right: 2%;
-                    }
-                    
-                    .btn {
-                        background: linear-gradient(to bottom, #FFD700, #FF8C00);
-                        color: #152c6e;
-                        border: none;
-                        padding: 10px 20px;
-                        border-radius: 50px;
-                        cursor: pointer;
-                        font-weight: bold;
-                        font-size: 14px;
-                        transition: all 0.3s ease;
-                        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-                        margin-top: 15px;
-                        display: inline-flex;
-                        align-items: center;
-                        gap: 8px;
-                    }
-                    
-                    .btn:hover {
-                        transform: translateY(-2px);
-                        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-                    }
-                    
                     @keyframes spin {
                         0% { transform: rotate(0deg); }
                         100% { transform: rotate(360deg); }
@@ -1740,6 +1444,22 @@
                         }
                     }
                 </style>
+            `;
+        }
+
+        // 🔧 FUNCIÓN AUXILIAR PARA GENERAR HTML DEL CARRUSEL
+        function generateCarruselHTML() {
+            return `
+                <h1 class="carrusel-title"> <span> BB Analytics 360 </span> <span style="font-size: 16px; color: #FFD700; font-weight: normal; margin-left: 5px;">V1.5</span> </h1>
+                <div class="carrusel-permission-info" id="carruselPermissionInfo">
+                    <i class="fas fa-user-check"></i> Cargando información de usuario...
+                </div>
+                <div class="carrusel-slider" id="carruselSlider">
+                    <div style="text-align: center; padding: 40px; color: white;">
+                        <div class="spinner" style="margin: 0 auto 20px;"></div>
+                        <p>Cargando carrusel de dashboards...</p>
+                    </div>
+                </div>
             `;
         }
 
@@ -1859,36 +1579,17 @@
                 });
                 
                 slideImages.forEach(img => {
-                    img.addEventListener('click', function() {
+                    img.addEventListener('click', async function() {
                         const dashboardKey = this.getAttribute('data-key');
                         if (dashboardKey && dashboardUrls[dashboardKey]) {
-                            // ✅ REGISTRAR ACCESO AL DASHBOARD
-                            logger.log('dashboard_view', dashboardKey, currentUser, {
+                            // ✅ REGISTRAR ACCESO AL DASHBOARD EN AIRTABLE
+                            await logger.log('dashboard_view', dashboardKey, currentUser, {
                                 source: 'mobile_carrusel_click',
                                 timestamp: new Date().toISOString()
-                            }).then(() => {
-                                // Cargar el dashboard después de registrar
-                                loadMobileDashboard(dashboardUrls[dashboardKey], dashboardKey);
-                            }).catch(error => {
-                                console.error('Error registrando acceso:', error);
-                                // Cargar de todos modos
-                                loadMobileDashboard(dashboardUrls[dashboardKey], dashboardKey);
                             });
-                        }
-                    });
-                    
-                    // Pausar carrusel al hacer hover (en móvil, touchstart)
-                    img.addEventListener('touchstart', function() {
-                        if (mobileAutoPlayInterval) {
-                            clearInterval(mobileAutoPlayInterval);
-                            mobileIsAutoPlay = false;
-                        }
-                    });
-                    
-                    img.addEventListener('touchend', function() {
-                        if (!mobileIsAutoPlay) {
-                            mobileIsAutoPlay = true;
-                            startMobileAutoPlay();
+                            
+                            // Cargar el dashboard
+                            loadMobileDashboard(dashboardUrls[dashboardKey], dashboardKey);
                         }
                     });
                 });
@@ -1994,12 +1695,12 @@
             }
             
             // 🚪 FUNCIÓN SIMPLIFICADA PARA REGISTRAR LOGOUT MÓVIL
-            function registerMobileLogout() {
+            async function registerMobileLogout() {
                 try {
                     console.log('🚪 Registrando logout móvil por botón');
                     
                     // Enviar al logger
-                    logger.log('logout', null, currentUser, { 
+                    await logger.log('logout', null, currentUser, { 
                         logoutType: 'button_click',
                         device: 'mobile',
                         timestamp: new Date().toISOString()
@@ -2017,7 +1718,7 @@
             mobileOverlay.addEventListener('click', toggleMobileSidebar);
             
             mobileMenuItems.forEach(item => {
-                item.addEventListener('click', function() {
+                item.addEventListener('click', async function() {
                     const dashboardUrl = this.getAttribute('data-src');
                     
                     if (dashboardUrl) {
@@ -2032,6 +1733,14 @@
                         });
                         this.classList.add('active');
                         
+                        // Registrar acceso si no es el carrusel
+                        if (dashboardKey && dashboardKey !== 'principal') {
+                            await logger.log('dashboard_view', dashboardKey, currentUser, {
+                                source: 'mobile_menu_click',
+                                timestamp: new Date().toISOString()
+                            });
+                        }
+                        
                         // Cargar dashboard
                         loadMobileDashboard(dashboardUrl, dashboardKey);
                     }
@@ -2043,9 +1752,9 @@
             });
             
             // Botón de cerrar sesión
-            mobileExitBtn.addEventListener('click', function() {
+            mobileExitBtn.addEventListener('click', async function() {
                 if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-                    registerMobileLogout();
+                    await registerMobileLogout();
                     setTimeout(() => {
                         window.location.reload();
                     }, 500);
@@ -2056,1105 +1765,1043 @@
             initMobileCarrusel();
         }
 
-        // 🔧 FUNCIÓN AUXILIAR PARA GENERAR HTML DEL CARRUSEL
-        function generateCarruselHTML() {
+        // Función para generar el HTML del dashboard para PC
+        function generateDashboardHTML() {
+            let menuItemsHTML = '';
+            
+            // Dashboard principal (carrusel integrado)
+            if (currentUserPermissions.includes('principal')) {
+                menuItemsHTML += `
+                    <button class="menu-item active" data-src="carrusel_integrado">
+                        <i class="${dashboardIcons.principal}"></i> ${dashboardNames.principal}
+                    </button>
+                `;
+            }
+            
+            // Otros dashboards
+            const otherDashboards = currentUserPermissions.filter(d => d !== 'principal' && d !== 'diccionario');
+            if (otherDashboards.length > 0) {
+                menuItemsHTML += `<div class="menu-section">Dashboards</div>`;
+                
+                otherDashboards.forEach(dashboard => {
+                    if (dashboardUrls[dashboard]) {
+                        menuItemsHTML += `
+                            <button class="menu-item" data-src="${dashboardUrls[dashboard]}">
+                                <i class="${dashboardIcons[dashboard]}"></i> ${dashboardNames[dashboard]}
+                            </button>
+                        `;
+                    }
+                });
+            }
+            
+            // Herramientas
+            menuItemsHTML += `<div class="menu-section">Herramientas</div>`;
+            
+            // Diccionario KPI's
+            if (currentUserPermissions.includes('diccionario')) {
+                menuItemsHTML += `
+                    <button class="menu-item" data-src="${dashboardUrls.diccionario}">
+                        <i class="${dashboardIcons.diccionario}"></i> ${dashboardNames.diccionario}
+                    </button>
+                `;
+            }
+            
+            // Botón de ayuda
+            menuItemsHTML += `
+                <button class="menu-item" id="whatsappBtn">
+                    <i class="fab fa-whatsapp"></i> Ayuda
+                </button>
+            `;
+            
+            // Convertir las constantes a JSON para pasarlas al dashboard
+            const dashboardUrlsJson = JSON.stringify(dashboardUrls);
+            const dashboardNamesJson = JSON.stringify(dashboardNames);
+            const dashboardIconsJson = JSON.stringify(dashboardIcons);
+            const currentUserPermissionsJson = JSON.stringify(currentUserPermissions);
+            const dashboardImagesJson = JSON.stringify(dashboardImages);
+            const dashboardDescriptionsJson = JSON.stringify(dashboardDescriptions);
+            
             return `
-                <h1 class="carrusel-title"> <span> BB Analytics 360 </span> <span style="font-size: 16px; color: #FFD700; font-weight: normal; margin-left: 5px;">V1.5</span> </h1>
-                <div class="carrusel-permission-info" id="carruselPermissionInfo">
-                    <i class="fas fa-user-check"></i> Cargando información de usuario...
-                </div>
-                <div class="carrusel-slider" id="carruselSlider">
-                    <div style="text-align: center; padding: 40px; color: white;">
-                        <div class="spinner" style="margin: 0 auto 20px;"></div>
-                        <p>Cargando carrusel de dashboards...</p>
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>BB Analytics 360 - Big Bola Casinos</title>
+                    <link rel="icon" type="image/png" href="https://i.postimg.cc/QCN4dPG1/analisis-de-datos.png">
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                    <style>
+                        * {
+                            margin: 0;
+                            padding: 0;
+                            box-sizing: border-box;
+                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        }
+                        
+                        body {
+                            background-color: #f5f5f5;
+                            overflow: hidden;
+                            margin: 0;
+                            padding: 0;
+                        }
+                        
+                        .container {
+                            width: 100vw;
+                            height: 100vh;
+                            background-color: #fff;
+                            display: flex;
+                            flex-direction: column;
+                            position: relative;
+                        }
+                        
+                        /* 🔹 BOTÓN HAMBURGUESA SUPERIOR IZQUIERDA */
+                        .floating-toggle {
+                            position: fixed;
+                            top: 20px;
+                            left: 20px;
+                            width: 50px;
+                            height: 50px;
+                            background: rgba(26, 58, 143, 0.8);
+                            color: white;
+                            border: none;
+                            border-radius: 50%;
+                            cursor: pointer;
+                            z-index: 1001;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 20px;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                            transition: all 0.3s ease;
+                        }
+                        
+                        .floating-toggle:hover {
+                            background: rgba(26, 58, 143, 0.9);
+                            transform: scale(1.05);
+                        }
+                        
+                        /* 🔹 SIDEBAR (MENÚ LATERAL) */
+                        .sidebar {
+                            position: fixed;
+                            top: 0;
+                            left: -320px;
+                            width: 320px;
+                            height: 100vh;
+                            background: #152c6e;
+                            z-index: 1002;
+                            transition: left 0.3s ease;
+                            overflow-y: auto;
+                            padding: 20px;
+                            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+                            display: flex;
+                            flex-direction: column;
+                        }
+                        
+                        .sidebar.active { left: 0; }
+                        
+                        .sidebar-overlay {
+                            display: none;
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background: rgba(0,0,0,0.5);
+                            z-index: 1001;
+                        }
+                        
+                        .sidebar-overlay.active { display: block; }
+                        
+                        .sidebar-header {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            padding: 20px 0;
+                            border-bottom: 1px solid rgba(255,255,255,0.2);
+                            margin-bottom: 20px;
+                        }
+                        
+                        .sidebar-logo {
+                            height: 60px;
+                            width: auto;
+                            margin-bottom: 15px;
+                        }
+                        
+                        .sidebar-title {
+                            font-size: 18px;
+                            font-weight: bold;
+                            color: white;
+                            text-align: center;
+                            line-height: 1.2;
+                        }
+                        
+                        .sidebar-subtitle {
+                            font-size: 14px;
+                            color: #FFD700;
+                            text-align: center;
+                            margin-top: 5px;
+                        }
+                        
+                        .user-info {
+                            margin-top: 10px;
+                            font-size: 12px;
+                            color: #FFD700;
+                            text-align: center;
+                        }
+                        
+                        .menu-section {
+                            color: #FFD700;
+                            font-weight: bold;
+                            margin: 20px 0 10px;
+                            padding-bottom: 5px;
+                            border-bottom: 1px solid rgba(255,255,255,0.2);
+                            font-size: 16px;
+                        }
+                        
+                        .menu-item {
+                            display: block;
+                            width: 100%;
+                            padding: 12px 15px;
+                            margin-bottom: 8px;
+                            background: rgba(255,255,255,0.1);
+                            color: white;
+                            border: none;
+                            border-radius: 5px;
+                            text-align: left;
+                            cursor: pointer;
+                            transition: background 0.3s, transform 0.2s;
+                            font-size: 15px;
+                        }
+                        
+                        .menu-item:hover { 
+                            background: rgba(255,255,255,0.2); 
+                            transform: translateX(5px);
+                        }
+                        
+                        .menu-item.active {
+                            background: rgba(255,215,0,0.3);
+                            border-left: 3px solid #FFD700;
+                            font-weight: bold;
+                        }
+                        
+                        .menu-item i {
+                            margin-right: 10px;
+                            width: 20px;
+                            text-align: center;
+                        }
+                        
+                        .sidebar-footer {
+                            margin-top: auto;
+                            padding-top: 20px;
+                            border-top: 1px solid rgba(255,255,255,0.2);
+                        }
+                        
+                        .exit-btn {
+                            display: block;
+                            width: 100%;
+                            padding: 12px 15px;
+                            background: rgba(255, 0, 0, 0.2);
+                            color: white;
+                            border: none;
+                            border-radius: 5px;
+                            cursor: pointer;
+                            font-size: 15px;
+                            transition: background 0.3s;
+                            text-align: center;
+                        }
+                        
+                        .exit-btn:hover { background: rgba(255, 0, 0, 0.3); }
+                        
+                        /* 🔹 CONTENEDOR DEL IFRAME (DASHBOARD) */
+                        .iframe-container {
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background: white;
+                            transition: left 0.3s ease;
+                            z-index: 1000;
+                        }
+                        
+                        .iframe-container.sidebar-open {
+                            left: 320px;
+                            width: calc(100% - 320px);
+                        }
+                        
+                        /* 🔹 ESTILOS PARA CARRUSEL INTEGRADO */
+                        .carrusel-container {
+                            width: 100%;
+                            height: 100%;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                            background: linear-gradient(135deg, #1a3a8f 0%, #152c6e 100%);
+                            overflow: hidden;
+                        }
+                        
+                        .carrusel-title {
+                            color: white;
+                            font-size: 32px;
+                            margin-bottom: 30px;
+                            text-align: center;
+                            padding: 0 20px;
+                        }
+                        
+                        .carrusel-title span {
+                            color: #FFD700;
+                            font-weight: bold;
+                        }
+                        
+                        .carrusel-slider {
+                            width: 90%;
+                            max-width: 1200px;
+                            height: 70vh;
+                            position: relative;
+                            overflow: hidden;
+                            border-radius: 20px;
+                            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+                        }
+                        
+                        .carrusel-slide {
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            opacity: 0;
+                            transition: opacity 0.8s ease-in-out;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                            background-color: transparent;
+                            padding: 40px;
+                            text-align: center;
+                        }
+                        
+                        .carrusel-slide.active {
+                            opacity: 1;
+                        }
+                        
+                        .carrusel-slide img {
+                            max-width: 60%;
+                            max-height: 60%;
+                            object-fit: contain;
+                            border-radius: 15px;
+                            margin-bottom: 25px;
+                            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+                            cursor: pointer;
+                            transition: transform 0.3s ease, box-shadow 0.3s ease;
+                            z-index: 10;
+                            position: relative;
+                        }
+
+                        .carrusel-slide img:hover {
+                            transform: scale(1.02);
+                            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+                        }
+                        
+                        .carrusel-slide .dashboard-title {
+                            color: white;
+                            font-size: 28px;
+                            margin-bottom: 15px;
+                            font-weight: bold;
+                            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+                        }
+                        
+                        .carrusel-slide .dashboard-desc {
+                            color: #FFD700;
+                            font-size: 18px;
+                            line-height: 1.6;
+                            max-width: 800px;
+                            margin: 0 auto 20px;
+                            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+                        }
+                        
+                        .carrusel-indicators {
+                            display: flex;
+                            justify-content: center;
+                            gap: 15px;
+                            margin-top: 30px;
+                            position: absolute;
+                            bottom: 30px;
+                            left: 0;
+                            right: 0;
+                        }
+                        
+                        .carrusel-indicator {
+                            width: 15px;
+                            height: 15px;
+                            background-color: rgba(255, 255, 255, 0.4);
+                            border-radius: 50%;
+                            cursor: pointer;
+                            transition: background-color 0.3s, transform 0.3s;
+                        }
+                        
+                        .carrusel-indicator.active {
+                            background-color: #FFD700;
+                            transform: scale(1.3);
+                        }
+                        
+                        .carrusel-nav {
+                            position: absolute;
+                            top: 50%;
+                            transform: translateY(-50%);
+                            background-color: rgba(21, 44, 110, 0.8);
+                            color: white;
+                            border: none;
+                            width: 60px;
+                            height: 60px;
+                            border-radius: 50%;
+                            cursor: pointer;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            font-size: 24px;
+                            z-index: 10;
+                            transition: background-color 0.3s, transform 0.3s;
+                        }
+                        
+                        .carrusel-nav:hover {
+                            background-color: rgba(21, 44, 110, 1);
+                            transform: translateY(-50%) scale(1.1);
+                        }
+                        
+                        .carrusel-prev {
+                            left: 30px;
+                        }
+                        
+                        .carrusel-next {
+                            right: 30px;
+                        }
+                        
+                        .carrusel-dashboard-badge {
+                            background-color: #152c6e;
+                            color: white;
+                            padding: 8px 15px;
+                            border-radius: 20px;
+                            font-size: 14px;
+                            font-weight: bold;
+                            margin-top: 15px;
+                            display: inline-block;
+                        }
+                        
+                        .carrusel-slide-description {
+                            font-style: italic;
+                            color: #FFD700;
+                            margin-top: 10px;
+                            font-size: 16px;
+                            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+                        }
+                        
+                        .carrusel-permission-info {
+                            color: #FFD700;
+                            font-size: 16px;
+                            margin-top: 20px;
+                            text-align: center;
+                        }
+                        
+                        .preview-images {
+                            position: absolute;
+                            top: 50%;
+                            transform: translateY(-50%);
+                            width: 25%;
+                            height: 50%;
+                            object-fit: cover;
+                            border-radius: 10px;
+                            opacity: 0.7;
+                            z-index: 5;
+                            pointer-events: none;
+                            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+                            filter: blur(1px);
+                        }
+                        
+                        .preview-prev {
+                            left: 5%;
+                        }
+                        
+                        .preview-next {
+                            right: 5%;
+                        }
+                        
+                        iframe {
+                            width: 100%;
+                            height: 100%;
+                            border: none;
+                            transition: opacity 0.3s;
+                        }
+                        
+                        /* Estilo para el mensaje de menú deshabilitado */
+                        .context-menu-message {
+                            position: fixed;
+                            top: 10px;
+                            right: 10px;
+                            background: rgba(0,0,0,0.7);
+                            color: white;
+                            padding: 10px;
+                            border-radius: 5px;
+                            z-index: 10000;
+                            font-size: 14px;
+                            display: none;
+                            animation: fadeInOut 3s ease-in-out;
+                        }
+                        
+                        @keyframes fadeInOut {
+                            0% { opacity: 0; }
+                            10% { opacity: 1; }
+                            90% { opacity: 1; }
+                            100% { opacity: 0; }
+                        }
+
+                        /* Loading spinner para iframe */
+                        .iframe-loading {
+                            position: absolute;
+                            top: 50%;
+                            left: 50%;
+                            transform: translate(-50%, -50%);
+                            text-align: center;
+                            z-index: 100;
+                            display: none;
+                        }
+
+                        .spinner {
+                            border: 4px solid #f3f3f3;
+                            border-top: 4px solid #152c6e;
+                            border-radius: 50%;
+                            width: 40px;
+                            height: 40px;
+                            animation: spin 1s linear infinite;
+                            margin: 0 auto 15px;
+                        }
+
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="context-menu-message" id="contextMenuMessage">Menú contextual deshabilitado</div>
+                    <div class="container">
+                        <!-- Botón hamburguesa superior izquierda -->
+                        <button class="floating-toggle" id="toggleBtn">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        
+                        <!-- Overlay para cerrar menú -->
+                        <div class="sidebar-overlay" id="overlay"></div>
+                        
+                        <!-- Sidebar con menú -->
+                        <div class="sidebar" id="sidebar">
+                            <div class="sidebar-header">
+                                <img src="https://i.postimg.cc/hGqNYsNp/Isotipo-Perfiles-Marmol01-Photoroom.png" alt="Big Bola Casinos" class="sidebar-logo">
+                                <div class="sidebar-title">
+                                    <div>BB Analytics 360 <span style="font-size: 12px; color: #FFD700; margin-left: 5px;">V1.5</span></div>
+                                    <div class="sidebar-subtitle">Plataforma de Business Intelligence</div>
+                                </div>
+                                <div class="user-info">
+                                    Usuario: ${currentUser}<br>
+                                    Dashboards: ${currentUserPermissions.length} disponibles
+                                </div>
+                            </div>
+                            ${menuItemsHTML}
+                            <div class="sidebar-footer">
+                                <button class="exit-btn" id="exitBtn">
+                                    <i class="fas fa-sign-out-alt"></i> Salir
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Contenedor principal -->
+                        <div class="iframe-container" id="iframeContainer">
+                            <div class="iframe-loading" id="iframeLoading">
+                                <div class="spinner"></div>
+                                <p>Cargando dashboard...</p>
+                            </div>
+                            <div id="contentContainer" class="carrusel-container">
+                                <h1 class="carrusel-title"> <span> BB Analytics 360 </span> <span style="font-size: 16px; color: #FFD700; font-weight: normal; margin-left: 5px;">V1.5</span> </h1>
+                                <div class="carrusel-permission-info" id="carruselPermissionInfo">
+                                    <i class="fas fa-user-check"></i> Cargando información de usuario...
+                                </div>
+                                <div class="carrusel-slider" id="carruselSlider">
+                                    <div style="text-align: center; padding: 40px; color: white;">
+                                        <div class="spinner" style="margin: 0 auto 20px;"></div>
+                                        <p>Cargando carrusel de dashboards...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
+
+                    <script>
+                        // 🔧 VARIABLES GLOBALES PARA ESTE SCRIPT
+                        const dashboardUrls = ${dashboardUrlsJson};
+                        const dashboardNames = ${dashboardNamesJson};
+                        const dashboardIcons = ${dashboardIconsJson};
+                        const dashboardImages = ${dashboardImagesJson};
+                        const dashboardDescriptions = ${dashboardDescriptionsJson};
+                        const currentUser = "${currentUser}";
+                        const currentUserPermissions = ${currentUserPermissionsJson};
+                        const currentSessionId = "${currentSessionId}";
+                        
+                        // Variables para control del carrusel
+                        let currentSlide = 0;
+                        let autoPlayInterval;
+                        let isAutoPlay = true;
+                        let carruselData = [];
+                        
+                        // Variable global para controlar logout
+                        window.logoutRegistered = false;
+                        
+                        // 🔧 FUNCIÓN PARA GENERAR LOS DATOS DEL CARRUSEL
+                        function generateCarruselData() {
+                            const data = [];
+                            
+                            // Para cada dashboard permitido, crear una diapositiva
+                            currentUserPermissions.forEach(dashboardKey => {
+                                if (dashboardKey !== 'diccionario' && dashboardUrls[dashboardKey]) {
+                                    const imageUrl = dashboardImages[dashboardKey] || 'https://i.postimg.cc/QCN4dPG1/analisis-de-datos.png';
+                                    const description = dashboardDescriptions[dashboardKey] || 'Dashboard de Business Intelligence';
+                                    
+                                    data.push({
+                                        key: dashboardKey,
+                                        title: dashboardNames[dashboardKey],
+                                        image: imageUrl,
+                                        description: description,
+                                        icon: dashboardIcons[dashboardKey],
+                                        url: dashboardUrls[dashboardKey]
+                                    });
+                                }
+                            });
+                            
+                            return data;
+                        }
+                        
+                        // 🔧 FUNCIÓN PARA INICIALIZAR EL CARRUSEL
+                        function initCarrusel() {
+                            carruselData = generateCarruselData();
+                            
+                            // Actualizar información de permisos
+                            const permissionInfo = document.getElementById('carruselPermissionInfo');
+                            if (permissionInfo) {
+                                permissionInfo.innerHTML = \`
+                                    <i class="fas fa-user-check"></i> Usuario: \${currentUser} | 
+                                    <i class="fas fa-chart-bar"></i> Dashboards disponibles: \${carruselData.length}
+                                \`;
+                            }
+                            
+                            // Si no hay dashboards permitidos, mostrar mensaje
+                            if (carruselData.length === 0) {
+                                document.getElementById('contentContainer').innerHTML = \`
+                                    <div style="text-align: center; color: white; padding: 40px;">
+                                        <i class="fas fa-exclamation-triangle" style="font-size: 60px; margin-bottom: 20px; color: #FFD700;"></i>
+                                        <h2 style="font-size: 28px; margin-bottom: 15px;">No hay dashboards disponibles</h2>
+                                        <p style="font-size: 18px;">No tienes permisos para acceder a ningún dashboard.</p>
+                                        <p style="font-size: 16px; margin-top: 20px; color: #FFD700;">
+                                            Contacta al administrador para solicitar acceso.
+                                        </p>
+                                    </div>
+                                \`;
+                                return;
+                            }
+                            
+                            // Generar HTML del carrusel
+                            const slidesHTML = carruselData.map((slide, index) => \`
+                                <div class="carrusel-slide \${index === 0 ? 'active' : ''}" data-index="\${index}">
+                                    <img src="\${slide.image}" alt="\${slide.title}" data-key="\${slide.key}">
+                                    <div class="dashboard-title">\${slide.title}</div>
+                                    <div class="dashboard-desc">\${slide.description}</div>
+                                    <p class="carrusel-slide-description">
+                                        Haz clic en la imagen para acceder al dashboard
+                                    </p>
+                                </div>
+                            \`).join('');
+                            
+                            const indicatorsHTML = carruselData.map((_, index) => \`
+                                <div class="carrusel-indicator \${index === 0 ? 'active' : ''}" data-index="\${index}"></div>
+                            \`).join('');
+                            
+                            document.getElementById('carruselSlider').innerHTML = \`
+                                <button class="carrusel-nav carrusel-prev">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="carrusel-nav carrusel-next">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                                \${slidesHTML}
+                                <div class="carrusel-indicators">
+                                    \${indicatorsHTML}
+                                </div>
+                            \`;
+                            
+                            // Inicializar eventos del carrusel
+                            setupCarruselEvents();
+                            startAutoPlay();
+                        }
+                        
+                        // 🔧 FUNCIÓN PARA CONFIGURAR EVENTOS DEL CARRUSEL
+                        function setupCarruselEvents() {
+                            const prevBtn = document.querySelector('.carrusel-prev');
+                            const nextBtn = document.querySelector('.carrusel-next');
+                            const indicators = document.querySelectorAll('.carrusel-indicator');
+                            const slideImages = document.querySelectorAll('.carrusel-slide img');
+                            
+                            if (prevBtn) prevBtn.addEventListener('click', showPrevSlide);
+                            if (nextBtn) nextBtn.addEventListener('click', showNextSlide);
+                            
+                            indicators.forEach(indicator => {
+                                indicator.addEventListener('click', function() {
+                                    const index = parseInt(this.getAttribute('data-index'));
+                                    goToSlide(index);
+                                });
+                            });
+                            
+                            slideImages.forEach(img => {
+                                img.addEventListener('click', function() {
+                                    const dashboardKey = this.getAttribute('data-key');
+                                    if (dashboardKey && dashboardUrls[dashboardKey]) {
+                                        // ✅ ENVIAR MENSAJE AL PADRE PARA LOGGING EN AIRTABLE
+                                        if (window.opener && !window.opener.closed) {
+                                            window.opener.postMessage({
+                                                type: 'dashboard_access',
+                                                dashboardKey: dashboardKey,
+                                                user: currentUser,
+                                                sessionId: currentSessionId,
+                                                timestamp: new Date().toISOString(),
+                                                dashboardName: dashboardNames[dashboardKey] || dashboardKey,
+                                                action: 'dashboard_view'
+                                            }, '*');
+                                        }
+                                        
+                                        console.log('📊 Dashboard accedido:', dashboardKey);
+                                        
+                                        // Cargar el dashboard
+                                        loadDashboard(dashboardUrls[dashboardKey], dashboardKey);
+                                    }
+                                });
+                                
+                                // Pausar carrusel al hacer hover
+                                img.addEventListener('mouseenter', function() {
+                                    if (autoPlayInterval) {
+                                        clearInterval(autoPlayInterval);
+                                        isAutoPlay = false;
+                                    }
+                                });
+                                
+                                // Reanudar carrusel al quitar el cursor
+                                img.addEventListener('mouseleave', function() {
+                                    if (!isAutoPlay) {
+                                        isAutoPlay = true;
+                                        startAutoPlay();
+                                    }
+                                });
+                            });
+                        }
+                        
+                        // 🔧 FUNCIONES DE CONTROL DEL CARRUSEL
+                        function showNextSlide() {
+                            currentSlide = (currentSlide + 1) % carruselData.length;
+                            updateCarrusel();
+                        }
+                        
+                        function showPrevSlide() {
+                            currentSlide = (currentSlide - 1 + carruselData.length) % carruselData.length;
+                            updateCarrusel();
+                        }
+                        
+                        function goToSlide(index) {
+                            currentSlide = index;
+                            updateCarrusel();
+                        }
+                        
+                        function updateCarrusel() {
+                            const slides = document.querySelectorAll('.carrusel-slide');
+                            const indicators = document.querySelectorAll('.carrusel-indicator');
+                            
+                            slides.forEach(slide => slide.classList.remove('active'));
+                            indicators.forEach(indicator => indicator.classList.remove('active'));
+                            
+                            if (slides[currentSlide]) slides[currentSlide].classList.add('active');
+                            if (indicators[currentSlide]) indicators[currentSlide].classList.add('active');
+                        }
+                        
+                        function startAutoPlay() {
+                            if (isAutoPlay) {
+                                autoPlayInterval = setInterval(showNextSlide, 5000);
+                            }
+                        }
+                        
+                        // ✅ FUNCIÓN PARA CARGAR DASHBOARD
+                        function loadDashboard(dashboardUrl, dashboardKey) {
+                            const iframeLoading = document.getElementById('iframeLoading');
+                            const contentContainer = document.getElementById('contentContainer');
+                            const menuItems = document.querySelectorAll('.menu-item');
+                            
+                            // Mostrar loading
+                            iframeLoading.style.display = 'block';
+                            
+                            // Si es el carrusel
+                            if (dashboardUrl === 'carrusel_integrado') {
+                                // Reconstruir el carrusel completamente
+                                contentContainer.innerHTML = \`
+                                    <h1 class="carrusel-title"> <span> BB Analytics 360 </span> <span style="font-size: 16px; color: #FFD700; font-weight: normal; margin-left: 5px;">V1.5</span> </h1>
+                                    <div class="carrusel-permission-info" id="carruselPermissionInfo">
+                                        <i class="fas fa-user-check"></i> Cargando información...
+                                    </div>
+                                    <div class="carrusel-slider" id="carruselSlider">
+                                        <div style="text-align: center; padding: 40px; color: white;">
+                                            <div class="spinner" style="margin: 0 auto 20px;"></div>
+                                            <p>Cargando carrusel de dashboards...</p>
+                                        </div>
+                                    </div>
+                                \`;
+                                
+                                // Inicializar el carrusel
+                                setTimeout(() => {
+                                    initCarrusel();
+                                    iframeLoading.style.display = 'none';
+                                }, 100);
+                                
+                                // Actualizar menú
+                                menuItems.forEach(menuItem => {
+                                    menuItem.classList.remove('active');
+                                    if (menuItem.getAttribute('data-src') === 'carrusel_integrado') {
+                                        menuItem.classList.add('active');
+                                    }
+                                });
+                            } 
+                            // Si es un dashboard externo
+                            else if (dashboardUrl && dashboardUrl !== '#') {
+                                // Crear iframe
+                                contentContainer.innerHTML = \`<iframe id="dashboardFrame" src="\${dashboardUrl}"></iframe>\`;
+                                
+                                // Ocultar loading cuando el iframe cargue
+                                const iframe = document.getElementById('dashboardFrame');
+                                iframe.onload = function() {
+                                    iframeLoading.style.display = 'none';
+                                };
+                                
+                                // Detener carrusel si estaba activo
+                                if (autoPlayInterval) {
+                                    clearInterval(autoPlayInterval);
+                                }
+                            }
+                            
+                            // Ocultar sidebar si está abierto
+                            const sidebar = document.getElementById('sidebar');
+                            if (sidebar.classList.contains('active')) {
+                                toggleSidebar();
+                            }
+                        }
+                        
+                        // 🚪 FUNCIÓN PARA REGISTRAR LOGOUT EN AIRTABLE
+                        function registerLogout() {
+                            if (window.logoutRegistered) {
+                                console.log('⚠️ Logout ya registrado, ignorando...');
+                                return true;
+                            }
+                            
+                            try {
+                                console.log('🚪 Registrando logout por botón');
+                                
+                                // Marcar inmediatamente que ya se registró logout
+                                window.logoutRegistered = true;
+                                
+                                // Crear datos de logout
+                                const logoutData = {
+                                    user: currentUser,
+                                    action: 'logout',
+                                    logoutType: 'button_click',
+                                    timestamp: new Date().toISOString(),
+                                    sessionId: currentSessionId,
+                                    deviceType: 'desktop',
+                                    registeredAt: Date.now(),
+                                    sessionDuration: Date.now() - parseInt(currentSessionId.split('_')[1])
+                                };
+                                
+                                // Enviar mensaje al padre (login page) para logging en Airtable
+                                if (window.opener && !window.opener.closed) {
+                                    try {
+                                        window.opener.postMessage({
+                                            type: 'logout',
+                                            ...logoutData,
+                                            source: 'dashboard_button'
+                                        }, '*');
+                                        
+                                        console.log('📤 Mensaje de logout enviado al padre para Airtable');
+                                        
+                                    } catch (error) {
+                                        console.warn('Error enviando mensaje al padre:', error);
+                                        localStorage.setItem('pending_logout', JSON.stringify(logoutData));
+                                    }
+                                } else {
+                                    localStorage.setItem('pending_logout', JSON.stringify(logoutData));
+                                }
+                                
+                                console.log('✅ Logout registrado exitosamente');
+                                return true;
+                                
+                            } catch (error) {
+                                console.error('❌ Error registrando logout:', error);
+                                return false;
+                            }
+                        }
+                        
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const toggleBtn = document.getElementById('toggleBtn');
+                            const sidebar = document.getElementById('sidebar');
+                            const overlay = document.getElementById('overlay');
+                            const iframeContainer = document.getElementById('iframeContainer');
+                            const menuItems = document.querySelectorAll('.menu-item');
+                            const whatsappBtn = document.getElementById('whatsappBtn');
+                            const exitBtn = document.getElementById('exitBtn');
+                            const iframeLoading = document.getElementById('iframeLoading');
+                            const contextMenuMessage = document.getElementById('contextMenuMessage');
+                            
+                            let isSidebarOpen = false;
+                            
+                            // 🔒 FUNCIONES DE SEGURIDAD
+                            function blockRightClickOnSidebar(e) {
+                                e.preventDefault();
+                                showContextMenuMessage();
+                                return false;
+                            }
+                            
+                            function showContextMenuMessage() {
+                                contextMenuMessage.style.display = 'block';
+                                setTimeout(() => {
+                                    contextMenuMessage.style.display = 'none';
+                                }, 3000);
+                            }
+                            
+                            function applySecurityBlocks() {
+                                sidebar.addEventListener('contextmenu', blockRightClickOnSidebar);
+                            }
+                            
+                            // 📱 FUNCIONES DE LA APLICACIÓN
+                            function openWhatsApp() {
+                                const phoneNumber = '+524421974414';
+                                const message = 'Hola, necesito ayuda en BB Analytics 360';
+                                const url = 'https://wa.me/' + phoneNumber + '?text=' + encodeURIComponent(message);
+                                window.open(url, '_blank');
+                            }
+                            
+                            function toggleSidebar() {
+                                isSidebarOpen = !isSidebarOpen;
+                                sidebar.classList.toggle('active');
+                                overlay.classList.toggle('active');
+                                iframeContainer.classList.toggle('sidebar-open');
+                                
+                                toggleBtn.innerHTML = isSidebarOpen ? 
+                                    '<i class="fas fa-times"></i>' : 
+                                    '<i class="fas fa-bars"></i>';
+                            }
+                            
+                            function logout() {
+                                if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                                    // ✅ REGISTRAR LOGOUT POR BOTÓN EN AIRTABLE
+                                    const registered = registerLogout();
+                                    
+                                    if (registered) {
+                                        // Cerrar después de un breve delay para permitir el logging
+                                        setTimeout(() => {
+                                            try {
+                                                window.close();
+                                            } catch (error) {
+                                                console.warn('No se pudo cerrar ventana:', error);
+                                                window.location.href = window.opener ? window.opener.location.href : 'about:blank';
+                                            }
+                                        }, 1000);
+                                    } else {
+                                        alert('Error registrando logout. La ventana se cerrará de todos modos.');
+                                        setTimeout(() => {
+                                            try {
+                                                window.close();
+                                            } catch (error) {
+                                                window.location.href = 'about:blank';
+                                            }
+                                        }, 100);
+                                    }
+                                }
+                            }
+                            
+                            // 🎯 EVENT LISTENERS
+                            toggleBtn.addEventListener('click', toggleSidebar);
+                            overlay.addEventListener('click', toggleSidebar);
+                            
+                            // ✅ CORRECCIÓN: Event listeners para los botones del menú
+                            menuItems.forEach(item => {
+                                item.addEventListener('click', function() {
+                                    const dashboardUrl = this.getAttribute('data-src');
+                                    const dashboardKey = Object.keys(dashboardUrls).find(key => 
+                                        dashboardUrls[key] === dashboardUrl
+                                    ) || (dashboardUrl === 'carrusel_integrado' ? 'principal' : null);
+                                    
+                                    if (dashboardUrl) {
+                                        // Actualizar estado activo
+                                        menuItems.forEach(menuItem => {
+                                            menuItem.classList.remove('active');
+                                        });
+                                        this.classList.add('active');
+                                        
+                                        // Enviar log si no es el carrusel
+                                        if (dashboardKey && dashboardKey !== 'principal' && window.opener && !window.opener.closed) {
+                                            window.opener.postMessage({
+                                                type: 'log_dashboard_view',
+                                                dashboardKey: dashboardKey,
+                                                user: currentUser,
+                                                sessionId: currentSessionId,
+                                                timestamp: new Date().toISOString()
+                                            }, '*');
+                                        }
+                                        
+                                        // Cargar el dashboard usando la función global loadDashboard
+                                        loadDashboard(dashboardUrl, dashboardKey);
+                                    }
+                                });
+                            });
+                            
+                            // Botón de WhatsApp
+                            if (whatsappBtn) {
+                                whatsappBtn.addEventListener('click', openWhatsApp);
+                            }
+                            
+                            // Botón de salir
+                            exitBtn.addEventListener('click', logout);
+                            
+                            // 📋 INICIALIZACIÓN
+                            applySecurityBlocks();
+                            
+                            // Inicializar carrusel automáticamente
+                            initCarrusel();
+                            
+                            // Registrar cierre de ventana/pestaña
+                            window.addEventListener('beforeunload', function(e) {
+                                if (!window.logoutRegistered) {
+                                    console.log('⚠️ Ventana cerrada sin logout formal');
+                                    
+                                    // Intentar registrar como logout automático
+                                    if (window.opener && !window.opener.closed) {
+                                        window.opener.postMessage({
+                                            type: 'logout',
+                                            user: currentUser,
+                                            action: 'logout',
+                                            logoutType: 'window_close',
+                                            sessionId: currentSessionId,
+                                            timestamp: new Date().toISOString(),
+                                            source: 'window_beforeunload'
+                                        }, '*');
+                                    }
+                                }
+                            });
+                        });
+                    <\/script>
+                </body>
+                </html>
             `;
         }
-
-			// Función para generar el HTML del dashboard para PC
-			function generateDashboardHTML() {
-				let menuItemsHTML = '';
-				
-				// Dashboard principal (ahora es el carrusel integrado)
-				if (currentUserPermissions.includes('principal')) {
-					menuItemsHTML += `
-						<button class="menu-item active" data-src="carrusel_integrado">
-							<i class="${dashboardIcons.principal}"></i> ${dashboardNames.principal}
-						</button>
-					`;
-				}
-				
-				// Otros dashboards
-				const otherDashboards = currentUserPermissions.filter(d => d !== 'principal' && d !== 'diccionario');
-				if (otherDashboards.length > 0) {
-					menuItemsHTML += `<div class="menu-section">Dashboards</div>`;
-					
-					otherDashboards.forEach(dashboard => {
-						if (dashboardUrls[dashboard]) {
-							menuItemsHTML += `
-								<button class="menu-item" data-src="${dashboardUrls[dashboard]}">
-									<i class="${dashboardIcons[dashboard]}"></i> ${dashboardNames[dashboard]}
-								</button>
-							`;
-						}
-					});
-				}
-				
-				// Herramientas
-				menuItemsHTML += `<div class="menu-section">Herramientas</div>`;
-				
-				// Diccionario KPI's
-				if (currentUserPermissions.includes('diccionario')) {
-					menuItemsHTML += `
-						<button class="menu-item" data-src="${dashboardUrls.diccionario}">
-							<i class="${dashboardIcons.diccionario}"></i> ${dashboardNames.diccionario}
-						</button>
-					`;
-				}
-				
-				// Botón de ayuda
-				menuItemsHTML += `
-					<button class="menu-item" id="whatsappBtn">
-						<i class="fab fa-whatsapp"></i> Ayuda
-					</button>
-				`;
-				
-				// Convertir las constantes a JSON para pasarlas al dashboard
-				const dashboardUrlsJson = JSON.stringify(dashboardUrls);
-				const dashboardNamesJson = JSON.stringify(dashboardNames);
-				const dashboardIconsJson = JSON.stringify(dashboardIcons);
-				const currentUserPermissionsJson = JSON.stringify(currentUserPermissions);
-				const dashboardImagesJson = JSON.stringify(dashboardImages);
-				const dashboardDescriptionsJson = JSON.stringify(dashboardDescriptions);
-				
-				return `
-					<!DOCTYPE html>
-					<html lang="es">
-					<head>
-						<meta charset="UTF-8">
-						<meta name="viewport" content="width=device-width, initial-scale=1.0">
-						<title>BB Analytics 360 - Big Bola Casinos</title>
-						<link rel="icon" type="image/png" href="https://i.postimg.cc/QCN4dPG1/analisis-de-datos.png">
-						<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-						<style>
-							* {
-								margin: 0;
-								padding: 0;
-								box-sizing: border-box;
-								font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-							}
-							
-							body {
-								background-color: #f5f5f5;
-								overflow: hidden;
-								margin: 0;
-								padding: 0;
-							}
-							
-							.container {
-								width: 100vw;
-								height: 100vh;
-								background-color: #fff;
-								display: flex;
-								flex-direction: column;
-								position: relative;
-							}
-							
-							/* 🔹 BOTÓN HAMBURGUESA SUPERIOR IZQUIERDA */
-							.floating-toggle {
-								position: fixed;
-								top: 20px;
-								left: 20px;
-								width: 50px;
-								height: 50px;
-								background: rgba(26, 58, 143, 0.8);
-								color: white;
-								border: none;
-								border-radius: 50%;
-								cursor: pointer;
-								z-index: 1001;
-								display: flex;
-								align-items: center;
-								justify-content: center;
-								font-size: 20px;
-								box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-								transition: all 0.3s ease;
-							}
-							
-							.floating-toggle:hover {
-								background: rgba(26, 58, 143, 0.9);
-								transform: scale(1.05);
-							}
-							
-							/* 🔹 SIDEBAR (MENÚ LATERAL) */
-							.sidebar {
-								position: fixed;
-								top: 0;
-								left: -320px;
-								width: 320px;
-								height: 100vh;
-								background: #152c6e;
-								z-index: 1002;
-								transition: left 0.3s ease;
-								overflow-y: auto;
-								padding: 20px;
-								box-shadow: 2px 0 10px rgba(0,0,0,0.3);
-								display: flex;
-								flex-direction: column;
-							}
-							
-							.sidebar.active { left: 0; }
-							
-							.sidebar-overlay {
-								display: none;
-								position: fixed;
-								top: 0;
-								left: 0;
-								width: 100%;
-								height: 100%;
-								background: rgba(0,0,0,0.5);
-								z-index: 1001;
-							}
-							
-							.sidebar-overlay.active { display: block; }
-							
-							.sidebar-header {
-								display: flex;
-								flex-direction: column;
-								align-items: center;
-								padding: 20px 0;
-								border-bottom: 1px solid rgba(255,255,255,0.2);
-								margin-bottom: 20px;
-							}
-							
-							.sidebar-logo {
-								height: 60px;
-								width: auto;
-								margin-bottom: 15px;
-							}
-							
-							.sidebar-title {
-								font-size: 18px;
-								font-weight: bold;
-								color: white;
-								text-align: center;
-								line-height: 1.2;
-							}
-							
-							.sidebar-subtitle {
-								font-size: 14px;
-								color: #FFD700;
-								text-align: center;
-								margin-top: 5px;
-							}
-							
-							.user-info {
-								margin-top: 10px;
-								font-size: 12px;
-								color: #FFD700;
-								text-align: center;
-							}
-							
-							.menu-section {
-								color: #FFD700;
-								font-weight: bold;
-								margin: 20px 0 10px;
-								padding-bottom: 5px;
-								border-bottom: 1px solid rgba(255,255,255,0.2);
-								font-size: 16px;
-							}
-							
-							.menu-item {
-								display: block;
-								width: 100%;
-								padding: 12px 15px;
-								margin-bottom: 8px;
-								background: rgba(255,255,255,0.1);
-								color: white;
-								border: none;
-								border-radius: 5px;
-								text-align: left;
-								cursor: pointer;
-								transition: background 0.3s, transform 0.2s;
-								font-size: 15px;
-							}
-							
-							.menu-item:hover { 
-								background: rgba(255,255,255,0.2); 
-								transform: translateX(5px);
-							}
-							
-							.menu-item.active {
-								background: rgba(255,215,0,0.3);
-								border-left: 3px solid #FFD700;
-								font-weight: bold;
-							}
-							
-							.menu-item i {
-								margin-right: 10px;
-								width: 20px;
-								text-align: center;
-							}
-							
-							.sidebar-footer {
-								margin-top: auto;
-								padding-top: 20px;
-								border-top: 1px solid rgba(255,255,255,0.2);
-							}
-							
-							.exit-btn {
-								display: block;
-								width: 100%;
-								padding: 12px 15px;
-								background: rgba(255, 0, 0, 0.2);
-								color: white;
-								border: none;
-								border-radius: 5px;
-								cursor: pointer;
-								font-size: 15px;
-								transition: background 0.3s;
-								text-align: center;
-							}
-							
-							.exit-btn:hover { background: rgba(255, 0, 0, 0.3); }
-							
-							/* 🔹 CONTENEDOR DEL IFRAME (DASHBOARD) */
-							.iframe-container {
-								position: fixed;
-								top: 0;
-								left: 0;
-								width: 100%;
-								height: 100%;
-								background: white;
-								transition: left 0.3s ease;
-								z-index: 1000;
-							}
-							
-							.iframe-container.sidebar-open {
-								left: 320px;
-								width: calc(100% - 320px);
-							}
-							
-							/* 🔹 ESTILOS PARA CARRUSEL INTEGRADO */
-							.carrusel-container {
-								width: 100%;
-								height: 100%;
-								display: flex;
-								flex-direction: column;
-								justify-content: center;
-								align-items: center;
-								background: linear-gradient(135deg, #1a3a8f 0%, #152c6e 100%);
-								overflow: hidden;
-							}
-							
-							.carrusel-title {
-								color: white;
-								font-size: 32px;
-								margin-bottom: 30px;
-								text-align: center;
-								padding: 0 20px;
-							}
-							
-							.carrusel-title span {
-								color: #FFD700;
-								font-weight: bold;
-							}
-							
-							.carrusel-slider {
-								width: 90%;
-								max-width: 1200px;
-								height: 70vh;
-								position: relative;
-								overflow: hidden;
-								border-radius: 20px;
-								box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-							}
-							
-							.carrusel-slide {
-								position: absolute;
-								top: 0;
-								left: 0;
-								width: 100%;
-								height: 100%;
-								opacity: 0;
-								transition: opacity 0.8s ease-in-out;
-								display: flex;
-								flex-direction: column;
-								justify-content: center;
-								align-items: center;
-								background-color: transparent;
-								padding: 40px;
-								text-align: center;
-							}
-							
-							.carrusel-slide.active {
-								opacity: 1;
-							}
-							
-							.carrusel-slide img {
-								max-width: 60%;
-								max-height: 60%;
-								object-fit: contain;
-								border-radius: 15px;
-								margin-bottom: 25px;
-								box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-								cursor: pointer;
-								transition: transform 0.3s ease, box-shadow 0.3s ease;
-								z-index: 10;
-								position: relative;
-							}
-
-							.carrusel-slide img:hover {
-								transform: scale(1.02);
-								box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
-							}
-							
-							.carrusel-slide .dashboard-title {
-								color: white;
-								font-size: 28px;
-								margin-bottom: 15px;
-								font-weight: bold;
-								text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-							}
-							
-							.carrusel-slide .dashboard-desc {
-								color: #FFD700;
-								font-size: 18px;
-								line-height: 1.6;
-								max-width: 800px;
-								margin: 0 auto 20px;
-								text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
-							}
-							
-							.carrusel-indicators {
-								display: flex;
-								justify-content: center;
-								gap: 15px;
-								margin-top: 30px;
-								position: absolute;
-								bottom: 30px;
-								left: 0;
-								right: 0;
-							}
-							
-							.carrusel-indicator {
-								width: 15px;
-								height: 15px;
-								background-color: rgba(255, 255, 255, 0.4);
-								border-radius: 50%;
-								cursor: pointer;
-								transition: background-color 0.3s, transform 0.3s;
-							}
-							
-							.carrusel-indicator.active {
-								background-color: #FFD700;
-								transform: scale(1.3);
-							}
-							
-							.carrusel-nav {
-								position: absolute;
-								top: 50%;
-								transform: translateY(-50%);
-								background-color: rgba(21, 44, 110, 0.8);
-								color: white;
-								border: none;
-								width: 60px;
-								height: 60px;
-								border-radius: 50%;
-								cursor: pointer;
-								display: flex;
-								justify-content: center;
-								align-items: center;
-								font-size: 24px;
-								z-index: 10;
-								transition: background-color 0.3s, transform 0.3s;
-							}
-							
-							.carrusel-nav:hover {
-								background-color: rgba(21, 44, 110, 1);
-								transform: translateY(-50%) scale(1.1);
-							}
-							
-							.carrusel-prev {
-								left: 30px;
-							}
-							
-							.carrusel-next {
-								right: 30px;
-							}
-							
-							.carrusel-dashboard-badge {
-								background-color: #152c6e;
-								color: white;
-								padding: 8px 15px;
-								border-radius: 20px;
-								font-size: 14px;
-								font-weight: bold;
-								margin-top: 15px;
-								display: inline-block;
-							}
-							
-							.carrusel-slide-description {
-								font-style: italic;
-								color: #FFD700;
-								margin-top: 10px;
-								font-size: 16px;
-								text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-							}
-							
-							.carrusel-permission-info {
-								color: #FFD700;
-								font-size: 16px;
-								margin-top: 20px;
-								text-align: center;
-							}
-							
-							/* Preview images for prev/next */
-							.carrusel-preview {
-								position: absolute;
-								top: 50%;
-								transform: translateY(-50%);
-								width: 25%;
-								height: 50%;
-								object-fit: cover;
-								border-radius: 10px;
-								opacity: 0.7;
-								z-index: 5;
-								pointer-events: none;
-								box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-								filter: blur(1px);
-							}
-							
-							.carrusel-preview-prev {
-								left: 5%;
-							}
-							
-							.carrusel-preview-next {
-								right: 5%;
-							}
-							
-							iframe {
-								width: 100%;
-								height: 100%;
-								border: none;
-								transition: opacity 0.3s;
-							}
-							
-							/* Estilo para el mensaje de menú deshabilitado */
-							.context-menu-message {
-								position: fixed;
-								top: 10px;
-								right: 10px;
-								background: rgba(0,0,0,0.7);
-								color: white;
-								padding: 10px;
-								border-radius: 5px;
-								z-index: 10000;
-								font-size: 14px;
-								display: none;
-								animation: fadeInOut 3s ease-in-out;
-							}
-							
-							@keyframes fadeInOut {
-								0% { opacity: 0; }
-								10% { opacity: 1; }
-								90% { opacity: 1; }
-								100% { opacity: 0; }
-							}
-
-							/* Loading spinner para iframe */
-							.iframe-loading {
-								position: absolute;
-								top: 50%;
-								left: 50%;
-								transform: translate(-50%, -50%);
-								text-align: center;
-								z-index: 100;
-								display: none;
-							}
-
-							.spinner {
-								border: 4px solid #f3f3f3;
-								border-top: 4px solid #152c6e;
-								border-radius: 50%;
-								width: 40px;
-								height: 40px;
-								animation: spin 1s linear infinite;
-								margin: 0 auto 15px;
-							}
-
-							@keyframes spin {
-								0% { transform: rotate(0deg); }
-								100% { transform: rotate(360deg); }
-							}
-						</style>
-					</head>
-					<body>
-						<div class="context-menu-message" id="contextMenuMessage">Menú contextual deshabilitado</div>
-						<div class="container">
-							<!-- Botón hamburguesa superior izquierda -->
-							<button class="floating-toggle" id="toggleBtn">
-								<i class="fas fa-bars"></i>
-							</button>
-							
-							<!-- Overlay para cerrar menú -->
-							<div class="sidebar-overlay" id="overlay"></div>
-							
-							<!-- Sidebar con menú -->
-							<div class="sidebar" id="sidebar">
-								<div class="sidebar-header">
-									<img src="https://i.postimg.cc/hGqNYsNp/Isotipo-Perfiles-Marmol01-Photoroom.png" alt="Big Bola Casinos" class="sidebar-logo">
-									<div class="sidebar-title">
-										<div>BB Analytics 360 <span style="font-size: 12px; color: #FFD700; margin-left: 5px;">V1.5</span></div>
-										<div class="sidebar-subtitle">Plataforma de Business Intelligence</div>
-									</div>
-									<div class="user-info">
-										Usuario: ${currentUser}<br>
-										Dashboards: ${currentUserPermissions.length} disponibles
-									</div>
-								</div>
-								${menuItemsHTML}
-								<div class="sidebar-footer">
-									<button class="exit-btn" id="exitBtn">
-										<i class="fas fa-sign-out-alt"></i> Salir
-									</button>
-								</div>
-							</div>
-							
-							<!-- Contenedor principal -->
-							<div class="iframe-container" id="iframeContainer">
-								<div class="iframe-loading" id="iframeLoading">
-									<div class="spinner"></div>
-									<p>Cargando dashboard...</p>
-								</div>
-								<div id="contentContainer" class="carrusel-container">
-									<h1 class="carrusel-title"> <span> BB Analytics 360 </span> <span style="font-size: 16px; color: #FFD700; font-weight: normal; margin-left: 5px;">V1.5</span> </h1>
-									<div class="carrusel-permission-info" id="carruselPermissionInfo">
-										<i class="fas fa-user-check"></i> Cargando información de usuario...
-									</div>
-									<div class="carrusel-slider" id="carruselSlider">
-										<div style="text-align: center; padding: 40px; color: white;">
-											<div class="spinner" style="margin: 0 auto 20px;"></div>
-											<p>Cargando carrusel de dashboards...</p>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-
-						<script>
-							// 🔧 VARIABLES GLOBALES PARA ESTE SCRIPT
-							const dashboardUrls = ${dashboardUrlsJson};
-							const dashboardNames = ${dashboardNamesJson};
-							const dashboardIcons = ${dashboardIconsJson};
-							const dashboardImages = ${dashboardImagesJson};
-							const dashboardDescriptions = ${dashboardDescriptionsJson};
-							const currentUser = "${currentUser}";
-							const currentUserPermissions = ${currentUserPermissionsJson};
-							const currentSessionId = "${currentSessionId}";
-							
-							// Variables para control del carrusel
-							let currentSlide = 0;
-							let autoPlayInterval;
-							let isAutoPlay = true;
-							let carruselData = [];
-							
-							// Variable global para controlar logout
-							window.logoutRegistered = false;
-							
-							// 🔧 FUNCIÓN PARA GENERAR LOS DATOS DEL CARRUSEL
-							function generateCarruselData() {
-								const data = [];
-								
-								// Para cada dashboard permitido, crear una diapositiva
-								currentUserPermissions.forEach(dashboardKey => {
-									if (dashboardKey !== 'diccionario' && dashboardUrls[dashboardKey]) {
-										const imageUrl = dashboardImages[dashboardKey] || 'https://i.postimg.cc/QCN4dPG1/analisis-de-datos.png';
-										const description = dashboardDescriptions[dashboardKey] || 'Dashboard de Business Intelligence';
-										
-										data.push({
-											key: dashboardKey,
-											title: dashboardNames[dashboardKey],
-											image: imageUrl,
-											description: description,
-											icon: dashboardIcons[dashboardKey],
-											url: dashboardUrls[dashboardKey]
-										});
-									}
-								});
-								
-								return data;
-							}
-							
-							// 🔧 FUNCIÓN PARA INICIALIZAR EL CARRUSEL
-							function initCarrusel() {
-								carruselData = generateCarruselData();
-								
-								// Actualizar información de permisos
-								const permissionInfo = document.getElementById('carruselPermissionInfo');
-								if (permissionInfo) {
-									permissionInfo.innerHTML = \`
-										<i class="fas fa-user-check"></i> Usuario: \${currentUser} | 
-										<i class="fas fa-chart-bar"></i> Dashboards disponibles: \${carruselData.length}
-									\`;
-								}
-								
-								// Si no hay dashboards permitidos, mostrar mensaje
-								if (carruselData.length === 0) {
-									document.getElementById('contentContainer').innerHTML = \`
-										<div style="text-align: center; color: white; padding: 40px;">
-											<i class="fas fa-exclamation-triangle" style="font-size: 60px; margin-bottom: 20px; color: #FFD700;"></i>
-											<h2 style="font-size: 28px; margin-bottom: 15px;">No hay dashboards disponibles</h2>
-											<p style="font-size: 18px;">No tienes permisos para acceder a ningún dashboard.</p>
-											<p style="font-size: 16px; margin-top: 20px; color: #FFD700;">
-												Contacta al administrador para solicitar acceso.
-											</p>
-										</div>
-									\`;
-									return;
-								}
-								
-								// Generar HTML del carrusel
-								const slidesHTML = carruselData.map((slide, index) => \`
-									<div class="carrusel-slide \${index === 0 ? 'active' : ''}" data-index="\${index}">
-										<img src="\${slide.image}" alt="\${slide.title}" data-key="\${slide.key}">
-										<div class="dashboard-title">\${slide.title}</div>
-										<div class="dashboard-desc">\${slide.description}</div>
-										<p class="carrusel-slide-description">
-											Haz clic en la imagen para acceder al dashboard
-										</p>
-									</div>
-								\`).join('');
-								
-								const indicatorsHTML = carruselData.map((_, index) => \`
-									<div class="carrusel-indicator \${index === 0 ? 'active' : ''}" data-index="\${index}"></div>
-								\`).join('');
-								
-								document.getElementById('carruselSlider').innerHTML = \`
-									<button class="carrusel-nav carrusel-prev">
-										<i class="fas fa-chevron-left"></i>
-									</button>
-									<button class="carrusel-nav carrusel-next">
-										<i class="fas fa-chevron-right"></i>
-									</button>
-									\${slidesHTML}
-									<div class="carrusel-indicators">
-										\${indicatorsHTML}
-									</div>
-								\`;
-								
-								// Inicializar eventos del carrusel
-								setupCarruselEvents();
-								startAutoPlay();
-								updatePreviewImages();
-							}
-							
-							// 🔧 FUNCIÓN PARA ACTUALIZAR IMÁGENES DE PREVIEW
-							function updatePreviewImages() {
-								// Eliminar previews anteriores si existen
-								const existingPreviews = document.querySelectorAll('.carrusel-preview');
-								existingPreviews.forEach(preview => preview.remove());
-								
-								if (carruselData.length <= 1) return;
-								
-								// Calcular índices para imágenes previas y siguientes
-								const prevIndex = (currentSlide - 1 + carruselData.length) % carruselData.length;
-								const nextIndex = (currentSlide + 1) % carruselData.length;
-								
-								// Crear imagen preview anterior
-								const prevPreview = document.createElement('img');
-								prevPreview.className = 'carrusel-preview carrusel-preview-prev';
-								prevPreview.src = carruselData[prevIndex].image;
-								prevPreview.alt = 'Dashboard anterior: ' + carruselData[prevIndex].title;
-								
-								// Crear imagen preview siguiente
-								const nextPreview = document.createElement('img');
-								nextPreview.className = 'carrusel-preview carrusel-preview-next';
-								nextPreview.src = carruselData[nextIndex].image;
-								nextPreview.alt = 'Dashboard siguiente: ' + carruselData[nextIndex].title;
-								
-								// Agregar previews al slider
-								const slider = document.querySelector('.carrusel-slider');
-								if (slider) {
-									slider.appendChild(prevPreview);
-									slider.appendChild(nextPreview);
-								}
-							}
-							
-							// 🔧 FUNCIÓN PARA CONFIGURAR EVENTOS DEL CARRUSEL
-							function setupCarruselEvents() {
-								const prevBtn = document.querySelector('.carrusel-prev');
-								const nextBtn = document.querySelector('.carrusel-next');
-								const indicators = document.querySelectorAll('.carrusel-indicator');
-								const slideImages = document.querySelectorAll('.carrusel-slide img');
-								
-								if (prevBtn) prevBtn.addEventListener('click', showPrevSlide);
-								if (nextBtn) nextBtn.addEventListener('click', showNextSlide);
-								
-								indicators.forEach(indicator => {
-									indicator.addEventListener('click', function() {
-										const index = parseInt(this.getAttribute('data-index'));
-										goToSlide(index);
-									});
-								});
-								
-								slideImages.forEach(img => {
-									img.addEventListener('click', function() {
-										const dashboardKey = this.getAttribute('data-key');
-										if (dashboardKey && dashboardUrls[dashboardKey]) {
-											// ✅ REGISTRAR ACCESO AL DASHBOARD EN AIRTABLE
-											logDashboardAccess(dashboardKey);
-											
-											// Cargar el dashboard
-											loadDashboard(dashboardUrls[dashboardKey], dashboardKey);
-										}
-									});
-									
-									// Pausar carrusel al hacer hover
-									img.addEventListener('mouseenter', function() {
-										if (autoPlayInterval) {
-											clearInterval(autoPlayInterval);
-											isAutoPlay = false;
-										}
-									});
-									
-									// Reanudar carrusel al quitar el cursor
-									img.addEventListener('mouseleave', function() {
-										if (!isAutoPlay) {
-											isAutoPlay = true;
-											startAutoPlay();
-										}
-									});
-								});
-							}
-							
-							// 🔧 FUNCIONES DE CONTROL DEL CARRUSEL
-							function showNextSlide() {
-								currentSlide = (currentSlide + 1) % carruselData.length;
-								updateCarrusel();
-								updatePreviewImages();
-							}
-							
-							function showPrevSlide() {
-								currentSlide = (currentSlide - 1 + carruselData.length) % carruselData.length;
-								updateCarrusel();
-								updatePreviewImages();
-							}
-							
-							function goToSlide(index) {
-								currentSlide = index;
-								updateCarrusel();
-								updatePreviewImages();
-							}
-							
-							function updateCarrusel() {
-								const slides = document.querySelectorAll('.carrusel-slide');
-								const indicators = document.querySelectorAll('.carrusel-indicator');
-								
-								slides.forEach(slide => slide.classList.remove('active'));
-								indicators.forEach(indicator => indicator.classList.remove('active'));
-								
-								if (slides[currentSlide]) slides[currentSlide].classList.add('active');
-								if (indicators[currentSlide]) indicators[currentSlide].classList.add('active');
-							}
-							
-							function startAutoPlay() {
-								if (isAutoPlay) {
-									autoPlayInterval = setInterval(showNextSlide, 5000);
-								}
-							}
-							
-							// ✅ FUNCIÓN PARA REGISTRAR ACCESO A DASHBOARD
-							function logDashboardAccess(dashboardKey) {
-								try {
-									// Enviar mensaje al padre (login page) para logging en Airtable
-									if (window.opener && !window.opener.closed) {
-										window.opener.postMessage({
-											type: 'dashboard_access',
-											dashboardKey: dashboardKey,
-											user: currentUser,
-											sessionId: currentSessionId,
-											timestamp: new Date().toISOString(),
-											dashboardName: dashboardNames[dashboardKey] || dashboardKey,
-											action: 'dashboard_view'
-										}, '*');
-									}
-									
-									console.log('📊 Dashboard accedido:', dashboardKey);
-									
-								} catch (error) {
-									console.warn('Error en logging dashboard:', error);
-									// Guardar localmente si falla
-									localStorage.setItem('last_dashboard_access', JSON.stringify({
-										dashboardKey: dashboardKey,
-										user: currentUser,
-										timestamp: new Date().toISOString()
-									}));
-								}
-							}
-							
-							// ✅ CORRECCIÓN: FUNCIÓN loadDashboard DEFINIDA GLOBALMENTE
-							function loadDashboard(dashboardUrl, dashboardKey) {
-								const iframeLoading = document.getElementById('iframeLoading');
-								const contentContainer = document.getElementById('contentContainer');
-								const menuItems = document.querySelectorAll('.menu-item');
-								
-								// Mostrar loading
-								iframeLoading.style.display = 'block';
-								
-								// Si es el carrusel
-								if (dashboardUrl === 'carrusel_integrado') {
-									// Reconstruir el carrusel completamente
-									contentContainer.innerHTML = \`
-										<h1 class="carrusel-title"> <span> BB Analytics 360 </span> <span style="font-size: 16px; color: #FFD700; font-weight: normal; margin-left: 5px;">V1.5</span> </h1>
-										<div class="carrusel-permission-info" id="carruselPermissionInfo">
-											<i class="fas fa-user-check"></i> Cargando información...
-										</div>
-										<div class="carrusel-slider" id="carruselSlider">
-											<div style="text-align: center; padding: 40px; color: white;">
-												<div class="spinner" style="margin: 0 auto 20px;"></div>
-												<p>Cargando carrusel de dashboards...</p>
-											</div>
-										</div>
-									\`;
-									
-									// Inicializar el carrusel
-									setTimeout(() => {
-										initCarrusel();
-										iframeLoading.style.display = 'none';
-									}, 100);
-									
-									// Actualizar menú
-									menuItems.forEach(menuItem => {
-										menuItem.classList.remove('active');
-										if (menuItem.getAttribute('data-src') === 'carrusel_integrado') {
-											menuItem.classList.add('active');
-										}
-									});
-								} 
-								// Si es un dashboard externo
-								else if (dashboardUrl && dashboardUrl !== '#') {
-									// ✅ REGISTRAR ACCESO AL DASHBOARD EN AIRTABLE
-									logDashboardAccess(dashboardKey);
-									
-									// Crear iframe
-									contentContainer.innerHTML = \`<iframe id="dashboardFrame" src="\${dashboardUrl}"></iframe>\`;
-									
-									// Ocultar loading cuando el iframe cargue
-									const iframe = document.getElementById('dashboardFrame');
-									iframe.onload = function() {
-										iframeLoading.style.display = 'none';
-									};
-									
-									// Detener carrusel si estaba activo
-									if (autoPlayInterval) {
-										clearInterval(autoPlayInterval);
-									}
-								}
-								
-								// Ocultar sidebar si está abierto
-								const sidebar = document.getElementById('sidebar');
-								if (sidebar.classList.contains('active')) {
-									toggleSidebar();
-								}
-							}
-							
-							// 🚪 FUNCIÓN PARA REGISTRAR LOGOUT EN AIRTABLE
-							function registerLogout() {
-								if (window.logoutRegistered) {
-									console.log('⚠️ Logout ya registrado, ignorando...');
-									return true;
-								}
-								
-								try {
-									console.log('🚪 Registrando logout por botón');
-									
-									// Marcar inmediatamente que ya se registró logout
-									window.logoutRegistered = true;
-									
-									// Crear datos de logout
-									const logoutData = {
-										user: currentUser,
-										action: 'logout',
-										logoutType: 'button_click',
-										timestamp: new Date().toISOString(),
-										sessionId: currentSessionId,
-										deviceType: 'desktop',
-										registeredAt: Date.now(),
-										sessionDuration: Date.now() - parseInt(currentSessionId.split('_')[1])
-									};
-									
-									// Enviar mensaje al padre (login page) para logging en Airtable
-									if (window.opener && !window.opener.closed) {
-										try {
-											window.opener.postMessage({
-												type: 'logout',
-												...logoutData,
-												source: 'dashboard_button'
-											}, '*');
-											
-											console.log('📤 Mensaje de logout enviado al padre para Airtable');
-											
-										} catch (error) {
-											console.warn('Error enviando mensaje al padre:', error);
-											localStorage.setItem('pending_logout', JSON.stringify(logoutData));
-										}
-									} else {
-										localStorage.setItem('pending_logout', JSON.stringify(logoutData));
-									}
-									
-									console.log('✅ Logout registrado exitosamente');
-									return true;
-									
-								} catch (error) {
-									console.error('❌ Error registrando logout:', error);
-									return false;
-								}
-							}
-							
-							document.addEventListener('DOMContentLoaded', function() {
-								const toggleBtn = document.getElementById('toggleBtn');
-								const sidebar = document.getElementById('sidebar');
-								const overlay = document.getElementById('overlay');
-								const iframeContainer = document.getElementById('iframeContainer');
-								const menuItems = document.querySelectorAll('.menu-item');
-								const whatsappBtn = document.getElementById('whatsappBtn');
-								const exitBtn = document.getElementById('exitBtn');
-								const iframeLoading = document.getElementById('iframeLoading');
-								const contextMenuMessage = document.getElementById('contextMenuMessage');
-								
-								let isSidebarOpen = false;
-								
-								// 🔒 FUNCIONES DE SEGURIDAD
-								function blockRightClickOnSidebar(e) {
-									e.preventDefault();
-									showContextMenuMessage();
-									return false;
-								}
-								
-								function showContextMenuMessage() {
-									contextMenuMessage.style.display = 'block';
-									setTimeout(() => {
-										contextMenuMessage.style.display = 'none';
-									}, 3000);
-								}
-								
-								function applySecurityBlocks() {
-									sidebar.addEventListener('contextmenu', blockRightClickOnSidebar);
-								}
-								
-								// 📱 FUNCIONES DE LA APLICACIÓN
-								function openWhatsApp() {
-									const phoneNumber = '+524421974414';
-									const message = 'Hola, necesito ayuda en BB Analytics 360';
-									const url = 'https://wa.me/' + phoneNumber + '?text=' + encodeURIComponent(message);
-									window.open(url, '_blank');
-								}
-								
-								function toggleSidebar() {
-									isSidebarOpen = !isSidebarOpen;
-									sidebar.classList.toggle('active');
-									overlay.classList.toggle('active');
-									iframeContainer.classList.toggle('sidebar-open');
-									
-									toggleBtn.innerHTML = isSidebarOpen ? 
-										'<i class="fas fa-times"></i>' : 
-										'<i class="fas fa-bars"></i>';
-								}
-								
-								function logout() {
-									if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-										// ✅ REGISTRAR LOGOUT POR BOTÓN EN AIRTABLE
-										const registered = registerLogout();
-										
-										if (registered) {
-											// Cerrar después de un breve delay para permitir el logging
-											setTimeout(() => {
-												try {
-													window.close();
-												} catch (error) {
-													console.warn('No se pudo cerrar ventana:', error);
-													window.location.href = window.opener ? window.opener.location.href : 'about:blank';
-												}
-											}, 1000);
-										} else {
-											alert('Error registrando logout. La ventana se cerrará de todos modos.');
-											setTimeout(() => {
-												try {
-													window.close();
-												} catch (error) {
-													window.location.href = 'about:blank';
-												}
-											}, 100);
-										}
-									}
-								}
-								
-								// 🎯 EVENT LISTENERS
-								toggleBtn.addEventListener('click', toggleSidebar);
-								overlay.addEventListener('click', toggleSidebar);
-								
-								// ✅ CORRECCIÓN: Event listeners para los botones del menú
-								menuItems.forEach(item => {
-									item.addEventListener('click', function() {
-										const dashboardUrl = this.getAttribute('data-src');
-										const dashboardKey = Object.keys(dashboardUrls).find(key => 
-											dashboardUrls[key] === dashboardUrl
-										) || (dashboardUrl === 'carrusel_integrado' ? 'principal' : null);
-										
-										if (dashboardUrl) {
-											// Actualizar estado activo
-											menuItems.forEach(menuItem => {
-												menuItem.classList.remove('active');
-											});
-											this.classList.add('active');
-											
-											// Cargar el dashboard usando la función global loadDashboard
-											loadDashboard(dashboardUrl, dashboardKey);
-										}
-									});
-								});
-								
-								// Botón de WhatsApp
-								if (whatsappBtn) {
-									whatsappBtn.addEventListener('click', openWhatsApp);
-								}
-								
-								// Botón de salir
-								exitBtn.addEventListener('click', logout);
-								
-								// 📋 INICIALIZACIÓN
-								applySecurityBlocks();
-								
-								// Inicializar carrusel automáticamente
-								initCarrusel();
-								
-								// Registrar cierre de ventana/pestaña
-								window.addEventListener('beforeunload', function(e) {
-									if (!window.logoutRegistered) {
-										console.log('⚠️ Ventana cerrada sin logout formal');
-										
-										// Intentar registrar como logout automático
-										if (window.opener && !window.opener.closed) {
-											window.opener.postMessage({
-												type: 'logout',
-												user: currentUser,
-												action: 'logout',
-												logoutType: 'window_close',
-												sessionId: currentSessionId,
-												timestamp: new Date().toISOString(),
-												source: 'window_beforeunload'
-											}, '*');
-										}
-									}
-								});
-							});
-						<\/script>
-					</body>
-					</html>
-				`;
-			}
     </script>
 </body>
 </html>
