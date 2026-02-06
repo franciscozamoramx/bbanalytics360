@@ -205,7 +205,7 @@
     <script>
         // Mapeo de dashboards a URLs
         const dashboardUrls = {
-            "principal": "#", // Carrusel integrado
+            "principal": "", // Carrusel integrado
             "adt": "https://app.powerbi.com/reportEmbed?reportId=1149b379-aad5-4876-bfe6-c325dc89308f&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c",
             "auditoria": "https://app.powerbi.com/reportEmbed?reportId=23dbdb70-5e05-4e2f-9cf6-38a11489cd3e&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c",
             "bigplayers": "https://app.powerbi.com/reportEmbed?reportId=8e08098b-ce0e-46af-a8b5-e90b0b216e76&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c",
@@ -2037,7 +2037,7 @@
                             flex-direction: column;
                             justify-content: center;
                             align-items: center;
-                            background: linear-gradient(135deg, #1a3a8f 0%, #152c6e 100%);
+                            background: linear-gradient(135deg, #2a4b9f 0%, #1a3a8f 100%);
                             overflow: hidden;
                         }
                         
@@ -2062,6 +2062,7 @@
                             overflow: hidden;
                             border-radius: 20px;
                             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+                            background: linear-gradient(135deg, rgba(26, 58, 143, 0.7) 0%, rgba(21, 44, 110, 0.8) 100%);
                         }
                         
                         .carrusel-slide {
@@ -2086,8 +2087,8 @@
                         }
                         
                         .carrusel-slide img {
-                            max-width: 60%;
-                            max-height: 60%;
+                            max-width: 50%;
+                            max-height: 50%;
                             object-fit: contain;
                             border-radius: 15px;
                             margin-bottom: 25px;
@@ -2129,6 +2130,7 @@
                             bottom: 30px;
                             left: 0;
                             right: 0;
+                            z-index: 15;
                         }
                         
                         .carrusel-indicator {
@@ -2149,7 +2151,7 @@
                             position: absolute;
                             top: 50%;
                             transform: translateY(-50%);
-                            background-color: rgba(21, 44, 110, 0.8);
+                            background-color: rgba(21, 44, 110, 0.9);
                             color: white;
                             border: none;
                             width: 60px;
@@ -2160,8 +2162,9 @@
                             justify-content: center;
                             align-items: center;
                             font-size: 24px;
-                            z-index: 10;
+                            z-index: 15;
                             transition: background-color 0.3s, transform 0.3s;
+                            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
                         }
                         
                         .carrusel-nav:hover {
@@ -2203,19 +2206,22 @@
                             text-align: center;
                         }
                         
+                        /* 🔹 ESTILOS PARA IMÁGENES DE PREVIO/SIGUIENTE */
                         .preview-images {
                             position: absolute;
                             top: 50%;
                             transform: translateY(-50%);
                             width: 25%;
+                            max-width: 300px;
                             height: 50%;
-                            object-fit: cover;
+                            object-fit: contain;
                             border-radius: 10px;
                             opacity: 0.7;
                             z-index: 5;
                             pointer-events: none;
                             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-                            filter: blur(1px);
+                            filter: blur(2px);
+                            transition: opacity 0.5s ease;
                         }
                         
                         .preview-prev {
@@ -2224,6 +2230,21 @@
                         
                         .preview-next {
                             right: 5%;
+                        }
+                        
+                        /* 🔹 MEJORAS VISUALES */
+                        .carrusel-slider::before {
+                            content: '';
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background: linear-gradient(135deg, 
+                                rgba(255, 215, 0, 0.1) 0%, 
+                                rgba(26, 58, 143, 0.3) 50%,
+                                rgba(21, 44, 110, 0.2) 100%);
+                            z-index: 1;
                         }
                         
                         iframe {
@@ -2436,9 +2457,57 @@
                                 </div>
                             \`;
                             
+                            // Crear imágenes de preview (anterior y siguiente)
+                            createPreviewImages();
+                            
                             // Inicializar eventos del carrusel
                             setupCarruselEvents();
                             startAutoPlay();
+                            
+                            // Actualizar imágenes de preview
+                            updatePreviewImages();
+                        }
+                        
+                        // 🔧 FUNCIÓN PARA CREAR IMÁGENES DE PREVIO/SIGUIENTE
+                        function createPreviewImages() {
+                            const carruselSlider = document.getElementById('carruselSlider');
+                            
+                            // Crear imagen para dashboard anterior
+                            const previewPrev = document.createElement('img');
+                            previewPrev.className = 'preview-images preview-prev';
+                            previewPrev.alt = 'Dashboard anterior';
+                            
+                            // Crear imagen para dashboard siguiente
+                            const previewNext = document.createElement('img');
+                            previewNext.className = 'preview-images preview-next';
+                            previewNext.alt = 'Dashboard siguiente';
+                            
+                            // Agregar al carrusel
+                            carruselSlider.appendChild(previewPrev);
+                            carruselSlider.appendChild(previewNext);
+                        }
+                        
+                        // 🔧 FUNCIÓN PARA ACTUALIZAR IMÁGENES DE PREVIO/SIGUIENTE
+                        function updatePreviewImages() {
+                            const previewPrev = document.querySelector('.preview-prev');
+                            const previewNext = document.querySelector('.preview-next');
+                            
+                            if (!previewPrev || !previewNext || carruselData.length === 0) return;
+                            
+                            // Calcular índices de anterior y siguiente
+                            const prevIndex = (currentSlide - 1 + carruselData.length) % carruselData.length;
+                            const nextIndex = (currentSlide + 1) % carruselData.length;
+                            
+                            // Actualizar imágenes
+                            if (carruselData[prevIndex]) {
+                                previewPrev.src = carruselData[prevIndex].image;
+                                previewPrev.style.opacity = '0.6';
+                            }
+                            
+                            if (carruselData[nextIndex]) {
+                                previewNext.src = carruselData[nextIndex].image;
+                                previewNext.style.opacity = '0.6';
+                            }
                         }
                         
                         // 🔧 FUNCIÓN PARA CONFIGURAR EVENTOS DEL CARRUSEL
@@ -2504,16 +2573,19 @@
                         function showNextSlide() {
                             currentSlide = (currentSlide + 1) % carruselData.length;
                             updateCarrusel();
+                            updatePreviewImages();
                         }
                         
                         function showPrevSlide() {
                             currentSlide = (currentSlide - 1 + carruselData.length) % carruselData.length;
                             updateCarrusel();
+                            updatePreviewImages();
                         }
                         
                         function goToSlide(index) {
                             currentSlide = index;
                             updateCarrusel();
+                            updatePreviewImages();
                         }
                         
                         function updateCarrusel() {
@@ -2528,7 +2600,7 @@
                         }
                         
                         function startAutoPlay() {
-                            if (isAutoPlay) {
+                            if (isAutoPlay && carruselData.length > 1) {
                                 autoPlayInterval = setInterval(showNextSlide, 5000);
                             }
                         }
