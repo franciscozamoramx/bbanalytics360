@@ -74,9 +74,11 @@
             "dashboards": [
                 "principal",
                 "adt",
+				"bigplayers",
                 "auditoria",
                 "desempeno",
-                "rtp",
+                "bolipoits",
+				"rtp",
                 "diccionario"
             ]
         },
@@ -113,7 +115,12 @@
         "jarb@bigbola.com": {
             "dashboards": [
                 "principal",
+                "adt",
+				"bigplayers",
+                "auditoria",
+                "desempeno",
                 "bolipoits",
+				"rtp",
                 "diccionario"
             ]
         }
