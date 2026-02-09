@@ -56,19 +56,22 @@
                 "principal",
                 "auditoria",
                 "promociones",
-                "seguimiento_auditores"
+                "seguimiento_auditores",
+				"diccionario"
             ]
         },
         "ruben.vargas@bigbola.com": {
             "dashboards": [
                 "principal",
-                "inventario"
+                "inventario",
+				"diccionario"
             ]
         },
         "javier.dominguez@bigbola.com": {
             "dashboards": [
                 "principal",
-                "inventario"
+                "inventario",
+				"diccionario"
             ]
         },
         "emilio.quiros@bigbola.com": {
