@@ -13,7 +13,8 @@
                 "promociones",
                 "rtp",
                 "logs_bi",
-                "diccionario"
+                "diccionario",
+				"ingreso_tarjetas"
             ]
         },
         "guillermo.luna@bigbola.com": {
@@ -29,7 +30,8 @@
                 "proyectos",
                 "rtp",
                 "logs_bi",
-                "diccionario"
+                "diccionario",
+				"ingreso_tarjetas"
             ]
         },
         "rafael.blanco@bigbola.com": {
