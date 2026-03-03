@@ -14,6 +14,7 @@
                 "rtp",
                 "logs_bi",
                 "diccionario",
+				"aforo",
 				"ingreso_tarjetas"
             ]
         },
@@ -31,6 +32,7 @@
                 "rtp",
                 "logs_bi",
                 "diccionario",
+				"aforo",
 				"ingreso_tarjetas"
             ]
         },
@@ -50,6 +52,7 @@
                 "rtp",
                 "bigplayers",
                 "bolipoits",
+				"aforo",
                 "diccionario"
             ]
         },
