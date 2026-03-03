@@ -14,7 +14,8 @@
                 "rtp",
                 "logs_bi",
                 "diccionario",
-				"ingreso_tarjetas"
+				"ingreso_tarjetas",
+				"aforo"
             ]
         },
         "guillermo.luna@bigbola.com": {
