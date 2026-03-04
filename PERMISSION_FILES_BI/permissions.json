@@ -127,6 +127,12 @@
                 "aforo"
             ]
         },
+		"joaquin.garcia@bigbola.com": {
+			"dashboards": [
+				"principal",
+				"ingreso_tarjetas"
+            ]
+        },
         "jarb@bigbola.com": {
             "dashboards": [
                 "principal",
