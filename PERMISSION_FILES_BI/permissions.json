@@ -121,6 +121,12 @@
                 "auditoria"
             ]
         },
+		"rodrigo.melendez@bigbola.com": {
+            "dashboards": [
+                "principal",
+                "aforo"
+            ]
+        },
         "jarb@bigbola.com": {
             "dashboards": [
                 "principal",
