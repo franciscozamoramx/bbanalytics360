@@ -41,7 +41,9 @@
                 "principal",
                 "adt",
                 "bigplayers",
-                "diccionario"
+                "diccionario",
+				"bolipoits",
+				"aforo"
             ]
         },
         "renato.delapena@bigbola.com": {
