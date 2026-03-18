@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0051)https://franciscozamoramx.github.io/bbanalytics360/ -->
+<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_10.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -194,11 +194,11 @@
             </button>
         </div>
         
-        <div class="status-message status-success" id="statusMessage" style="display: block;">Acceso concedido. Abriendo BB Analytics 360...</div>
+        <div class="status-message status-success" id="statusMessage" style="display: none;">Permisos cargados correctamente</div>
         
-        <div class="user-info" id="userInfo" style="display: block;">
-            <p>Bienvenido: <span id="userEmail">francisco.zamora@bigbola.com</span></p>
-            <p>Dashboards disponibles: <span id="dashboardsCount">14</span></p>
+        <div class="user-info" id="userInfo" style="display: none;">
+            <p>Bienvenido: <span id="userEmail"></span></p>
+            <p>Dashboards disponibles: <span id="dashboardsCount"></span></p>
         </div>
     </div>
 
@@ -1823,8 +1823,8 @@
 
             // Definición de áreas y sus dashboards (excluye principal y diccionario)
             const areaConfig = [
-                { key: 'auditoria',  label: 'Auditoría',  color: '#FFB84A', dashboards: ['auditoria', 'seguimiento_auditores'] },
-                { key: 'comercial',  label: 'Comercial',  color: '#4A9EFF', dashboards: ['bigplayers', 'bolipoits', 'promociones'] },
+                { key: 'auditoria',  label: 'Auditoría',  color: '#FFB84A', dashboards: ['auditoria', 'promociones', 'seguimiento_auditores'] },
+                { key: 'comercial',  label: 'Comercial',  color: '#4A9EFF', dashboards: ['bigplayers', 'bolipoits'] },
                 { key: 'finanzas',   label: 'Finanzas',   color: '#B47FFF', dashboards: ['ingreso_tarjetas'] },
                 { key: 'productos',  label: 'Productos',  color: '#3DD68C', dashboards: ['adt', 'desempeno', 'rtp', 'aforo'] },
                 { key: 'ti',         label: 'TI',          color: '#FF7A6E', dashboards: ['inventario', 'proyectos', 'logs_bi'] }
