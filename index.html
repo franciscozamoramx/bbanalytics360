@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_33.html -->
+<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_35.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -181,7 +181,7 @@
     <!-- Contenedor de login -->
     <div class="login-container" id="loginContainer">
         <img src="./index_files/Isotipo-Perfiles-Marmol01-Photoroom.png" alt="Big Bola Casinos" class="logo">
-        <h1>BB <span class="title-highlight">Analytics 360</span><span class="version">V1.73</span></h1>
+        <h1>BB <span class="title-highlight">Analytics 360</span><span class="version">V1.74</span></h1>
         <p>Ingresa con tu correo corporativo</p>
         
         <div class="login-form">
@@ -1087,7 +1087,7 @@
                         <div class="mobile-sidebar-header">
                             <img src="https://i.postimg.cc/hGqNYsNp/Isotipo-Perfiles-Marmol01-Photoroom.png" alt="Big Bola Casinos" class="mobile-sidebar-logo">
                             <div class="mobile-sidebar-title">
-                                <div>BB Analytics 360 <span style="font-size: 12px; color: #FFD700; margin-left: 5px;">V1.73</span></div>
+                                <div>BB Analytics 360 <span style="font-size: 12px; color: #FFD700; margin-left: 5px;">V1.74</span></div>
                                 <div style="font-size: 14px; margin-top: 5px;">Plataforma de Business Intelligence</div>
                             </div>
                             <div class="user-info" style="margin-top: 10px; font-size: 12px;">
@@ -1104,15 +1104,17 @@
                     </div>
                     
                     <div class="mobile-iframe-container" id="mobileIframeContainer">
-                        <div class="iframe-loading" id="mobileIframeLoading" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                        <div class="iframe-loading" id="mobileIframeLoading" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 10;">
                             <div class="spinner" style="border: 4px solid #f3f3f3; border-top: 4px solid #152c6e; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px;"></div>
                             <p>Cargando dashboard...</p>
                         </div>
+                        <div id="mobileEmbedContainer" style="width:100%;height:100%;display:none;"></div>
                         <div id="mobileContentContainer" class="carrusel-container">
                             ${generateCarruselHTML()}
                         </div>
                     </div>
                 </div>
+                <script src="https://cdn.jsdelivr.net/npm/powerbi-client@2.23.1/dist/powerbi.min.js"><\/script>
 
                 <style>
                     .mobile-dashboard-container {
@@ -1653,7 +1655,7 @@
         // 🔧 FUNCIÓN AUXILIAR PARA GENERAR HTML DEL CARRUSEL
         function generateCarruselHTML() {
             return `
-                <h1 class="carrusel-title"> <span> BB Analytics 360 </span> <span style="font-size: 16px; color: #FFD700; font-weight: normal; margin-left: 5px;">V1.73</span> </h1>
+                <h1 class="carrusel-title"> <span> BB Analytics 360 </span> <span style="font-size: 16px; color: #FFD700; font-weight: normal; margin-left: 5px;">V1.74</span> </h1>
                 <div class="carrusel-permission-info" id="carruselPermissionInfo">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" style="width:13px;height:13px;fill:#FFD700;vertical-align:middle;margin-right:4px;"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3zm339-78.7c9.4-9.4 9.4-24.6 0-33.9l-48-48c-9.4-9.4-24.6-9.4-33.9 0l-80 80c-9.4 9.4-9.4 24.6 0 33.9l48 48c9.4 9.4 24.6 9.4 33.9 0l80-80z"/></svg> Cargando información de usuario...
                 </div>
@@ -1756,7 +1758,7 @@
 
                 mobileContentContainer.innerHTML = `
                     <div style="position:relative;z-index:2;text-align:center;margin-bottom:16px;flex-shrink:0;">
-                        <h1 class="carrusel-title" style="font-size:22px;margin:0 0 8px;">BB <span>Analytics 360</span> <span style="font-size:12px;color:rgba(255,215,0,0.7);font-weight:400;margin-left:4px;">V1.73</span></h1>
+                        <h1 class="carrusel-title" style="font-size:22px;margin:0 0 8px;">BB <span>Analytics 360</span> <span style="font-size:12px;color:rgba(255,215,0,0.7);font-weight:400;margin-left:4px;">V1.74</span></h1>
                         <div style="display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:50px;padding:5px 14px;font-size:12px;color:rgba(255,255,255,0.8);">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" style="width:13px;height:13px;fill:#FFD700;flex-shrink:0;"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3zm339-78.7c9.4-9.4 9.4-24.6 0-33.9l-48-48c-9.4-9.4-24.6-9.4-33.9 0l-80 80c-9.4 9.4-9.4 24.6 0 33.9l48 48c9.4 9.4 24.6 9.4 33.9 0l80-80z"/></svg> ${currentUser} &nbsp;|&nbsp;
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:13px;height:13px;fill:#FFD700;flex-shrink:0;"><path d="M32 32c17.7 0 32 14.3 32 32V400c0 8.8 7.2 16 16 16H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H80c-44.2 0-80-35.8-80-80V64C0 46.3 14.3 32 32 32zm96 96c0-17.7 14.3-32 32-32l192 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-192 0c-17.7 0-32-14.3-32-32zm32 96c17.7 0 32 14.3 32 32s-14.3 32-32 32H128c-17.7 0-32-14.3-32-32s14.3-32 32-32h32zm96 32c0-17.7 14.3-32 32-32H384c17.7 0 32 14.3 32 32s-14.3 32-32 32H288c-17.7 0-32-14.3-32-32z"/></svg> ${mobileCarruselData.length} dashboards
@@ -1886,48 +1888,162 @@
                 if (chevron) chevron.classList.toggle('open', !isOpen);
             };
             
-            function loadMobileDashboard(dashboardUrl, dashboardKey) {
-                // Mostrar loading
+            // Instancia global de powerbi embed para móvil
+            let _mobileEmbeddedReport = null;
+
+            async function loadMobileDashboard(dashboardUrl, dashboardKey) {
                 mobileIframeLoading.style.display = 'block';
-                
+
+                // Detener carrusel
+                if (mobileAutoPlayInterval) {
+                    clearInterval(mobileAutoPlayInterval);
+                    mobileAutoPlayInterval = null;
+                }
+
+                // Ocultar sidebar
+                if (isSidebarOpen) toggleMobileSidebar();
+
                 // Si es el carrusel
                 if (dashboardUrl === 'carrusel_integrado') {
+                    _resetMobileEmbed();
                     initMobileCarrusel();
                     mobileIframeLoading.style.display = 'none';
-                    
-                    // Actualizar menú
                     mobileMenuItems.forEach(menuItem => {
                         menuItem.classList.remove('active');
-                        if (menuItem.getAttribute('data-src') === 'carrusel_integrado') {
-                            menuItem.classList.add('active');
-                        }
+                        if (menuItem.getAttribute('data-src') === 'carrusel_integrado') menuItem.classList.add('active');
                     });
-                } 
-                // Si es un dashboard externo
-                else if (dashboardUrl && dashboardUrl !== '#') {
-                    // Reutilizar iframe si ya existe
-                    let iframe = document.getElementById('mobileIframe');
-                    if (!iframe) {
-                        mobileContentContainer.innerHTML = `<iframe class="mobile-iframe" id="mobileIframe" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>`;
-                        iframe = document.getElementById('mobileIframe');
-                    }
-
-                    iframe.onload = function() {
-                        mobileIframeLoading.style.display = 'none';
-                        showRotateHint();
-                    };
-
-                    iframe.src = dashboardUrl;
-
-                    // Detener carrusel si estaba activo
-                    if (mobileAutoPlayInterval) {
-                        clearInterval(mobileAutoPlayInterval);
-                    }
+                    return;
                 }
-                
-                // Ocultar sidebar si está abierto
-                if (isSidebarOpen) {
-                    toggleMobileSidebar();
+
+                if (!dashboardUrl || dashboardUrl === '#') return;
+
+                // Intentar usar powerbi-client si está disponible
+                const pbi = window['powerbi'];
+                if (pbi && dashboardKey) {
+                    try {
+                        await _loadWithPowerBIClient(dashboardUrl, dashboardKey, pbi);
+                    } catch(e) {
+                        console.warn('powerbi-client falló, usando iframe:', e);
+                        _loadWithIframe(dashboardUrl);
+                    }
+                } else {
+                    _loadWithIframe(dashboardUrl);
+                }
+            }
+
+            function _resetMobileEmbed() {
+                const embedContainer = document.getElementById('mobileEmbedContainer');
+                const pbi = window['powerbi'];
+                if (pbi && embedContainer) {
+                    try { pbi.reset(embedContainer); } catch(e) {}
+                }
+                if (embedContainer) embedContainer.style.display = 'none';
+                _mobileEmbeddedReport = null;
+                mobileContentContainer.style.display = '';
+            }
+
+            function _loadWithIframe(dashboardUrl) {
+                _resetMobileEmbed();
+                mobileContentContainer.style.display = 'block';
+                let iframe = document.getElementById('mobileIframe');
+                if (!iframe) {
+                    mobileContentContainer.innerHTML = '<iframe class="mobile-iframe" id="mobileIframe" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>';
+                    iframe = document.getElementById('mobileIframe');
+                }
+                iframe.onload = function() {
+                    mobileIframeLoading.style.display = 'none';
+                    showRotateHint();
+                };
+                iframe.src = dashboardUrl;
+            }
+
+            async function _loadWithPowerBIClient(dashboardUrl, dashboardKey, pbi) {
+                // Extraer reportId de la URL
+                const reportIdMatch = dashboardUrl.match(/reportId=([a-f0-9-]+)/i);
+                if (!reportIdMatch) { _loadWithIframe(dashboardUrl); return; }
+                const reportId = reportIdMatch[1];
+
+                const embedContainer = document.getElementById('mobileEmbedContainer');
+                const models = window['powerbi-client'] ? window['powerbi-client'].models : pbi.models;
+
+                // Limpiar embed anterior
+                try { pbi.reset(embedContainer); } catch(e) {}
+
+                // Config base con AAD (user owns data — usa la sesión de Power BI del usuario)
+                const isPortrait = window.innerHeight > window.innerWidth;
+                const embedConfig = {
+                    type: 'report',
+                    id: reportId,
+                    embedUrl: 'https://app.powerbi.com/reportEmbed',
+                    tokenType: models.TokenType.Aad,
+                    settings: {
+                        navContentPaneEnabled: false,
+                        filterPaneEnabled: false,
+                        layoutType: isPortrait
+                            ? models.LayoutType.MobilePortrait
+                            : models.LayoutType.MobileLandscape
+                    }
+                };
+
+                // Mostrar el contenedor de embed, ocultar carrusel
+                mobileContentContainer.style.display = 'none';
+                embedContainer.style.display = 'block';
+                embedContainer.style.width = '100%';
+                embedContainer.style.height = '100%';
+
+                const report = pbi.embed(embedContainer, embedConfig);
+                _mobileEmbeddedReport = report;
+
+                report.on('loaded', async function() {
+                    mobileIframeLoading.style.display = 'none';
+
+                    // Verificar si la página activa tiene layout móvil portrait
+                    try {
+                        const pages = await report.getPages();
+                        const activePage = pages.find(p => p.isActive) || pages[0];
+                        const hasMobile = await activePage.hasLayout(models.LayoutType.MobilePortrait);
+
+                        if (!hasMobile && isPortrait) {
+                            // No tiene layout móvil — mostrar hint de rotación
+                            showRotateHint();
+                        }
+                    } catch(e) {
+                        if (isPortrait) showRotateHint();
+                    }
+
+                    // Escuchar cambios de orientación para actualizar layoutType
+                    window.addEventListener('resize', _onMobileOrientationChange);
+                });
+
+                report.on('error', function(event) {
+                    console.warn('powerbi-client error:', event.detail);
+                    // Fallback a iframe si hay error de autenticación u otro
+                    pbi.reset(embedContainer);
+                    embedContainer.style.display = 'none';
+                    mobileContentContainer.style.display = 'block';
+                    _loadWithIframe(dashboardUrl);
+                });
+            }
+
+            async function _onMobileOrientationChange() {
+                if (!_mobileEmbeddedReport) return;
+                const pbi = window['powerbi'];
+                const models = window['powerbi-client'] ? window['powerbi-client'].models : pbi.models;
+                const isPortrait = window.innerHeight > window.innerWidth;
+                try {
+                    await _mobileEmbeddedReport.updateSettings({
+                        layoutType: isPortrait
+                            ? models.LayoutType.MobilePortrait
+                            : models.LayoutType.MobileLandscape
+                    });
+                    if (isPortrait) {
+                        const pages = await _mobileEmbeddedReport.getPages();
+                        const activePage = pages.find(p => p.isActive) || pages[0];
+                        const hasMobile = await activePage.hasLayout(models.LayoutType.MobilePortrait);
+                        if (!hasMobile) showRotateHint();
+                    }
+                } catch(e) {
+                    console.warn('Error actualizando layout:', e);
                 }
             }
             
@@ -2720,7 +2836,7 @@
                             <div class="sidebar-header">
                                 <img src="https://i.postimg.cc/hGqNYsNp/Isotipo-Perfiles-Marmol01-Photoroom.png" alt="Big Bola Casinos" class="sidebar-logo">
                                 <div class="sidebar-title">
-                                    <div>BB Analytics 360 <span style="font-size: 12px; color: #FFD700; margin-left: 5px;">V1.73</span></div>
+                                    <div>BB Analytics 360 <span style="font-size: 12px; color: #FFD700; margin-left: 5px;">V1.74</span></div>
                                     <div class="sidebar-subtitle">Plataforma de Business Intelligence</div>
                                 </div>
                                 <div class="user-info">
@@ -2744,7 +2860,7 @@
                             </div>
                             <div id="contentContainer" class="carrusel-container">
                                 <div class="carrusel-header">
-                                    <h1 class="carrusel-title">BB <span>Analytics 360</span> <span style="font-size: 14px; font-weight: 400; color: rgba(255,215,0,0.7); margin-left: 6px;">V1.73</span></h1>
+                                    <h1 class="carrusel-title">BB <span>Analytics 360</span> <span style="font-size: 14px; font-weight: 400; color: rgba(255,215,0,0.7); margin-left: 6px;">V1.74</span></h1>
                                     <div class="carrusel-permission-info" id="carruselPermissionInfo">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" style="width:13px;height:13px;fill:#FFD700;vertical-align:middle;margin-right:4px;"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3zm339-78.7c9.4-9.4 9.4-24.6 0-33.9l-48-48c-9.4-9.4-24.6-9.4-33.9 0l-80 80c-9.4 9.4-9.4 24.6 0 33.9l48 48c9.4 9.4 24.6 9.4 33.9 0l80-80z"/></svg> Cargando información de usuario...
                                     </div>
@@ -3052,7 +3168,7 @@
                                 // Reconstruir el carrusel completamente
                                 contentContainer.innerHTML = \`
                                     <div class="carrusel-header">
-                                        <h1 class="carrusel-title">BB <span>Analytics 360</span> <span style="font-size:14px;font-weight:400;color:rgba(255,215,0,0.7);margin-left:6px;">V1.73</span></h1>
+                                        <h1 class="carrusel-title">BB <span>Analytics 360</span> <span style="font-size:14px;font-weight:400;color:rgba(255,215,0,0.7);margin-left:6px;">V1.74</span></h1>
                                         <div class="carrusel-permission-info" id="carruselPermissionInfo">
                                             <i class="fas fa-user-check"></i> Cargando información...
                                         </div>
