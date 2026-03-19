@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_16.html -->
+<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_23.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1929,27 +1929,28 @@
                         /* 🔹 BOTÓN HAMBURGUESA SUPERIOR IZQUIERDA */
                         .floating-toggle {
                             position: fixed;
-                            top: 20px;
-                            left: 20px;
-                            width: 50px;
-                            height: 50px;
-                            background: rgba(26, 58, 143, 0.8);
-                            color: white;
+                            top: 12px;
+                            left: 0;
+                            transform: none;
+                            width: 42px;
+                            height: 42px;
+                            background: rgba(21, 44, 110, 0.85);
+                            color: #FFD700;
                             border: none;
-                            border-radius: 50%;
+                            border-radius: 0 0 10px 0;
                             cursor: pointer;
                             z-index: 1001;
                             display: flex;
                             align-items: center;
                             justify-content: center;
-                            font-size: 20px;
-                            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                            transition: all 0.3s ease;
+                            font-size: 16px;
+                            box-shadow: 2px 2px 8px rgba(0,0,0,0.35);
+                            transition: background 0.2s ease, color 0.2s ease;
                         }
-                        
+
                         .floating-toggle:hover {
-                            background: rgba(26, 58, 143, 0.9);
-                            transform: scale(1.05);
+                            background: rgba(21, 44, 110, 1);
+                            color: #ffe84d;
                         }
                         
                         /* 🔹 SIDEBAR (MENÚ LATERAL) */
@@ -2845,8 +2846,16 @@
                             
                             // Ocultar sidebar si está abierto
                             const sidebar = document.getElementById('sidebar');
-                            if (sidebar.classList.contains('active')) {
-                                toggleSidebar();
+                            const overlay = document.getElementById('overlay');
+                            const iframeContainer = document.getElementById('iframeContainer');
+                            const toggleBtn = document.getElementById('toggleBtn');
+                            if (sidebar && sidebar.classList.contains('active')) {
+                                sidebar.classList.remove('active');
+                                if (overlay) overlay.classList.remove('active');
+                                if (iframeContainer) {
+                                    iframeContainer.classList.remove('sidebar-open');
+                                }
+                                if (toggleBtn) toggleBtn.innerHTML = '<i class="fas fa-bars"></i>';
                             }
                         }
                         
@@ -2957,10 +2966,6 @@
                                 sidebar.classList.toggle('active');
                                 overlay.classList.toggle('active');
                                 iframeContainer.classList.toggle('sidebar-open');
-                                
-                                toggleBtn.innerHTML = isSidebarOpen ? 
-                                    '<i class="fas fa-times"></i>' : 
-                                    '<i class="fas fa-bars"></i>';
                             }
                             
                             function logout() {
