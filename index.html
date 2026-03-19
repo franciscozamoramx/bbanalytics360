@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_30.html -->
+<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_31.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1034,7 +1034,7 @@
 
                 const itemsHTML = available.map(d => `
                     <button class="mobile-menu-item mobile-area-child" data-src="${dashboardUrls[d]}">
-                        <i class="${dashboardIcons[d]}"></i> ${dashboardNames[d]}
+                        <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;margin-right:8px;flex-shrink:0;opacity:0.8;vertical-align:middle;"></span>${dashboardNames[d]}
                     </button>
                 `).join('');
 
@@ -1854,32 +1854,9 @@
 
                     iframe.onload = function() {
                         mobileIframeLoading.style.display = 'none';
-                        applyMobileIframeScale();
                     };
 
                     iframe.src = dashboardUrl;
-
-                    // Ajustar escala al girar el teléfono
-                    window.addEventListener('resize', applyMobileIframeScale);
-
-                    function applyMobileIframeScale() {
-                        const el = document.getElementById('mobileIframe');
-                        if (!el) return;
-                        const isPortrait = window.innerHeight > window.innerWidth;
-                        if (isPortrait) {
-                            // En vertical: zoom out para que quepa el dashboard de escritorio
-                            el.style.width = '200%';
-                            el.style.height = '200%';
-                            el.style.transform = 'scale(0.5)';
-                            el.style.transformOrigin = 'top left';
-                        } else {
-                            // En horizontal: tamaño normal
-                            el.style.width = '100%';
-                            el.style.height = '100%';
-                            el.style.transform = 'none';
-                            el.style.transformOrigin = 'top left';
-                        }
-                    }
 
                     // Detener carrusel si estaba activo
                     if (mobileAutoPlayInterval) {
@@ -1998,7 +1975,7 @@
 
                 const itemsHTML = available.map(d => `
                     <button class="menu-item area-child" data-src="${dashboardUrls[d]}">
-                        <i class="${dashboardIcons[d]}"></i> ${dashboardNames[d]}
+                        <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;margin-right:8px;flex-shrink:0;opacity:0.8;vertical-align:middle;"></span>${dashboardNames[d]}
                     </button>
                 `).join('');
 
