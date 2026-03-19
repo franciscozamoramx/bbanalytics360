@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_32.html -->
+<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_33.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1531,18 +1531,18 @@
                         display: flex;
                         align-items: center;
                         gap: 12px;
-                        background: rgba(13, 27, 75, 0.92);
-                        border: 1px solid rgba(255, 215, 0, 0.35);
+                        background: rgba(13, 27, 75, 0.93);
+                        border: 1px solid rgba(255, 215, 0, 0.4);
                         border-radius: 50px;
-                        padding: 10px 22px 10px 16px;
+                        padding: 12px 24px 12px 18px;
                         z-index: 9999;
                         white-space: nowrap;
-                        box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+                        box-shadow: 0 6px 28px rgba(0,0,0,0.5);
                         animation: hintFadeIn 0.35s ease forwards;
                     }
 
                     #rotateHint.hiding {
-                        animation: hintFadeOut 0.5s ease forwards;
+                        animation: hintFadeOut 0.4s ease forwards;
                     }
 
                     @keyframes hintFadeIn {
@@ -1555,21 +1555,31 @@
                         to   { opacity: 0; transform: translateX(-50%) translateY(16px); }
                     }
 
+                    /* Parpadeo del ícono */
                     #rotateHint .rotate-icon {
-                        animation: rotatePulse 0.9s ease-in-out infinite alternate;
                         flex-shrink: 0;
+                        animation: iconBlink 0.8s ease-in-out infinite;
                     }
 
-                    @keyframes rotatePulse {
-                        from { transform: rotate(-30deg); opacity: 0.5; }
-                        to   { transform: rotate(30deg);  opacity: 1; }
+                    @keyframes iconBlink {
+                        0%   { opacity: 1;   transform: scale(1); }
+                        50%  { opacity: 0.2; transform: scale(0.88); }
+                        100% { opacity: 1;   transform: scale(1); }
                     }
 
+                    /* Parpadeo del texto */
                     #rotateHint .rotate-text {
-                        color: white;
+                        color: #FFD700;
                         font-size: 13px;
-                        font-weight: 500;
+                        font-weight: 600;
                         letter-spacing: 0.02em;
+                        animation: textBlink 0.8s ease-in-out infinite;
+                    }
+
+                    @keyframes textBlink {
+                        0%   { opacity: 1; }
+                        50%  { opacity: 0.25; }
+                        100% { opacity: 1; }
                     }
                     
                     /* Landscape: botón más pequeño y compacto */
@@ -1989,27 +1999,60 @@
             });
 
             // 📱 MOSTRAR HINT DE ROTACIÓN EN PORTRAIT
+            let _rotateCheckInterval = null;
+
             function showRotateHint() {
                 const isPortrait = window.innerHeight > window.innerWidth;
                 if (!isPortrait) return;
 
+                _doShowHint();
+
+                // Verificar cada 10s si sigue en portrait; si es así, volver a mostrar
+                if (_rotateCheckInterval) clearInterval(_rotateCheckInterval);
+                _rotateCheckInterval = setInterval(() => {
+                    const stillPortrait = window.innerHeight > window.innerWidth;
+                    if (stillPortrait) {
+                        _doShowHint();
+                    } else {
+                        clearInterval(_rotateCheckInterval);
+                        _rotateCheckInterval = null;
+                    }
+                }, 10000);
+            }
+
+            function _doShowHint() {
                 const existing = document.getElementById('rotateHint');
                 if (existing) existing.remove();
 
                 const hint = document.createElement('div');
                 hint.id = 'rotateHint';
                 hint.innerHTML = `
-                    <svg class="rotate-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
-                        style="width:26px;height:26px;fill:#FFD700;">
-                        <path d="M192 64C192 46.3 206.3 32 224 32H448c17.7 0 32 14.3 32 32V256c0 17.7-14.3 32-32 32H416V208c0-8.8-7.2-16-16-16s-16 7.2-16 16v96c0 8.8 7.2 16 16 16h64c17.7 0 32-14.3 32-32V64c0-35.3-28.7-64-64-64H224C188.7 0 160 28.7 160 64v16H96C60.7 80 32 108.7 32 144V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V384H336v64c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V144c0-17.7 14.3-32 32-32h64V64z"/>
+                    <svg class="rotate-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"
+                        style="width:32px;height:32px;">
+                        <!-- Teléfono en vertical girando a horizontal -->
+                        <g fill="#FFD700">
+                            <!-- cuerpo del teléfono en horizontal -->
+                            <rect x="18" y="35" width="54" height="30" rx="5" ry="5"/>
+                            <!-- pantalla -->
+                            <rect x="23" y="40" width="40" height="20" rx="2" ry="2" fill="#0d1b4b"/>
+                            <!-- botón derecho -->
+                            <circle cx="68" cy="50" r="3"/>
+                            <!-- flecha de rotación curva arriba -->
+                            <path d="M50 18 C65 18, 76 28, 76 35" stroke="#FFD700" stroke-width="4" fill="none" stroke-linecap="round"/>
+                            <polygon points="74,22 80,35 68,33" fill="#FFD700"/>
+                        </g>
                     </svg>
-                    <span class="rotate-text">Gira a modo horizontal</span>
+                    <span class="rotate-text">Gira a vista horizontal</span>
                 `;
                 document.body.appendChild(hint);
 
+                // Desaparecer tras 4 segundos
                 setTimeout(() => {
-                    hint.classList.add('hiding');
-                    setTimeout(() => hint.remove(), 500);
+                    const el = document.getElementById('rotateHint');
+                    if (el) {
+                        el.classList.add('hiding');
+                        setTimeout(() => el.remove(), 400);
+                    }
                 }, 4000);
             }
 
