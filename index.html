@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_27.html -->
+<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_28.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1003,37 +1003,64 @@
 
         // Función para generar el HTML del dashboard móvil
         function generateMobileDashboardHTML() {
-            let menuItemsHTML = '';
-            
+            let inicioHTML = '';
+            let areasHTML = '';
+
             // Dashboard principal (carrusel integrado)
             if (currentUserPermissions.includes('principal')) {
-                menuItemsHTML += `
+                inicioHTML = `
                     <button class="mobile-menu-item active" data-src="carrusel_integrado">
                         <i class="${dashboardIcons.principal}"></i> ${dashboardNames.principal}
                     </button>
                 `;
             }
-            
-            // Otros dashboards
-            const otherDashboards = currentUserPermissions.filter(d => d !== 'principal' && d !== 'diccionario');
-            if (otherDashboards.length > 0) {
-                menuItemsHTML += `<div class="mobile-menu-section">Dashboards</div>`;
-                
-                otherDashboards.forEach(dashboard => {
-                    if (dashboardUrls[dashboard]) {
-                        menuItemsHTML += `
-                            <button class="mobile-menu-item" data-src="${dashboardUrls[dashboard]}">
-                                <i class="${dashboardIcons[dashboard]}"></i> ${dashboardNames[dashboard]}
-                            </button>
-                        `;
-                    }
-                });
+
+            // Definición de áreas
+            const areaConfig = [
+                { key: 'auditoria',  label: 'Auditoría', color: '#FFB84A', dashboards: ['auditoria', 'promociones', 'seguimiento_auditores'] },
+                { key: 'comercial',  label: 'Comercial',  color: '#4A9EFF', dashboards: ['bigplayers', 'bolipoits'] },
+                { key: 'finanzas',   label: 'Finanzas',   color: '#B47FFF', dashboards: ['ingreso_tarjetas'] },
+                { key: 'productos',  label: 'Productos',  color: '#3DD68C', dashboards: ['adt', 'desempeno', 'rtp', 'aforo'] },
+                { key: 'ti',         label: 'TI',          color: '#FF7A6E', dashboards: ['inventario', 'proyectos', 'logs_bi'] }
+            ];
+
+            const permSet = new Set(currentUserPermissions);
+            let hasAnyArea = false;
+
+            areaConfig.forEach((area, idx) => {
+                const available = area.dashboards.filter(d => permSet.has(d) && dashboardUrls[d]);
+                if (available.length === 0) return;
+                hasAnyArea = true;
+
+                const itemsHTML = available.map(d => `
+                    <button class="mobile-menu-item mobile-area-child" data-src="${dashboardUrls[d]}">
+                        <i class="${dashboardIcons[d]}"></i> ${dashboardNames[d]}
+                    </button>
+                `).join('');
+
+                areasHTML += `
+                    <div class="mobile-area-group">
+                        <button class="mobile-area-toggle" onclick="toggleMobileArea(${idx})">
+                            <span class="mobile-area-pip" style="background:${area.color}"></span>
+                            <span class="mobile-area-label">${area.label}</span>
+                            <span class="mobile-area-count" style="color:${area.color}">${available.length}</span>
+                            <span class="mobile-area-chevron" id="mobile-chevron-${idx}">&#9656;</span>
+                        </button>
+                        <div class="mobile-area-children" id="mobile-area-children-${idx}">
+                            ${itemsHTML}
+                        </div>
+                    </div>
+                `;
+            });
+
+            let menuItemsHTML = inicioHTML;
+            if (hasAnyArea) {
+                menuItemsHTML += `<div class="mobile-menu-section">Dashboards</div>` + areasHTML;
             }
-            
+
             // Herramientas
             menuItemsHTML += `<div class="mobile-menu-section">Herramientas</div>`;
-            
-            // Diccionario KPI's
+
             if (currentUserPermissions.includes('diccionario')) {
                 menuItemsHTML += `
                     <button class="mobile-menu-item" data-src="${dashboardUrls.diccionario}">
@@ -1041,8 +1068,7 @@
                     </button>
                 `;
             }
-            
-            // Botón de ayuda
+
             menuItemsHTML += `
                 <button class="mobile-menu-item" id="mobileWhatsappBtn">
                     <i class="fab fa-whatsapp"></i> Ayuda
@@ -1101,22 +1127,66 @@
                     
                     .mobile-floating-toggle {
                         position: fixed;
-                        top: 20px;
-                        left: 20px;
-                        width: 50px;
+                        top: 12px;
+                        left: 0;
+                        width: 36px;
                         height: 50px;
-                        background: rgba(26, 58, 143, 0.8);
-                        color: white;
+                        background: #152c6e;
+                        color: #FFD700;
                         border: none;
-                        border-radius: 50%;
+                        border-radius: 0 8px 8px 0;
                         cursor: pointer;
                         z-index: 1001;
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        font-size: 20px;
-                        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                        transition: all 0.3s ease;
+                        font-size: 16px;
+                        box-shadow: 3px 0 10px rgba(0,0,0,0.3);
+                        transition: width 0.2s ease, background 0.2s ease;
+                    }
+
+                    /* Árbol de áreas móvil */
+                    .mobile-area-group { margin-bottom: 4px; }
+
+                    .mobile-area-toggle {
+                        display: flex; align-items: center; gap: 8px;
+                        width: 100%; padding: 10px 12px;
+                        background: rgba(255,255,255,0.08);
+                        color: white; border: none; border-radius: 5px;
+                        cursor: pointer; font-size: 14px; font-weight: 600;
+                        text-align: left; transition: background 0.2s;
+                    }
+                    .mobile-area-toggle:hover { background: rgba(255,255,255,0.15); }
+
+                    .mobile-area-pip { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+                    .mobile-area-label { flex: 1; }
+
+                    .mobile-area-count {
+                        font-size: 11px; font-weight: 700;
+                        background: rgba(255,255,255,0.1);
+                        padding: 1px 7px; border-radius: 20px;
+                    }
+
+                    .mobile-area-chevron {
+                        font-size: 10px; color: rgba(255,255,255,0.5);
+                        transition: transform 0.22s ease;
+                    }
+                    .mobile-area-chevron.open { transform: rotate(90deg); }
+
+                    .mobile-area-children {
+                        overflow: hidden; max-height: 0; opacity: 0;
+                        transition: max-height 0.28s ease, opacity 0.2s ease;
+                        padding-left: 12px;
+                        border-left: 2px solid rgba(255,255,255,0.1);
+                        margin-left: 10px;
+                    }
+                    .mobile-area-children.open { max-height: 400px; opacity: 1; padding-top: 4px; padding-bottom: 4px; }
+
+                    .mobile-area-child {
+                        font-size: 13px !important;
+                        padding: 9px 12px !important;
+                        margin-bottom: 4px !important;
+                        background: rgba(255,255,255,0.06) !important;
                     }
                     
                     .mobile-sidebar {
@@ -1266,9 +1336,25 @@
                         flex-direction: column;
                         justify-content: center;
                         align-items: center;
-                        background: linear-gradient(135deg, #1a3a8f 0%, #152c6e 100%);
+                        background: #0d1b4b;
+                        background-image:
+                            radial-gradient(ellipse at 20% 50%, rgba(42,75,159,0.5) 0%, transparent 60%),
+                            radial-gradient(ellipse at 80% 20%, rgba(255,215,0,0.07) 0%, transparent 50%);
                         overflow: hidden;
-                        padding: 20px;
+                        padding: 20px 16px;
+                        gap: 0;
+                        position: relative;
+                    }
+
+                    .carrusel-container::before {
+                        content: '';
+                        position: absolute;
+                        inset: 0;
+                        background-image:
+                            linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+                        background-size: 40px 40px;
+                        pointer-events: none;
                     }
                     
                     .carrusel-title {
@@ -1565,38 +1651,49 @@
                     return;
                 }
                 
+                const areaLabels = {
+                    adt:'Productos', desempeno:'Productos', rtp:'Productos', aforo:'Productos',
+                    auditoria:'Auditoría', seguimiento_auditores:'Auditoría', promociones:'Auditoría',
+                    bigplayers:'Comercial', bolipoits:'Comercial',
+                    ingreso_tarjetas:'Finanzas',
+                    inventario:'TI', proyectos:'TI', logs_bi:'TI',
+                    principal:'Inicio'
+                };
+
                 const slidesHTML = mobileCarruselData.map((slide, index) => `
-                    <div class="carrusel-slide ${index === 0 ? 'active' : ''}" data-index="${index}">
-                        <img src="${slide.image}" alt="${slide.title}" data-key="${slide.key}">
-                        <div class="dashboard-title">${slide.title}</div>
-                        <div class="dashboard-desc">${slide.description}</div>
-                        <p class="carrusel-slide-description">
-                            Toca la imagen para acceder al dashboard
-                        </p>
+                    <div class="carrusel-slide ${index === 0 ? 'active' : ''}" data-index="${index}" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px 48px;gap:14px;">
+                        <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,0.12);border:1px solid rgba(255,215,0,0.25);color:#FFD700;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:3px 10px;border-radius:20px;">
+                            <i class="${slide.icon}" style="font-size:9px;"></i> ${areaLabels[slide.key] || 'Dashboard'}
+                        </span>
+                        <img src="${slide.image}" alt="${slide.title}" data-key="${slide.key}"
+                            style="width:90%;max-height:38vh;object-fit:contain;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,0.5);cursor:pointer;">
+                        <div class="dashboard-title" style="font-size:20px;font-weight:700;color:white;text-align:center;line-height:1.2;">${slide.title}</div>
+                        <div class="dashboard-desc" style="font-size:13px;color:rgba(255,255,255,0.6);text-align:center;line-height:1.5;">${slide.description}</div>
+                        <button class="mobile-slide-cta" data-key="${slide.key}"
+                            style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(to right,#FFD700,#FF8C00);color:#0d1b4b;font-size:13px;font-weight:700;padding:10px 22px;border-radius:50px;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(255,215,0,0.3);">
+                            <i class="fas fa-arrow-right" style="font-size:11px;"></i> Abrir dashboard
+                        </button>
                     </div>
                 `).join('');
-                
+
                 const indicatorsHTML = mobileCarruselData.map((_, index) => `
                     <div class="carrusel-indicator ${index === 0 ? 'active' : ''}" data-index="${index}"></div>
                 `).join('');
-                
+
                 mobileContentContainer.innerHTML = `
-                    <h1 class="carrusel-title">BB <span>Analytics 360</span> <span style="font-size: 14px; color: #FFD700; font-weight: normal; margin-left: 5px;">V1.7</span></h1>
-                    <div class="carrusel-permission-info">
-                        <i class="fas fa-user-check"></i> ${currentUser} | 
-                        <i class="fas fa-chart-bar"></i> ${mobileCarruselData.length} dashboards
-                    </div>
-                    <div class="carrusel-slider">
-                        <button class="carrusel-nav carrusel-prev">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <button class="carrusel-nav carrusel-next">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                        ${slidesHTML}
-                        <div class="carrusel-indicators">
-                            ${indicatorsHTML}
+                    <div style="position:relative;z-index:2;text-align:center;margin-bottom:16px;flex-shrink:0;">
+                        <h1 class="carrusel-title" style="font-size:22px;margin:0 0 8px;">BB <span>Analytics 360</span> <span style="font-size:12px;color:rgba(255,215,0,0.7);font-weight:400;margin-left:4px;">V1.7</span></h1>
+                        <div style="display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:50px;padding:5px 14px;font-size:12px;color:rgba(255,255,255,0.8);">
+                            <i class="fas fa-user-check" style="color:#FFD700;"></i> ${currentUser} &nbsp;|&nbsp;
+                            <i class="fas fa-chart-bar" style="color:#FFD700;"></i> ${mobileCarruselData.length} dashboards
                         </div>
+                    </div>
+                    <div class="carrusel-slider" style="flex:1;min-height:0;border-radius:16px;border:1px solid rgba(255,255,255,0.1);">
+                        <button class="carrusel-nav carrusel-prev"><i class="fas fa-chevron-left"></i></button>
+                        <button class="carrusel-nav carrusel-next"><i class="fas fa-chevron-right"></i></button>
+                        ${slidesHTML}
+                        <div class="carrusel-indicators">${indicatorsHTML}</div>
+                        <span style="position:absolute;top:12px;right:14px;font-size:11px;color:rgba(255,255,255,0.3);z-index:15;" id="mobileSlideCounter">1 / ${mobileCarruselData.length}</span>
                     </div>
                 `;
                 
@@ -1610,28 +1707,39 @@
                 const nextBtn = document.querySelector('.carrusel-next');
                 const indicators = document.querySelectorAll('.carrusel-indicator');
                 const slideImages = document.querySelectorAll('.carrusel-slide img');
-                
+
                 if (prevBtn) prevBtn.addEventListener('click', showMobilePrevSlide);
                 if (nextBtn) nextBtn.addEventListener('click', showMobileNextSlide);
-                
+
                 indicators.forEach(indicator => {
                     indicator.addEventListener('click', function() {
-                        const index = parseInt(this.getAttribute('data-index'));
-                        goToMobileSlide(index);
+                        goToMobileSlide(parseInt(this.getAttribute('data-index')));
                     });
                 });
-                
+
+                // Click en imagen
                 slideImages.forEach(img => {
                     img.addEventListener('click', async function() {
                         const dashboardKey = this.getAttribute('data-key');
                         if (dashboardKey && dashboardUrls[dashboardKey]) {
-                            // ✅ REGISTRAR ACCESO AL DASHBOARD EN AIRTABLE
                             await logger.log('dashboard_view', dashboardKey, currentUser, {
                                 source: 'mobile_carrusel_click',
                                 timestamp: new Date().toISOString()
                             });
-                            
-                            // Cargar el dashboard
+                            loadMobileDashboard(dashboardUrls[dashboardKey], dashboardKey);
+                        }
+                    });
+                });
+
+                // Click en botón CTA
+                document.querySelectorAll('.mobile-slide-cta').forEach(btn => {
+                    btn.addEventListener('click', async function() {
+                        const dashboardKey = this.getAttribute('data-key');
+                        if (dashboardKey && dashboardUrls[dashboardKey]) {
+                            await logger.log('dashboard_view', dashboardKey, currentUser, {
+                                source: 'mobile_cta_click',
+                                timestamp: new Date().toISOString()
+                            });
                             loadMobileDashboard(dashboardUrls[dashboardKey], dashboardKey);
                         }
                     });
@@ -1657,12 +1765,15 @@
             function updateMobileCarrusel() {
                 const slides = document.querySelectorAll('.carrusel-slide');
                 const indicators = document.querySelectorAll('.carrusel-indicator');
-                
+
                 slides.forEach(slide => slide.classList.remove('active'));
                 indicators.forEach(indicator => indicator.classList.remove('active'));
-                
+
                 if (slides[currentMobileSlide]) slides[currentMobileSlide].classList.add('active');
                 if (indicators[currentMobileSlide]) indicators[currentMobileSlide].classList.add('active');
+
+                const counter = document.getElementById('mobileSlideCounter');
+                if (counter) counter.textContent = `${currentMobileSlide + 1} / ${mobileCarruselData.length}`;
             }
             
             function startMobileAutoPlay() {
@@ -1689,13 +1800,17 @@
                 mobileSidebar.classList.toggle('active');
                 mobileOverlay.classList.toggle('active');
                 mobileIframeContainer.classList.toggle('sidebar-open');
-                
-                if (isSidebarOpen) {
-                    mobileToggleBtn.innerHTML = '<i class="fas fa-times"></i>';
-                } else {
-                    mobileToggleBtn.innerHTML = '<i class="fas fa-bars"></i>';
-                }
             }
+
+            // Función global para el árbol de áreas móvil
+            window.toggleMobileArea = function(idx) {
+                const children = document.getElementById('mobile-area-children-' + idx);
+                const chevron = document.getElementById('mobile-chevron-' + idx);
+                if (!children) return;
+                const isOpen = children.classList.contains('open');
+                children.classList.toggle('open', !isOpen);
+                if (chevron) chevron.classList.toggle('open', !isOpen);
+            };
             
             function loadMobileDashboard(dashboardUrl, dashboardKey) {
                 // Mostrar loading
