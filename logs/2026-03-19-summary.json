@@ -110,5 +110,21 @@
     "unique_users": 0,
     "actions_summary": {},
     "device_summary": {}
+  },
+  "2026-03-19-18": {
+    "hour": "2026-03-19-18",
+    "generated_at": "2026-03-19T18:52:47.626Z",
+    "total_logs_in_hour": 0,
+    "unique_users": 0,
+    "actions_summary": {},
+    "device_summary": {}
+  },
+  "2026-03-19-19": {
+    "hour": "2026-03-19-19",
+    "generated_at": "2026-03-19T19:43:17.642Z",
+    "total_logs_in_hour": 0,
+    "unique_users": 0,
+    "actions_summary": {},
+    "device_summary": {}
   }
 }
