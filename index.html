@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_36.html -->
+<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_38.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -303,11 +303,11 @@
         let currentSessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         let userIP = null;
 
-        // CONFIGURACIÓN AIRTABLE
+        // CONFIGURACIÓN AIRTABLE — API key movida a Cloudflare Worker (segura)
         const AIRTABLE_CONFIG = {
             baseId: 'appyLYRPaDHgHRMfg',
-            apiKey: 'patotjwpztoSwMBKc.19277efd2f0944e48d327235c5ecd969e1ece9b46543924225445a24d0992e23',
-            tableName: 'Table 1'
+            tableName: 'Table 1',
+            workerUrl: 'https://bi-log-handler.francisco-zamora.workers.dev'
         };
 
         class AirtableLogger {
@@ -444,17 +444,18 @@
                     }
                 };
                 
-                const url = `https://api.airtable.com/v0/${AIRTABLE_CONFIG.baseId}/${AIRTABLE_CONFIG.tableName}`;
+                const url = AIRTABLE_CONFIG.workerUrl;
                 
-                console.log('Enviando a Airtable:', airtableRecord.fields);
+                console.log('Enviando a Airtable vía Worker:', airtableRecord.fields);
                 
                 const response = await fetch(url, {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${AIRTABLE_CONFIG.apiKey}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(airtableRecord)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        baseId: AIRTABLE_CONFIG.baseId,
+                        tableName: AIRTABLE_CONFIG.tableName,
+                        fields: airtableRecord.fields
+                    })
                 });
                 
                 if (!response.ok) {
