@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_38.html -->
+<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_39.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1914,12 +1914,36 @@
                     iframe = document.getElementById('mobileIframe');
                 }
 
+                // URL con layoutType según orientación actual
+                function getUrlWithLayout(url) {
+                    const isPortrait = window.innerHeight > window.innerWidth;
+                    return isPortrait
+                        ? url + '&layoutType=MobilePortrait'
+                        : url + '&layoutType=MobileLandscape';
+                }
+
                 iframe.onload = function() {
                     mobileIframeLoading.style.display = 'none';
-                    showRotateHint();
+                    const isPortrait = window.innerHeight > window.innerWidth;
+                    if (isPortrait) showRotateHint();
                 };
 
-                iframe.src = dashboardUrl;
+                iframe.src = getUrlWithLayout(dashboardUrl);
+
+                // Actualizar al girar el teléfono
+                if (window._mobileOrientationHandler) {
+                    window.removeEventListener('resize', window._mobileOrientationHandler);
+                }
+                window._mobileOrientationHandler = function() {
+                    const el = document.getElementById('mobileIframe');
+                    if (!el) return;
+                    const newUrl = getUrlWithLayout(dashboardUrl);
+                    if (el.src !== newUrl) {
+                        mobileIframeLoading.style.display = 'block';
+                        el.src = newUrl;
+                    }
+                };
+                window.addEventListener('resize', window._mobileOrientationHandler);
 
                 // Detener carrusel si estaba activo
                 if (mobileAutoPlayInterval) {
