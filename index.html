@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_43.html -->
+<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_44.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BB Analytics 360 - Big Bola</title>
     <link rel="icon" type="image/png" href="https://i.postimg.cc/PJSBFV7L/panel.png">
     <link rel="stylesheet" href="./index_files/all.min.css">
+    <script src="./index_files/msal-browser.min.js.descarga"></script>
+    <script src="./index_files/powerbi.min.js.descarga"></script>
     <style>
         * {
             margin: 0;
@@ -1886,11 +1888,55 @@
                 if (chevron) chevron.classList.toggle('open', !isOpen);
             };
             
-            function loadMobileDashboard(dashboardUrl, dashboardKey) {
+            // ── MSAL + powerbi-client config ──────────────────────────────
+            const MSAL_CONFIG = {
+                auth: {
+                    clientId: 'f5e76dc5-692e-4523-8da0-643bcb368dde',
+                    authority: 'https://login.microsoftonline.com/b19d1a80-fff1-4a7e-b9ce-93f694e7b65c',
+                    redirectUri: 'https://franciscozamoramx.github.io/bbanalytics360/'
+                },
+                cache: { cacheLocation: 'sessionStorage', storeAuthStateInCookie: false }
+            };
+            const PBI_SCOPES = ['https://analysis.windows.net/powerbi/api/Report.Read.All'];
+            let _msalInstance = null;
+            let _pbiEmbedReport = null;
+
+            function getMsalInstance() {
+                if (!_msalInstance) {
+                    _msalInstance = new msal.PublicClientApplication(MSAL_CONFIG);
+                }
+                return _msalInstance;
+            }
+
+            async function getPbiAccessToken() {
+                const msalApp = getMsalInstance();
+                await msalApp.initialize();
+
+                // Intentar obtener token silenciosamente primero
+                const accounts = msalApp.getAllAccounts();
+                if (accounts.length > 0) {
+                    try {
+                        const result = await msalApp.acquireTokenSilent({
+                            scopes: PBI_SCOPES,
+                            account: accounts[0]
+                        });
+                        return result.accessToken;
+                    } catch (e) {
+                        console.warn('Silent token failed, trying popup:', e);
+                    }
+                }
+
+                // Si no hay cuenta o falla el silencioso, usar popup
+                const result = await msalApp.acquireTokenPopup({ scopes: PBI_SCOPES });
+                return result.accessToken;
+            }
+
+            async function loadMobileDashboard(dashboardUrl, dashboardKey) {
                 mobileIframeLoading.style.display = 'block';
 
                 // Si es el carrusel
                 if (dashboardUrl === 'carrusel_integrado') {
+                    _resetMobilePbiEmbed();
                     initMobileCarrusel();
                     mobileIframeLoading.style.display = 'none';
                     mobileMenuItems.forEach(menuItem => {
@@ -1900,31 +1946,133 @@
                     return;
                 }
 
-                if (!dashboardUrl || dashboardUrl === '#') return;
+                if (!dashboardUrl || dashboardKey === '#') return;
 
                 // Ocultar sidebar
                 if (isSidebarOpen) toggleMobileSidebar();
-
-                // Cargar en iframe
-                mobileContentContainer.style.display = 'block';
-                let iframe = document.getElementById('mobileIframe');
-                if (!iframe) {
-                    mobileContentContainer.innerHTML = '<iframe class="mobile-iframe" id="mobileIframe" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>';
-                    iframe = document.getElementById('mobileIframe');
-                }
-
-                iframe.onload = function() {
-                    mobileIframeLoading.style.display = 'none';
-                    showRotateHint();
-                };
-
-                iframe.src = dashboardUrl;
 
                 // Detener carrusel si estaba activo
                 if (mobileAutoPlayInterval) {
                     clearInterval(mobileAutoPlayInterval);
                     mobileAutoPlayInterval = null;
                 }
+
+                // Extraer reportId de la URL
+                const reportIdMatch = dashboardUrl.match(/reportId=([a-f0-9-]+)/i);
+                const reportId = reportIdMatch ? reportIdMatch[1] : null;
+
+                // Si hay powerbi-client y reportId disponibles, usar embed con MSAL
+                const pbiLib = window['powerbi'];
+                if (pbiLib && reportId) {
+                    try {
+                        const accessToken = await getPbiAccessToken();
+                        await _embedMobileReport(reportId, accessToken, pbiLib);
+                        return;
+                    } catch (err) {
+                        console.warn('MSAL/embed falló, usando iframe:', err);
+                    }
+                }
+
+                // Fallback: iframe simple
+                _loadMobileIframe(dashboardUrl);
+            }
+
+            function _resetMobilePbiEmbed() {
+                const pbiLib = window['powerbi'];
+                const container = document.getElementById('mobileEmbedContainer');
+                if (pbiLib && container) {
+                    try { pbiLib.reset(container); } catch(e) {}
+                }
+                if (container) container.style.display = 'none';
+                _pbiEmbedReport = null;
+                mobileContentContainer.style.display = '';
+            }
+
+            async function _embedMobileReport(reportId, accessToken, pbiLib) {
+                const models = window['powerbi-client'] ? window['powerbi-client'].models : pbiLib.models;
+                const isPortrait = window.innerHeight > window.innerWidth;
+
+                // Preparar contenedor embed
+                let embedContainer = document.getElementById('mobileEmbedContainer');
+                if (!embedContainer) {
+                    embedContainer = document.createElement('div');
+                    embedContainer.id = 'mobileEmbedContainer';
+                    embedContainer.style.cssText = 'width:100%;height:100%;position:absolute;top:0;left:0;';
+                    mobileContentContainer.parentNode.appendChild(embedContainer);
+                }
+                mobileContentContainer.style.display = 'none';
+                embedContainer.style.display = 'block';
+
+                // Limpiar embed anterior
+                try { pbiLib.reset(embedContainer); } catch(e) {}
+
+                const config = {
+                    type: 'report',
+                    id: reportId,
+                    embedUrl: 'https://app.powerbi.com/reportEmbed',
+                    tokenType: models.TokenType.Aad,
+                    accessToken: accessToken,
+                    settings: {
+                        navContentPaneEnabled: false,
+                        filterPaneEnabled: false,
+                        layoutType: isPortrait
+                            ? models.LayoutType.MobilePortrait
+                            : models.LayoutType.MobileLandscape
+                    }
+                };
+
+                const report = pbiLib.embed(embedContainer, config);
+                _pbiEmbedReport = report;
+
+                report.on('loaded', async function() {
+                    mobileIframeLoading.style.display = 'none';
+
+                    // Verificar si tiene layout móvil
+                    try {
+                        const pages = await report.getPages();
+                        const activePage = pages.find(p => p.isActive) || pages[0];
+                        const hasMobile = await activePage.hasLayout(models.LayoutType.MobilePortrait);
+                        if (!hasMobile && isPortrait) showRotateHint();
+                    } catch(e) {
+                        if (isPortrait) showRotateHint();
+                    }
+                });
+
+                report.on('error', function(event) {
+                    console.warn('PBI embed error:', event.detail);
+                    pbiLib.reset(embedContainer);
+                    embedContainer.style.display = 'none';
+                    mobileContentContainer.style.display = 'block';
+                    _loadMobileIframe(dashboardUrl);
+                });
+
+                // Actualizar layout al girar
+                window.addEventListener('resize', async function() {
+                    if (!_pbiEmbedReport) return;
+                    const portrait = window.innerHeight > window.innerWidth;
+                    try {
+                        await _pbiEmbedReport.updateSettings({
+                            layoutType: portrait
+                                ? models.LayoutType.MobilePortrait
+                                : models.LayoutType.MobileLandscape
+                        });
+                    } catch(e) {}
+                });
+            }
+
+            function _loadMobileIframe(dashboardUrl) {
+                mobileIframeLoading.style.display = 'block';
+                mobileContentContainer.style.display = 'block';
+                let iframe = document.getElementById('mobileIframe');
+                if (!iframe) {
+                    mobileContentContainer.innerHTML = '<iframe class="mobile-iframe" id="mobileIframe" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>';
+                    iframe = document.getElementById('mobileIframe');
+                }
+                iframe.onload = function() {
+                    mobileIframeLoading.style.display = 'none';
+                    showRotateHint();
+                };
+                iframe.src = dashboardUrl;
             }
             
             // 🚪 FUNCIÓN SIMPLIFICADA PARA REGISTRAR LOGOUT MÓVIL
