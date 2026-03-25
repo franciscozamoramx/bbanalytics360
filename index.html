@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_47.html -->
+<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_48.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1952,7 +1952,11 @@
                 sessionStorage.setItem('pbi_pending_dashboard', JSON.stringify({ dashboardUrl, dashboardKey }));
                 const msalApp = getMsalInstance();
                 await msalApp.initialize();
-                await msalApp.loginRedirect({ scopes: PBI_SCOPES });
+                // loginRedirect lleva al usuario a Microsoft login y regresa aquí
+                await msalApp.loginRedirect({
+                    scopes: PBI_SCOPES,
+                    prompt: 'select_account'
+                });
             }
 
             async function loadMobileDashboard(dashboardUrl, dashboardKey) {
@@ -2000,10 +2004,22 @@
 
                         if (errMsg.includes('NO_ACCOUNT')) {
                             try {
+                                _showMobileDebugMsg('Iniciando login Microsoft...');
                                 await loginAndEmbed(dashboardUrl, dashboardKey);
                                 return;
                             } catch(e) {
                                 _showMobileDebugMsg('Redirect falló: ' + (e.message||'').substring(0, 80));
+                                // Si redirect falla, intentar popup como último recurso
+                                try {
+                                    const msalApp = getMsalInstance();
+                                    const result = await msalApp.loginPopup({ scopes: PBI_SCOPES });
+                                    if (result && result.accessToken) {
+                                        await _embedMobileReport(reportId, result.accessToken, pbiLib, dashboardUrl);
+                                        return;
+                                    }
+                                } catch(popupErr) {
+                                    _showMobileDebugMsg('Popup falló: ' + (popupErr.message||'').substring(0, 80));
+                                }
                             }
                         }
                     }
