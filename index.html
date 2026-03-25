@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_57.html -->
+<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_58.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -2022,13 +2022,13 @@
                     };
                     window.addEventListener('blur', blurHandler);
 
-                    // Si después de 2.5s no se abrió la app, mostrar mensaje
+                    // Si después de 1.2s no se abrió la app, mostrar mensaje
                     appCheckTimeout = setTimeout(function() {
                         window.removeEventListener('blur', blurHandler);
                         if (!appOpened) {
                             _showInstallAppToast(serviceUrl);
                         }
-                    }, 2500);
+                    }, 1200);
 
                     window.location.href = pbiDeepLink;
                 });
