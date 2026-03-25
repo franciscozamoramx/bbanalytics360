@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_48.html -->
+<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_49.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -2264,34 +2264,34 @@
             }
 
             // Manejar redirect de vuelta de MSAL (si venimos de un login)
-            (async function handleMsalRedirectOnLoad() {
+            // Inicializar carrusel automáticamente
+            initMobileCarrusel();
+
+            // Manejar redirect de vuelta de MSAL — ejecutar DESPUÉS de que el DOM móvil esté listo
+            setTimeout(async function() {
                 const pbiLib = window['powerbi'];
                 if (!pbiLib) return;
+                const pending = sessionStorage.getItem('pbi_pending_dashboard');
+                if (!pending) return; // No hay dashboard pendiente
                 try {
                     const msalApp = getMsalInstance();
                     await msalApp.initialize();
                     const redirectResult = await msalApp.handleRedirectPromise();
                     if (redirectResult && redirectResult.accessToken) {
-                        // Recuperar el dashboard pendiente
-                        const pending = sessionStorage.getItem('pbi_pending_dashboard');
-                        if (pending) {
-                            sessionStorage.removeItem('pbi_pending_dashboard');
-                            const { dashboardUrl, dashboardKey } = JSON.parse(pending);
-                            const reportIdMatch = dashboardUrl.match(/reportId=([a-f0-9-]+)/i);
-                            const reportId = reportIdMatch ? reportIdMatch[1] : null;
-                            if (reportId) {
-                                await _embedMobileReport(reportId, redirectResult.accessToken, pbiLib, dashboardUrl);
-                                return;
-                            }
+                        sessionStorage.removeItem('pbi_pending_dashboard');
+                        const { dashboardUrl } = JSON.parse(pending);
+                        const reportIdMatch = dashboardUrl.match(/reportId=([a-f0-9-]+)/i);
+                        const reportId = reportIdMatch ? reportIdMatch[1] : null;
+                        if (reportId) {
+                            mobileIframeLoading.style.display = 'block';
+                            await _embedMobileReport(reportId, redirectResult.accessToken, pbiLib, dashboardUrl);
                         }
                     }
                 } catch(e) {
                     console.warn('MSAL redirect handler error:', e);
+                    sessionStorage.removeItem('pbi_pending_dashboard');
                 }
-            })();
-
-            // Inicializar carrusel automáticamente
-            initMobileCarrusel();
+            }, 500);
         }
 
         // Función para generar el HTML del dashboard para PC
