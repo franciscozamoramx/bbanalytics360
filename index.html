@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_44.html -->
+<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_45.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1961,15 +1961,24 @@
                 const reportIdMatch = dashboardUrl.match(/reportId=([a-f0-9-]+)/i);
                 const reportId = reportIdMatch ? reportIdMatch[1] : null;
 
-                // Si hay powerbi-client y reportId disponibles, usar embed con MSAL
+                // Si hay powerbi-client y reportId disponibles, intentar embed con MSAL
                 const pbiLib = window['powerbi'];
                 if (pbiLib && reportId) {
+                    // Timeout de seguridad: si MSAL tarda más de 8s, usar iframe
+                    const msalTimeout = setTimeout(() => {
+                        console.warn('MSAL timeout — usando iframe como fallback');
+                        mobileIframeLoading.style.display = 'none';
+                        _loadMobileIframe(dashboardUrl);
+                    }, 8000);
+
                     try {
                         const accessToken = await getPbiAccessToken();
-                        await _embedMobileReport(reportId, accessToken, pbiLib);
+                        clearTimeout(msalTimeout);
+                        await _embedMobileReport(reportId, accessToken, pbiLib, dashboardUrl);
                         return;
                     } catch (err) {
-                        console.warn('MSAL/embed falló, usando iframe:', err);
+                        clearTimeout(msalTimeout);
+                        console.warn('MSAL/embed falló, usando iframe:', err.message);
                     }
                 }
 
@@ -1988,7 +1997,7 @@
                 mobileContentContainer.style.display = '';
             }
 
-            async function _embedMobileReport(reportId, accessToken, pbiLib) {
+            async function _embedMobileReport(reportId, accessToken, pbiLib, dashboardUrl) {
                 const models = window['powerbi-client'] ? window['powerbi-client'].models : pbiLib.models;
                 const isPortrait = window.innerHeight > window.innerWidth;
 
