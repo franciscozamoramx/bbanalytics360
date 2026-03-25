@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_50.html -->
+<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_51.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -194,7 +194,7 @@
             </button>
         </div>
         
-        <div class="status-message status-success" id="statusMessage" style="display: none;">Permisos cargados correctamente</div>
+        <div class="status-message" id="statusMessage" style="display: none;"></div>
         
         <div class="user-info" id="userInfo" style="display: none;">
             <p>Bienvenido: <span id="userEmail"></span></p>
@@ -220,6 +220,12 @@
             "seguimiento_auditores": "https://app.powerbi.com/reportEmbed?reportId=f298656f-f4fb-4110-9580-321f04c0cfd6&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false",
             "logs_bi": "https://app.powerbi.com/reportEmbed?reportId=36b35095-427f-4ded-82d4-27ce644ddeac&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false",
 			"aforo": "https://app.powerbi.com/reportEmbed?reportId=416f739b-51f2-4696-a698-c45636691de6&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false"
+        };
+
+        // URLs de Power BI Service para móvil (abren en browser con layout vertical)
+        // Agregar más reportes aquí cuando se confirmen sus groupId
+        const dashboardMobileUrls = {
+            "bigplayers": "https://app.powerbi.com/groups/a5d9b077-bf5c-4f5b-a90f-b4e374793ee8/reports/8e08098b-ce0e-46af-a8b5-e90b0b216e76"
         };
 
         // Mapeo de nombres de dashboards
@@ -1905,7 +1911,21 @@
                 // Ocultar sidebar
                 if (isSidebarOpen) toggleMobileSidebar();
 
-                // Cargar en iframe
+                // Detener carrusel si estaba activo
+                if (mobileAutoPlayInterval) {
+                    clearInterval(mobileAutoPlayInterval);
+                    mobileAutoPlayInterval = null;
+                }
+
+                // Si el reporte tiene URL de PBI Service configurada, abrir ahí
+                const mobileServiceUrl = dashboardMobileUrls[dashboardKey];
+                if (mobileServiceUrl) {
+                    mobileIframeLoading.style.display = 'none';
+                    _showOpenInServiceToast(mobileServiceUrl, dashboardUrl, dashboardKey);
+                    return;
+                }
+
+                // Fallback: iframe normal
                 mobileContentContainer.style.display = 'block';
                 let iframe = document.getElementById('mobileIframe');
                 if (!iframe) {
@@ -1919,12 +1939,76 @@
                 };
 
                 iframe.src = dashboardUrl;
+            }
 
-                // Detener carrusel si estaba activo
-                if (mobileAutoPlayInterval) {
-                    clearInterval(mobileAutoPlayInterval);
-                    mobileAutoPlayInterval = null;
-                }
+            function _showOpenInServiceToast(serviceUrl, embedUrl, dashboardKey) {
+                const prev = document.getElementById('pbiServiceToast');
+                if (prev) prev.remove();
+
+                const dashName = dashboardNames[dashboardKey] || dashboardKey;
+
+                const toast = document.createElement('div');
+                toast.id = 'pbiServiceToast';
+                toast.style.cssText = \`
+                    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+                    background: #152c6e; border-top: 2px solid #FFD700;
+                    padding: 16px 20px; display: flex; flex-direction: column; gap: 12px;
+                    box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
+                    animation: slideUpToast 0.3s ease;
+                \`;
+
+                toast.innerHTML = \`
+                    <style>
+                        @keyframes slideUpToast {
+                            from { transform: translateY(100%); }
+                            to   { transform: translateY(0); }
+                        }
+                    </style>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" style="width:18px;height:18px;fill:#FFD700;flex-shrink:0;">
+                            <path d="M80 0C44.7 0 16 28.7 16 64V448c0 35.3 28.7 64 64 64H304c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64H80zm80 432h64c8.8 0 16 7.2 16 16s-7.2 16-16 16H160c-8.8 0-16-7.2-16-16s7.2-16 16-16z"/>
+                        </svg>
+                        <span style="color:white;font-size:14px;font-weight:600;">\${dashName}</span>
+                    </div>
+                    <p style="color:rgba(255,255,255,0.8);font-size:12px;margin:0;line-height:1.5;">
+                        Este dashboard tiene vista optimizada para móvil. ¿Cómo deseas verlo?
+                    </p>
+                    <div style="display:flex;gap:10px;">
+                        <button id="pbiOpenService" style="
+                            flex:1; padding:11px;
+                            background:linear-gradient(to right,#FFD700,#FF8C00);
+                            color:#152c6e; font-weight:700; font-size:13px;
+                            border:none; border-radius:50px; cursor:pointer;">
+                            📱 Vista vertical
+                        </button>
+                        <button id="pbiOpenEmbed" style="
+                            flex:1; padding:11px;
+                            background:rgba(255,255,255,0.1);
+                            color:white; font-weight:600; font-size:13px;
+                            border:1px solid rgba(255,255,255,0.3); border-radius:50px; cursor:pointer;">
+                            Ver aquí
+                        </button>
+                    </div>
+                \`;
+
+                document.body.appendChild(toast);
+
+                document.getElementById('pbiOpenService').addEventListener('click', function() {
+                    toast.remove();
+                    window.open(serviceUrl, '_blank');
+                });
+
+                document.getElementById('pbiOpenEmbed').addEventListener('click', function() {
+                    toast.remove();
+                    mobileContentContainer.style.display = 'block';
+                    let iframe = document.getElementById('mobileIframe');
+                    if (!iframe) {
+                        mobileContentContainer.innerHTML = '<iframe class="mobile-iframe" id="mobileIframe" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>';
+                        iframe = document.getElementById('mobileIframe');
+                    }
+                    iframe.onload = function() { showRotateHint(); };
+                    iframe.src = embedUrl;
+                });
             }
             
             // 🚪 FUNCIÓN SIMPLIFICADA PARA REGISTRAR LOGOUT MÓVIL
