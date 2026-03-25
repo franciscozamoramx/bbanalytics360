@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_51.html -->
+<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_52.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -194,7 +194,7 @@
             </button>
         </div>
         
-        <div class="status-message" id="statusMessage" style="display: none;"></div>
+        <div class="status-message status-success" id="statusMessage" style="display: none;">Permisos cargados correctamente</div>
         
         <div class="user-info" id="userInfo" style="display: none;">
             <p>Bienvenido: <span id="userEmail"></span></p>
@@ -1942,66 +1942,63 @@
             }
 
             function _showOpenInServiceToast(serviceUrl, embedUrl, dashboardKey) {
-                const prev = document.getElementById('pbiServiceToast');
+                var prev = document.getElementById('pbiServiceToast');
                 if (prev) prev.remove();
 
-                const dashName = dashboardNames[dashboardKey] || dashboardKey;
+                var dashName = dashboardNames[dashboardKey] || dashboardKey;
 
-                const toast = document.createElement('div');
+                var toast = document.createElement('div');
                 toast.id = 'pbiServiceToast';
-                toast.style.cssText = \`
-                    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
-                    background: #152c6e; border-top: 2px solid #FFD700;
-                    padding: 16px 20px; display: flex; flex-direction: column; gap: 12px;
-                    box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
-                    animation: slideUpToast 0.3s ease;
-                \`;
+                toast.style.position = 'fixed';
+                toast.style.bottom = '0';
+                toast.style.left = '0';
+                toast.style.right = '0';
+                toast.style.zIndex = '9999';
+                toast.style.background = '#152c6e';
+                toast.style.borderTop = '2px solid #FFD700';
+                toast.style.padding = '16px 20px';
+                toast.style.display = 'flex';
+                toast.style.flexDirection = 'column';
+                toast.style.gap = '12px';
+                toast.style.boxShadow = '0 -4px 20px rgba(0,0,0,0.4)';
 
-                toast.innerHTML = \`
-                    <style>
-                        @keyframes slideUpToast {
-                            from { transform: translateY(100%); }
-                            to   { transform: translateY(0); }
-                        }
-                    </style>
-                    <div style="display:flex;align-items:center;gap:10px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" style="width:18px;height:18px;fill:#FFD700;flex-shrink:0;">
-                            <path d="M80 0C44.7 0 16 28.7 16 64V448c0 35.3 28.7 64 64 64H304c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64H80zm80 432h64c8.8 0 16 7.2 16 16s-7.2 16-16 16H160c-8.8 0-16-7.2-16-16s7.2-16 16-16z"/>
-                        </svg>
-                        <span style="color:white;font-size:14px;font-weight:600;">\${dashName}</span>
-                    </div>
-                    <p style="color:rgba(255,255,255,0.8);font-size:12px;margin:0;line-height:1.5;">
-                        Este dashboard tiene vista optimizada para móvil. ¿Cómo deseas verlo?
-                    </p>
-                    <div style="display:flex;gap:10px;">
-                        <button id="pbiOpenService" style="
-                            flex:1; padding:11px;
-                            background:linear-gradient(to right,#FFD700,#FF8C00);
-                            color:#152c6e; font-weight:700; font-size:13px;
-                            border:none; border-radius:50px; cursor:pointer;">
-                            📱 Vista vertical
-                        </button>
-                        <button id="pbiOpenEmbed" style="
-                            flex:1; padding:11px;
-                            background:rgba(255,255,255,0.1);
-                            color:white; font-weight:600; font-size:13px;
-                            border:1px solid rgba(255,255,255,0.3); border-radius:50px; cursor:pointer;">
-                            Ver aquí
-                        </button>
-                    </div>
-                \`;
+                var title = document.createElement('p');
+                title.style.cssText = 'color:white;font-size:14px;font-weight:600;margin:0;';
+                title.textContent = dashName;
 
+                var desc = document.createElement('p');
+                desc.style.cssText = 'color:rgba(255,255,255,0.8);font-size:12px;margin:0;line-height:1.5;';
+                desc.textContent = 'Este dashboard tiene vista optimizada para movil.';
+
+                var btnRow = document.createElement('div');
+                btnRow.style.cssText = 'display:flex;gap:10px;';
+
+                var btnVertical = document.createElement('button');
+                btnVertical.id = 'pbiOpenService';
+                btnVertical.style.cssText = 'flex:1;padding:11px;background:linear-gradient(to right,#FFD700,#FF8C00);color:#152c6e;font-weight:700;font-size:13px;border:none;border-radius:50px;cursor:pointer;';
+                btnVertical.textContent = 'Vista vertical';
+
+                var btnEmbed = document.createElement('button');
+                btnEmbed.id = 'pbiOpenEmbed';
+                btnEmbed.style.cssText = 'flex:1;padding:11px;background:rgba(255,255,255,0.1);color:white;font-weight:600;font-size:13px;border:1px solid rgba(255,255,255,0.3);border-radius:50px;cursor:pointer;';
+                btnEmbed.textContent = 'Ver aqui';
+
+                btnRow.appendChild(btnVertical);
+                btnRow.appendChild(btnEmbed);
+                toast.appendChild(title);
+                toast.appendChild(desc);
+                toast.appendChild(btnRow);
                 document.body.appendChild(toast);
 
-                document.getElementById('pbiOpenService').addEventListener('click', function() {
+                btnVertical.addEventListener('click', function() {
                     toast.remove();
-                    window.open(serviceUrl, '_blank');
+                    window.location.href = serviceUrl;
                 });
 
-                document.getElementById('pbiOpenEmbed').addEventListener('click', function() {
+                btnEmbed.addEventListener('click', function() {
                     toast.remove();
                     mobileContentContainer.style.display = 'block';
-                    let iframe = document.getElementById('mobileIframe');
+                    var iframe = document.getElementById('mobileIframe');
                     if (!iframe) {
                         mobileContentContainer.innerHTML = '<iframe class="mobile-iframe" id="mobileIframe" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>';
                         iframe = document.getElementById('mobileIframe');
@@ -2010,7 +2007,6 @@
                     iframe.src = embedUrl;
                 });
             }
-            
             // 🚪 FUNCIÓN SIMPLIFICADA PARA REGISTRAR LOGOUT MÓVIL
             async function registerMobileLogout() {
                 try {
