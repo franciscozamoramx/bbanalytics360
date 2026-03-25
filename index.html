@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_45.html -->
+<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_46.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1912,7 +1912,18 @@
                 const msalApp = getMsalInstance();
                 await msalApp.initialize();
 
-                // Intentar obtener token silenciosamente primero
+                // Manejar respuesta de redirect si venimos de uno
+                try {
+                    const redirectResult = await msalApp.handleRedirectPromise();
+                    if (redirectResult && redirectResult.accessToken) {
+                        // Guardar el dashboard pendiente en sessionStorage
+                        return redirectResult.accessToken;
+                    }
+                } catch(e) {
+                    console.warn('handleRedirectPromise error:', e);
+                }
+
+                // Intentar obtener token silenciosamente
                 const accounts = msalApp.getAllAccounts();
                 if (accounts.length > 0) {
                     try {
@@ -1922,13 +1933,26 @@
                         });
                         return result.accessToken;
                     } catch (e) {
-                        console.warn('Silent token failed, trying popup:', e);
+                        console.warn('Silent token failed:', e);
                     }
                 }
 
-                // Si no hay cuenta o falla el silencioso, usar popup
-                const result = await msalApp.acquireTokenPopup({ scopes: PBI_SCOPES });
-                return result.accessToken;
+                // Usar redirect (funciona en móvil sin bloqueo de popups)
+                // Guardar el dashboard que se quería abrir para restaurarlo después del redirect
+                const pendingDashboard = sessionStorage.getItem('pbi_pending_dashboard');
+                if (!pendingDashboard) {
+                    // Solo hacer redirect si no hay uno pendiente (evitar loop)
+                    throw new Error('NO_ACCOUNT — se requiere login');
+                }
+                throw new Error('NO_TOKEN');
+            }
+
+            async function loginAndEmbed(dashboardUrl, dashboardKey) {
+                // Guardar dashboard pendiente antes del redirect
+                sessionStorage.setItem('pbi_pending_dashboard', JSON.stringify({ dashboardUrl, dashboardKey }));
+                const msalApp = getMsalInstance();
+                await msalApp.initialize();
+                await msalApp.loginRedirect({ scopes: PBI_SCOPES });
             }
 
             async function loadMobileDashboard(dashboardUrl, dashboardKey) {
@@ -1964,21 +1988,21 @@
                 // Si hay powerbi-client y reportId disponibles, intentar embed con MSAL
                 const pbiLib = window['powerbi'];
                 if (pbiLib && reportId) {
-                    // Timeout de seguridad: si MSAL tarda más de 8s, usar iframe
-                    const msalTimeout = setTimeout(() => {
-                        console.warn('MSAL timeout — usando iframe como fallback');
-                        mobileIframeLoading.style.display = 'none';
-                        _loadMobileIframe(dashboardUrl);
-                    }, 8000);
-
                     try {
                         const accessToken = await getPbiAccessToken();
-                        clearTimeout(msalTimeout);
                         await _embedMobileReport(reportId, accessToken, pbiLib, dashboardUrl);
                         return;
                     } catch (err) {
-                        clearTimeout(msalTimeout);
-                        console.warn('MSAL/embed falló, usando iframe:', err.message);
+                        console.warn('MSAL falló:', err.message);
+                        if (err.message === 'NO_ACCOUNT — se requiere login') {
+                            // Iniciar redirect login — la página se recargará después
+                            try {
+                                await loginAndEmbed(dashboardUrl, dashboardKey);
+                                return; // El redirect tomará control
+                            } catch(e) {
+                                console.warn('Redirect login falló:', e);
+                            }
+                        }
                     }
                 }
 
@@ -2208,6 +2232,33 @@
                     }
                 }, 4000);
             }
+
+            // Manejar redirect de vuelta de MSAL (si venimos de un login)
+            (async function handleMsalRedirectOnLoad() {
+                const pbiLib = window['powerbi'];
+                if (!pbiLib) return;
+                try {
+                    const msalApp = getMsalInstance();
+                    await msalApp.initialize();
+                    const redirectResult = await msalApp.handleRedirectPromise();
+                    if (redirectResult && redirectResult.accessToken) {
+                        // Recuperar el dashboard pendiente
+                        const pending = sessionStorage.getItem('pbi_pending_dashboard');
+                        if (pending) {
+                            sessionStorage.removeItem('pbi_pending_dashboard');
+                            const { dashboardUrl, dashboardKey } = JSON.parse(pending);
+                            const reportIdMatch = dashboardUrl.match(/reportId=([a-f0-9-]+)/i);
+                            const reportId = reportIdMatch ? reportIdMatch[1] : null;
+                            if (reportId) {
+                                await _embedMobileReport(reportId, redirectResult.accessToken, pbiLib, dashboardUrl);
+                                return;
+                            }
+                        }
+                    }
+                } catch(e) {
+                    console.warn('MSAL redirect handler error:', e);
+                }
+            })();
 
             // Inicializar carrusel automáticamente
             initMobileCarrusel();
