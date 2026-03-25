@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_46.html -->
+<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_47.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1993,14 +1993,17 @@
                         await _embedMobileReport(reportId, accessToken, pbiLib, dashboardUrl);
                         return;
                     } catch (err) {
-                        console.warn('MSAL falló:', err.message);
-                        if (err.message === 'NO_ACCOUNT — se requiere login') {
-                            // Iniciar redirect login — la página se recargará después
+                        // Mostrar error en pantalla para diagnóstico
+                        const errMsg = err.message || String(err);
+                        console.warn('MSAL falló:', errMsg);
+                        _showMobileDebugMsg('MSAL error: ' + errMsg.substring(0, 120));
+
+                        if (errMsg.includes('NO_ACCOUNT')) {
                             try {
                                 await loginAndEmbed(dashboardUrl, dashboardKey);
-                                return; // El redirect tomará control
+                                return;
                             } catch(e) {
-                                console.warn('Redirect login falló:', e);
+                                _showMobileDebugMsg('Redirect falló: ' + (e.message||'').substring(0, 80));
                             }
                         }
                     }
@@ -2091,6 +2094,17 @@
                         });
                     } catch(e) {}
                 });
+            }
+
+            function _showMobileDebugMsg(msg) {
+                const prev = document.getElementById('pbiDebugMsg');
+                if (prev) prev.remove();
+                const el = document.createElement('div');
+                el.id = 'pbiDebugMsg';
+                el.style.cssText = 'position:fixed;bottom:80px;left:10px;right:10px;background:rgba(180,0,0,0.9);color:white;padding:10px;border-radius:8px;font-size:11px;z-index:9999;word-break:break-all;';
+                el.textContent = msg;
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 12000);
             }
 
             function _loadMobileIframe(dashboardUrl) {
