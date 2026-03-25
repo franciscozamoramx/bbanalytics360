@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_56.html -->
+<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_57.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1996,8 +1996,104 @@
 
                 btnVertical.addEventListener('click', function() {
                     toast.remove();
-                    window.location.href = serviceUrl;
+
+                    // Extraer reportId y groupId de la serviceUrl
+                    var parts = serviceUrl.split('/reports/');
+                    var groupId = parts[0].split('/groups/')[1];
+                    var reportId = parts[1] ? parts[1].split('/')[0] : null;
+
+                    if (!reportId || !groupId) {
+                        window.location.href = serviceUrl;
+                        return;
+                    }
+
+                    // Deep link para abrir en la app de Power BI
+                    var pbiDeepLink = 'mspbi://app/OpenReport?ReportObjectId=' + reportId + '&GroupObjectId=' + groupId;
+
+                    // Intentar abrir la app
+                    var appOpened = false;
+                    var appCheckTimeout;
+
+                    // Detectar si la app se abrió — si la página pierde foco, la app se abrió
+                    var blurHandler = function() {
+                        appOpened = true;
+                        clearTimeout(appCheckTimeout);
+                        window.removeEventListener('blur', blurHandler);
+                    };
+                    window.addEventListener('blur', blurHandler);
+
+                    // Si después de 2.5s no se abrió la app, mostrar mensaje
+                    appCheckTimeout = setTimeout(function() {
+                        window.removeEventListener('blur', blurHandler);
+                        if (!appOpened) {
+                            _showInstallAppToast(serviceUrl);
+                        }
+                    }, 2500);
+
+                    window.location.href = pbiDeepLink;
                 });
+
+                // Función para mostrar mensaje de instalación
+                function _showInstallAppToast(fallbackUrl) {
+                    var prev = document.getElementById('pbiInstallToast');
+                    if (prev) prev.remove();
+
+                    var isAndroid = /android/i.test(navigator.userAgent);
+                    var storeUrl = isAndroid
+                        ? 'https://play.google.com/store/apps/details?id=com.microsoft.powerbims'
+                        : 'https://apps.apple.com/app/microsoft-power-bi/id929738808';
+
+                    var t = document.createElement('div');
+                    t.id = 'pbiInstallToast';
+                    t.style.position = 'fixed';
+                    t.style.bottom = '0';
+                    t.style.left = '0';
+                    t.style.right = '0';
+                    t.style.zIndex = '9999';
+                    t.style.background = '#152c6e';
+                    t.style.borderTop = '2px solid #FFD700';
+                    t.style.padding = '16px 20px';
+                    t.style.display = 'flex';
+                    t.style.flexDirection = 'column';
+                    t.style.gap = '12px';
+                    t.style.boxShadow = '0 -4px 20px rgba(0,0,0,0.4)';
+
+                    var title = document.createElement('p');
+                    title.style.cssText = 'color:#FFD700;font-size:14px;font-weight:700;margin:0;';
+                    title.textContent = 'Big Bola recomienda descargar la aplicacion de Power BI';
+
+                    var desc = document.createElement('p');
+                    desc.style.cssText = 'color:rgba(255,255,255,0.8);font-size:12px;margin:0;line-height:1.5;';
+                    desc.textContent = 'Para una mejor experiencia en dispositivos moviles, instala la app gratuita de Microsoft Power BI.';
+
+                    var btnRow = document.createElement('div');
+                    btnRow.style.cssText = 'display:flex;gap:10px;';
+
+                    var btnInstall = document.createElement('button');
+                    btnInstall.style.cssText = 'flex:1;padding:11px;background:linear-gradient(to right,#FFD700,#FF8C00);color:#152c6e;font-weight:700;font-size:13px;border:none;border-radius:50px;cursor:pointer;';
+                    btnInstall.textContent = 'Descargar app';
+
+                    var btnWeb = document.createElement('button');
+                    btnWeb.style.cssText = 'flex:1;padding:11px;background:rgba(255,255,255,0.1);color:white;font-weight:600;font-size:13px;border:1px solid rgba(255,255,255,0.3);border-radius:50px;cursor:pointer;';
+                    btnWeb.textContent = 'Ver en navegador';
+
+                    btnRow.appendChild(btnInstall);
+                    btnRow.appendChild(btnWeb);
+                    t.appendChild(title);
+                    t.appendChild(desc);
+                    t.appendChild(btnRow);
+                    document.body.appendChild(t);
+
+                    btnInstall.addEventListener('click', function() {
+                        t.remove();
+                        window.open(storeUrl, '_blank');
+                    });
+
+                    btnWeb.addEventListener('click', function() {
+                        t.remove();
+                        window.location.href = fallbackUrl;
+                    });
+                }
 
                 btnEmbed.addEventListener('click', function() {
                     toast.remove();
