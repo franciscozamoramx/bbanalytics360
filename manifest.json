@@ -1,6 +1,6 @@
 {
     "name": "BB Analytics 360",
-    "short_name": "BB Analytics 360",
+    "short_name": "BB Analytics",
     "description": "Portal de dashboards de Business Intelligence para Big Bola Casinos",
     "start_url": "/bbanalytics360/",
     "scope": "/bbanalytics360/",
