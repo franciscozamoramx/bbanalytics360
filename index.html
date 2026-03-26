@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_71.html -->
+<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_72.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,15 +25,6 @@
         window.addEventListener('beforeinstallprompt', function(e) {
             e.preventDefault();
             _pwaInstallPrompt = e;
-
-            // Mostrar botón en login
-            var ua = navigator.userAgent.toLowerCase();
-            var isTouch = /android|iphone|ipad|ipod|tablet/.test(ua) || typeof window.orientation !== 'undefined';
-            var isSmall = window.innerWidth <= 1024;
-            if (isTouch || isSmall) {
-                var btn = document.getElementById('pwaInstallBtn');
-                if (btn) btn.style.display = 'flex';
-            }
 
             // Toast flotante automático
             var prev = document.getElementById('pwaReadyToast');
@@ -67,8 +58,8 @@
 
         window.addEventListener('appinstalled', function() {
             _pwaInstallPrompt = null;
-            var btn = document.getElementById('pwaInstallBtn');
-            if (btn) btn.style.display = 'none';
+            var toast = document.getElementById('pwaReadyToast');
+            if (toast) toast.remove();
         });
 
         function triggerPwaInstall() {
@@ -77,8 +68,7 @@
                 _pwaInstallPrompt.userChoice.then(function(result) {
                     if (result.outcome === 'accepted') {
                         _pwaInstallPrompt = null;
-                        var btn = document.getElementById('pwaInstallBtn');
-                        if (btn) btn.style.display = 'none';
+
                     }
                 });
             }
@@ -271,31 +261,7 @@
             <button class="btn" id="loginBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:18px;height:18px;fill:currentColor;vertical-align:middle;margin-right:8px;flex-shrink:0"><path d="M352 96l0 64-96 0 0 192 96 0 0 64-96 0c-35.3 0-64-28.7-64-64l0-192c0-35.3 28.7-64 64-64l96 0zm57.4 105.4L505.4 297c9.4 9.4 9.4 24.6 0 33.9L409.4 426.6c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9L433.4 335 224 335c-13.3 0-24-10.7-24-24s10.7-24 24-24l209.4 0-57.9-57.9c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0z"></path></svg>Ingresar a Analytics 360
             </button>
-            <button id="pwaInstallBtn" onclick="triggerPwaInstall()" style="display:none;align-items:center;justify-content:center;gap:8px;margin-top:10px;width:100%;padding:12px;background:transparent;border:1px solid rgba(255,215,0,0.5);border-radius:50px;color:#FFD700;font-size:14px;font-weight:600;cursor:pointer;">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:16px;height:16px;fill:#FFD700;"><path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 242.7-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7 288 32zM64 352c-35.3 0-64 28.7-64 64l0 32c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-32c0-35.3-28.7-64-64-64l-101.5 0-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352 64 352zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"></path></svg>
-                Instalar BB Analytics 360
-            </button>
-            <script>
-                // Mostrar botón de instalación en móvil/tablet al cargar
-                (function() {
-                    function checkAndShowBtn() {
-                        var ua = navigator.userAgent.toLowerCase();
-                        var isTouch = /android|iphone|ipad|ipod|tablet/.test(ua) || typeof window.orientation !== 'undefined';
-                        var isSmall = window.innerWidth <= 1024;
-                        // Verificar si ya está instalada como PWA (standalone)
-                        var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-                        if ((isTouch || isSmall) && !isStandalone) {
-                            var btn = document.getElementById('pwaInstallBtn');
-                            if (btn) btn.style.display = 'flex';
-                        }
-                    }
-                    if (document.readyState === 'loading') {
-                        document.addEventListener('DOMContentLoaded', checkAndShowBtn);
-                    } else {
-                        checkAndShowBtn();
-                    }
-                })();
-            </script>
+
 
         </div>
         
