@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_58.html -->
-<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BB Analytics 360 - Big Bola</title>
     <link rel="icon" type="image/png" href="https://i.postimg.cc/PJSBFV7L/panel.png">
-    <link rel="stylesheet" href="./index_files/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -180,21 +180,21 @@
 <body>
     <!-- Contenedor de login -->
     <div class="login-container" id="loginContainer">
-        <img src="./index_files/Isotipo-Perfiles-Marmol01-Photoroom.png" alt="Big Bola Casinos" class="logo">
+        <img src="https://i.postimg.cc/hGqNYsNp/Isotipo-Perfiles-Marmol01-Photoroom.png" alt="Big Bola Casinos" class="logo">
         <h1>BB <span class="title-highlight">Analytics 360</span><span class="version">V1.75</span></h1>
         <p>Ingresa con tu correo corporativo</p>
         
         <div class="login-form">
             <div class="form-group">
                 <label for="email">Correo electrónico:</label>
-                <input type="email" id="email" placeholder="usuario@bigbola.com" required="">
+                <input type="email" id="email" placeholder="usuario@bigbola.com" required>
             </div>
             <button class="btn" id="loginBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:18px;height:18px;fill:currentColor;vertical-align:middle;margin-right:8px;flex-shrink:0"><path d="M352 96l0 64-96 0 0 192 96 0 0 64-96 0c-35.3 0-64-28.7-64-64l0-192c0-35.3 28.7-64 64-64l96 0zm57.4 105.4L505.4 297c9.4 9.4 9.4 24.6 0 33.9L409.4 426.6c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9L433.4 335 224 335c-13.3 0-24-10.7-24-24s10.7-24 24-24l209.4 0-57.9-57.9c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0z"></path></svg>Ingresar a Analytics 360
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:18px;height:18px;fill:currentColor;vertical-align:middle;margin-right:8px;flex-shrink:0"><path d="M352 96l0 64-96 0 0 192 96 0 0 64-96 0c-35.3 0-64-28.7-64-64l0-192c0-35.3 28.7-64 64-64l96 0zm57.4 105.4L505.4 297c9.4 9.4 9.4 24.6 0 33.9L409.4 426.6c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9L433.4 335 224 335c-13.3 0-24-10.7-24-24s10.7-24 24-24l209.4 0-57.9-57.9c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0z"/></svg>Ingresar a Analytics 360
             </button>
         </div>
         
-        <div class="status-message status-success" id="statusMessage" style="display: none;">Permisos cargados correctamente</div>
+        <div class="status-message" id="statusMessage" style="display: none;"></div>
         
         <div class="user-info" id="userInfo" style="display: none;">
             <p>Bienvenido: <span id="userEmail"></span></p>
@@ -2010,19 +2010,31 @@
                     // Deep link para abrir en la app de Power BI
                     var pbiDeepLink = 'mspbi://app/OpenReport?ReportObjectId=' + reportId + '&GroupObjectId=' + groupId;
 
-                    // Intentar abrir la app
+                    // Registrar en log que se abrió el dashboard
+                    if (typeof logger !== 'undefined' && currentUser) {
+                        logger.log('open_dashboard_vertical', dashboardKey, currentUser, { method: 'pbi_app' });
+                    }
+
+                    // Abrir deep link — si la app está instalada se abre, si no se detecta con blur
                     var appOpened = false;
                     var appCheckTimeout;
 
-                    // Detectar si la app se abrió — si la página pierde foco, la app se abrió
                     var blurHandler = function() {
                         appOpened = true;
                         clearTimeout(appCheckTimeout);
                         window.removeEventListener('blur', blurHandler);
+
+                        // Cuando el usuario regresa al portal, mostrar mensaje
+                        var visibilityHandler = function() {
+                            if (!document.hidden) {
+                                document.removeEventListener('visibilitychange', visibilityHandler);
+                                _showReturnToPortalMsg();
+                            }
+                        };
+                        document.addEventListener('visibilitychange', visibilityHandler);
                     };
                     window.addEventListener('blur', blurHandler);
 
-                    // Si después de 1.2s no se abrió la app, mostrar mensaje
                     appCheckTimeout = setTimeout(function() {
                         window.removeEventListener('blur', blurHandler);
                         if (!appOpened) {
@@ -2034,6 +2046,42 @@
                 });
 
                 // Función para mostrar mensaje de instalación
+                function _showReturnToPortalMsg() {
+                    var prev = document.getElementById('pbiReturnMsg');
+                    if (prev) prev.remove();
+
+                    var t = document.createElement('div');
+                    t.id = 'pbiReturnMsg';
+                    t.style.position = 'fixed';
+                    t.style.top = '0';
+                    t.style.left = '0';
+                    t.style.right = '0';
+                    t.style.zIndex = '9999';
+                    t.style.background = 'linear-gradient(to right,#152c6e,#1a3a8a)';
+                    t.style.borderBottom = '2px solid #FFD700';
+                    t.style.padding = '12px 20px';
+                    t.style.display = 'flex';
+                    t.style.alignItems = 'center';
+                    t.style.justifyContent = 'space-between';
+                    t.style.boxShadow = '0 4px 20px rgba(0,0,0,0.4)';
+
+                    var msg = document.createElement('span');
+                    msg.style.cssText = 'color:white;font-size:13px;font-weight:600;';
+                    msg.textContent = 'Bienvenido de vuelta. Selecciona otro dashboard.';
+
+                    var btnClose = document.createElement('button');
+                    btnClose.style.cssText = 'background:none;border:none;color:#FFD700;font-size:18px;cursor:pointer;padding:0 4px;';
+                    btnClose.textContent = 'x';
+                    btnClose.addEventListener('click', function() { t.remove(); });
+
+                    t.appendChild(msg);
+                    t.appendChild(btnClose);
+                    document.body.appendChild(t);
+
+                    // Auto-cerrar después de 4 segundos
+                    setTimeout(function() { if (t.parentNode) t.remove(); }, 4000);
+                }
+
                 function _showInstallAppToast(fallbackUrl) {
                     var prev = document.getElementById('pbiInstallToast');
                     if (prev) prev.remove();
@@ -3538,5 +3586,5 @@
             `;
         }
     </script>
-
-</body></html>
+</body>
+</html>
