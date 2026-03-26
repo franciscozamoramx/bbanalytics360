@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_70.html -->
+<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_71.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,7 +25,8 @@
         window.addEventListener('beforeinstallprompt', function(e) {
             e.preventDefault();
             _pwaInstallPrompt = e;
-            // Mostrar botón solo en móvil y tablet (usar innerWidth porque isMobileDevice aún no está definida aquí)
+
+            // Mostrar botón en login
             var ua = navigator.userAgent.toLowerCase();
             var isTouch = /android|iphone|ipad|ipod|tablet/.test(ua) || typeof window.orientation !== 'undefined';
             var isSmall = window.innerWidth <= 1024;
@@ -33,6 +34,35 @@
                 var btn = document.getElementById('pwaInstallBtn');
                 if (btn) btn.style.display = 'flex';
             }
+
+            // Toast flotante automático
+            var prev = document.getElementById('pwaReadyToast');
+            if (prev) prev.remove();
+            var toast = document.createElement('div');
+            toast.id = 'pwaReadyToast';
+            toast.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:99999;background:#152c6e;border:2px solid #FFD700;border-radius:16px;padding:14px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 20px rgba(0,0,0,0.5);min-width:280px;max-width:90vw;';
+            var text = document.createElement('div');
+            text.style.cssText = 'flex:1;';
+            var title = document.createElement('div');
+            title.style.cssText = 'color:#FFD700;font-weight:700;font-size:13px;';
+            title.textContent = 'BB Analytics 360 listo para instalar';
+            var sub = document.createElement('div');
+            sub.style.cssText = 'color:rgba(255,255,255,0.7);font-size:11px;margin-top:2px;';
+            sub.textContent = 'Instala para acceso rapido sin barra de direcciones';
+            var btnInstall = document.createElement('button');
+            btnInstall.style.cssText = 'background:linear-gradient(to right,#FFD700,#FF8C00);color:#152c6e;border:none;border-radius:50px;padding:8px 16px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;';
+            btnInstall.textContent = 'Instalar';
+            var btnClose = document.createElement('button');
+            btnClose.style.cssText = 'background:none;border:none;color:rgba(255,255,255,0.5);font-size:18px;cursor:pointer;padding:0 4px;line-height:1;';
+            btnClose.textContent = 'x';
+            text.appendChild(title);
+            text.appendChild(sub);
+            toast.appendChild(text);
+            toast.appendChild(btnInstall);
+            toast.appendChild(btnClose);
+            document.body.appendChild(toast);
+            btnInstall.addEventListener('click', function() { toast.remove(); triggerPwaInstall(); });
+            btnClose.addEventListener('click', function() { toast.remove(); });
         });
 
         window.addEventListener('appinstalled', function() {
