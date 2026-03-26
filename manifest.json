@@ -10,14 +10,16 @@
     "theme_color": "#152c6e",
     "icons": [
         {
-            "src": "https://i.postimg.cc/y8LRGjWK/panel-(2).png",
+            "src": "/bbanalytics360/icon.png",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
         },
         {
-            "src": "https://i.postimg.cc/y8LRGjWK/panel-(2).png",
+            "src": "/bbanalytics360/icon.png",
             "sizes": "512x512",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
         }
     ]
 }
