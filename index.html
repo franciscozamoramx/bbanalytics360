@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_76.html -->
+<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_77.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,9 +27,15 @@
             var isSmall = window.innerWidth <= 1024;
             var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
             if ((isTouch || isSmall) && !isStandalone) {
+                // Agregar padding temporal para permitir scroll
+                document.body.style.paddingBottom = '100px';
                 setTimeout(function() {
-                    window.scrollTo(0, 1);
-                }, 300);
+                    window.scrollTo({top: 1, behavior: 'instant'});
+                    setTimeout(function() {
+                        window.scrollTo({top: 0, behavior: 'instant'});
+                        document.body.style.paddingBottom = '';
+                    }, 100);
+                }, 500);
             }
         });
 
