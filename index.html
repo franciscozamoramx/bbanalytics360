@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_75.html -->
+<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_76.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,6 +19,19 @@
                     .catch(function(err) { console.warn('SW error:', err); });
             });
         }
+
+        // Ocultar barra de direcciones automáticamente en móvil/tablet
+        window.addEventListener('load', function() {
+            var ua = navigator.userAgent.toLowerCase();
+            var isTouch = /android|iphone|ipad|ipod|tablet/.test(ua) || typeof window.orientation !== 'undefined';
+            var isSmall = window.innerWidth <= 1024;
+            var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+            if ((isTouch || isSmall) && !isStandalone) {
+                setTimeout(function() {
+                    window.scrollTo(0, 1);
+                }, 300);
+            }
+        });
 
         // Capturar evento de instalación PWA
         let _pwaInstallPrompt = null;
