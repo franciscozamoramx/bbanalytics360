@@ -11,15 +11,31 @@
     "icons": [
         {
             "src": "/bbanalytics360/icon.png",
-            "sizes": "192x192",
+            "sizes": "512x512",
             "type": "image/png",
-            "purpose": "any maskable"
+            "purpose": "any"
         },
         {
             "src": "/bbanalytics360/icon.png",
             "sizes": "512x512",
             "type": "image/png",
-            "purpose": "any maskable"
+            "purpose": "maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "https://i.postimg.cc/y8LRGjWK/panel-(2).png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "BB Analytics 360 - Portal de dashboards"
+        },
+        {
+            "src": "https://i.postimg.cc/y8LRGjWK/panel-(2).png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "BB Analytics 360 - Portal de dashboards"
         }
     ]
 }
