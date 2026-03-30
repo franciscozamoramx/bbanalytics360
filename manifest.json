@@ -1,4 +1,5 @@
 {
+    "id": "/bbanalytics360/",
     "name": "BB Analytics 360",
     "short_name": "BB Analytics 360",
     "description": "Portal de dashboards de Business Intelligence para Big Bola Casinos",
@@ -24,18 +25,17 @@
     ],
     "screenshots": [
         {
-            "src": "https://i.postimg.cc/y8LRGjWK/panel-(2).png",
-            "sizes": "512x512",
-            "type": "image/png",
-            "form_factor": "narrow",
-            "label": "BB Analytics 360 - Portal de dashboards"
-        },
-        {
-            "src": "https://i.postimg.cc/y8LRGjWK/panel-(2).png",
+            "src": "/bbanalytics360/icon.png",
             "sizes": "512x512",
             "type": "image/png",
             "form_factor": "wide",
-            "label": "BB Analytics 360 - Portal de dashboards"
+            "label": "BB Analytics 360"
+        },
+        {
+            "src": "/bbanalytics360/icon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "label": "BB Analytics 360"
         }
     ]
 }
