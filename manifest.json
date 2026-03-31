@@ -11,13 +11,13 @@
     "theme_color": "#152c6e",
     "icons": [
         {
-            "src": "/bbanalytics360/icon.png",
+            "src": "/bbanalytics360/icon_crystal.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any"
         },
         {
-            "src": "/bbanalytics360/icon.png",
+            "src": "/bbanalytics360/icon_crystal.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
@@ -25,14 +25,14 @@
     ],
     "screenshots": [
         {
-            "src": "/bbanalytics360/icon.png",
+            "src": "/bbanalytics360/icon_crystal.png",
             "sizes": "512x512",
             "type": "image/png",
             "form_factor": "wide",
             "label": "BB Analytics 360"
         },
         {
-            "src": "/bbanalytics360/icon.png",
+            "src": "/bbanalytics360/icon_crystal.png",
             "sizes": "512x512",
             "type": "image/png",
             "label": "BB Analytics 360"
