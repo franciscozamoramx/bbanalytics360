@@ -30,5 +30,13 @@
     "unique_users": 0,
     "actions_summary": {},
     "device_summary": {}
+  },
+  "2026-04-08-10": {
+    "hour": "2026-04-08-10",
+    "generated_at": "2026-04-08T10:07:17.735Z",
+    "total_logs_in_hour": 0,
+    "unique_users": 0,
+    "actions_summary": {},
+    "device_summary": {}
   }
 }
