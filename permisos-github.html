@@ -384,7 +384,9 @@ async function confirmActivation() {
     await saveAdminsToGithub(admins);
 
     // Redirigir al login limpio
+    // Guardar flag para que init() no sobreescriba localStorage con GitHub
     sessionStorage.setItem('bb_activated_name', name.split(' ')[0]);
+    sessionStorage.setItem('bb_skip_github_admins', '1');
     window.location.href = window.location.pathname;
 }
 
@@ -449,11 +451,32 @@ async function init() {
         // 3. Sin sesión → mostrar login
         document.getElementById('loginOverlay').style.display = 'flex';
         document.getElementById('portalRoot').style.display   = 'none';
-        // Intentar cargar admins desde GitHub público para validar login
-        try {
-            const r = await fetch(`https://raw.githubusercontent.com/franciscozamoramx/bbanalytics360/main/PERMISSION_FILES_BI/admins.json?t=${Date.now()}`);
-            if (r.ok) saveAdmins(await r.json());
-        } catch(e) {}
+        // Cargar admins desde GitHub solo si no acabamos de activar una cuenta
+        // (evitar sobreescribir el passHash recién guardado con el null de GitHub)
+        const skipGithub = sessionStorage.getItem('bb_skip_github_admins');
+        if (skipGithub) {
+            sessionStorage.removeItem('bb_skip_github_admins');
+        } else {
+            try {
+                const r = await fetch('https://raw.githubusercontent.com/franciscozamoramx/bbanalytics360/main/PERMISSION_FILES_BI/admins.json?t='+Date.now());
+                if (r.ok) {
+                    const ghAdmins = await r.json();
+                    // Merge: si el admin local tiene passHash y el de GitHub no, conservar el local
+                    const localAdmins = getAdmins();
+                    const merged = ghAdmins.map(ga => {
+                        const local = localAdmins.find(la => la.email === ga.email);
+                        if (local && local.passHash && !ga.passHash) return local;
+                        if (local && local.status === 'active' && ga.status === 'pending') return local;
+                        return ga;
+                    });
+                    // Agregar admins locales que no están en GitHub aún
+                    localAdmins.forEach(la => {
+                        if (!merged.find(m => m.email === la.email)) merged.push(la);
+                    });
+                    saveAdmins(merged);
+                }
+            } catch(e) {}
+        }
     }
 }
 
