@@ -373,17 +373,25 @@ function saveAdmins(admins) {
     localStorage.setItem('bb_admins_cache', JSON.stringify(admins));
 }
 
-// Cargar admins desde GitHub al iniciar (para que el token funcione en cualquier browser)
+// Cargar admins desde GitHub (raw, sin auth) — funciona en cualquier browser
 async function loadAdminsFromGithub() {
-    if (!githubConfig.token || !githubConfig.user || !githubConfig.repo) return;
     try {
-        const url = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/PERMISSION_FILES_BI/admins.json`;
-        const r = await fetch(url, { headers: { 'Authorization': 'token ' + githubConfig.token, 'Accept': 'application/vnd.github.v3+json' } });
+        // Usar raw.githubusercontent.com — no requiere token, es público
+        const cfg = JSON.parse(localStorage.getItem('bbAnalyticsGithubConfig') || '{}');
+        const user = cfg.user || 'franciscozamoramx';
+        const repo = cfg.repo || 'bbanalytics360';
+        const url  = `https://raw.githubusercontent.com/${user}/${repo}/main/PERMISSION_FILES_BI/admins.json?t=${Date.now()}`;
+        const r    = await fetch(url);
         if (r.ok) {
-            const d    = await r.json();
-            const admins = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));
+            const admins = await r.json();
             localStorage.setItem('bb_admins_cache', JSON.stringify(admins));
-            localStorage.setItem('bb_admins_sha', d.sha);
+            // También obtener el SHA via API si tenemos token (para poder escribir después)
+            const token = cfg.token;
+            if (token) {
+                const apiUrl = `https://api.github.com/repos/${user}/${repo}/contents/PERMISSION_FILES_BI/admins.json`;
+                const apiR   = await fetch(apiUrl, { headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' } });
+                if (apiR.ok) { const d = await apiR.json(); localStorage.setItem('bb_admins_sha', d.sha); }
+            }
             return admins;
         }
     } catch(e) { console.warn('No se pudo cargar admins desde GitHub:', e); }
