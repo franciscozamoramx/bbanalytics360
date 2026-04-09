@@ -18,8 +18,10 @@
     </script>
     <style>
         /* Si hay token: mostrar solo changePassOverlay al cargar */
-        html[data-has-token="1"] #loginOverlay    { display: none !important; }
-        html[data-has-token="1"] #changePassOverlay { display: flex !important; }
+        html[data-has-token="1"] #loginOverlay      { display: none !important; }
+        html[data-has-token="1"] #changePassOverlay  { display: flex !important; }
+        /* Sin token: ambos overlays ocultos por defecto hasta que JS decida */
+        html:not([data-has-token]) #changePassOverlay { display: none !important; }
     </style>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -759,8 +761,12 @@ async function init() {
             document.getElementById('loginOverlay').style.display = 'flex';
         }
     } else {
-        // Sin token — mostrar login si no hay sesión activa
+        // Sin token — ocultar AMBOS overlays primero para desbloquear interacción
+        document.getElementById('changePassOverlay').style.display = 'none';
+        document.documentElement.removeAttribute('data-has-token');
+
         if (sessionStorage.getItem('bb_admin_auth')) {
+            document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('topbarLogout').style.display = 'block';
         } else {
             document.getElementById('loginOverlay').style.display = 'flex';
@@ -770,7 +776,7 @@ async function init() {
     const justActivated = sessionStorage.getItem('bb_just_activated');
     if (justActivated) {
         sessionStorage.removeItem('bb_just_activated');
-        setTimeout(() => showAlert('✓ Cuenta activada correctamente. ¡Bienvenido!', 'success'), 500);
+        setTimeout(() => showAlert('✓ Cuenta activada. ¡Bienvenido!', 'success'), 500);
     }
 
     loadGithubConfig();
