@@ -275,6 +275,70 @@
         .modal-box { background: linear-gradient(135deg, #1a3a8f 0%, #152c6e 100%); padding: 30px; border-radius: 15px; max-width: 820px; width: 90%; max-height: 82vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
         .modal-box h2 { color: #FFD700; margin-bottom: 20px; font-size: 1.2em; }
 
+
+        /* ── LOGIN OVERLAY ── */
+        .login-overlay {
+            position: fixed; top:0; left:0; right:0; bottom:0;
+            background: linear-gradient(135deg, #1a3a8f 0%, #152c6e 100%);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9999;
+        }
+        .login-box {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            text-align: center;
+        }
+        .login-box h2 { color: white; font-size: 1.6em; margin-bottom: 6px; }
+        .login-box h2 span { color: #FFD700; }
+        .login-box .subtitle { color: rgba(255,255,255,0.6); font-size: 0.9em; margin-bottom: 28px; }
+        .login-box .form-group { text-align: left; margin-bottom: 16px; }
+        .login-box .form-group label { color: rgba(255,255,255,0.85); font-size: 0.9em; font-weight: 600; display:block; margin-bottom:6px; }
+        .login-box .form-group input {
+            width: 100%; padding: 12px 15px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px; color: white; font-size: 1em;
+        }
+        .login-box .form-group input::placeholder { color: rgba(255,255,255,0.4); }
+        .login-box .form-group input:focus { outline: none; border-color: #FFD700; background: rgba(255,255,255,0.18); }
+        .login-box .btn-login {
+            width: 100%; padding: 13px;
+            background: linear-gradient(to bottom, #FFD700, #FF8C00);
+            border: none; border-radius: 50px;
+            color: #152c6e; font-weight: bold; font-size: 1em;
+            cursor: pointer; transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(255,215,0,0.4);
+            margin-top: 8px;
+        }
+        .login-box .btn-login:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,215,0,0.6); }
+        .login-error {
+            background: rgba(239,68,68,0.2); color: #fca5a5;
+            border: 1px solid rgba(239,68,68,0.4);
+            border-radius: 8px; padding: 10px 14px;
+            font-size: 0.88em; margin-bottom: 14px; display: none;
+        }
+        .login-box .lock-icon { font-size: 2.5em; margin-bottom: 12px; }
+
+        /* ── TOPBAR LOGOUT ── */
+        .topbar-logout {
+            position: fixed; top: 16px; right: 20px; z-index: 1000;
+        }
+        .btn-logout {
+            background: rgba(239,68,68,0.25);
+            border: 1px solid rgba(239,68,68,0.5);
+            color: #fca5a5; padding: 8px 18px;
+            border-radius: 50px; font-size: 0.85em; font-weight: 600;
+            cursor: pointer; transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        .btn-logout:hover { background: rgba(239,68,68,0.5); color: white; transform: translateY(-1px); }
+
         @media (max-width: 768px) {
             .header h1 { font-size: 1.7em; }
             .tabs { flex-direction: column; }
@@ -285,6 +349,32 @@
     </style>
 </head>
 <body>
+
+<!-- LOGIN OVERLAY -->
+<div class="login-overlay" id="loginOverlay">
+    <div class="login-box">
+        <div class="lock-icon">🔐</div>
+        <h2>BB <span>Analytics 360</span></h2>
+        <p class="subtitle">Administrador de Permisos — Acceso restringido</p>
+        <div class="login-error" id="loginError">Usuario o contraseña incorrectos</div>
+        <div class="form-group">
+            <label>Usuario</label>
+            <input type="text" id="loginUser" placeholder="admin" autocomplete="username">
+        </div>
+        <div class="form-group">
+            <label>Contraseña</label>
+            <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password"
+                   onkeydown="if(event.key==='Enter') doLogin()">
+        </div>
+        <button class="btn-login" onclick="doLogin()">🔓 Ingresar</button>
+    </div>
+</div>
+
+<!-- BOTÓN SALIR (visible solo cuando está logueado) -->
+<div class="topbar-logout" id="topbarLogout" style="display:none;">
+    <button class="btn-logout" onclick="doLogout()">⬅️ Salir</button>
+</div>
+
 <div class="container">
 
     <div class="header">
@@ -406,8 +496,65 @@ const DASHBOARDS_CONFIG = [
 let permissionsData = { users: {} };
 let githubConfig    = { user:'', repo:'', token:'', file:'PERMISSION_FILES_BI/permissions.json' };
 
+
+// ─── AUTH ─────────────────────────────────────────────────────────────────────
+const SALT = 'bbanalytics360';
+// Credenciales hasheadas (SHA-256): admin / BB@Admin2024
+// Para cambiar: genera los hashes con SHA-256(usuario+salt) y SHA-256(contraseña+salt)
+const VALID_CREDENTIALS = [
+    {
+        userHash: '589a0dcd13def224e143ac7987144066f02c5a95a9e3cda25f0305f07d90c6bf',
+        passHash: 'b4be387dbb966d51187eb3b81046d7b582ea601fe7b1494a77099d5a7be9c507'
+    }
+];
+
+async function sha256(text) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function doLogin() {
+    const user = document.getElementById('loginUser').value.trim();
+    const pass = document.getElementById('loginPass').value;
+    const errEl = document.getElementById('loginError');
+    if (!user || !pass) { errEl.style.display='block'; errEl.textContent='Completa usuario y contraseña'; return; }
+
+    const uHash = await sha256(user + SALT);
+    const pHash = await sha256(pass + SALT);
+
+    const ok = VALID_CREDENTIALS.some(c => c.userHash === uHash && c.passHash === pHash);
+    if (ok) {
+        sessionStorage.setItem('bb_admin_auth', '1');
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('topbarLogout').style.display = 'block';
+        errEl.style.display = 'none';
+    } else {
+        errEl.style.display = 'block';
+        errEl.textContent = 'Usuario o contraseña incorrectos';
+        document.getElementById('loginPass').value = '';
+        document.getElementById('loginPass').focus();
+    }
+}
+
+function doLogout() {
+    sessionStorage.removeItem('bb_admin_auth');
+    document.getElementById('loginOverlay').style.display = 'flex';
+    document.getElementById('topbarLogout').style.display = 'none';
+    document.getElementById('loginUser').value = '';
+    document.getElementById('loginPass').value = '';
+}
+
+function checkAuth() {
+    if (sessionStorage.getItem('bb_admin_auth') === '1') {
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('topbarLogout').style.display = 'block';
+    }
+    // Si no hay sesión, el overlay ya está visible por defecto
+}
+
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 function init() {
+    checkAuth();
     loadGithubConfig();
     renderPermissionsCheckboxes();
     renderDashboards();
