@@ -423,7 +423,7 @@ async function doLogin() {
 
     // Admin maestro
     const masterHash = await sha256('BB@Admin2024' + SALT);
-    const isMaster   = (user==='francisco.zamora@bigbola.com' || user==='admin') && passHash===masterHash;
+    const isMaster   = (user==='admin') && passHash===masterHash;
 
     if (admin || isMaster) {
         sessionStorage.setItem('bb_admin_auth', user);
