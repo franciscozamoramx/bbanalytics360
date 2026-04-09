@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BB Analytics 360 - Admin Permisos</title>
+    <link rel="icon" type="image/png" href="./icon_crystal.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a3a8f 0%, #152c6e 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #152c6e;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header .title-highlight {
+            color: #FFD700;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .github-status {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .github-status .status-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .github-status .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .github-status .status-indicator.connected {
+            background: #10b981;
+        }
+
+        .github-status .status-indicator.disconnected {
+            background: #ef4444;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px 25px;
+            background: white;
+            border: 3px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: #666;
+        }
+
+        .tab-btn:hover {
+            background: #f0f4ff;
+            border-color: #152c6e;
+        }
+
+        .tab-btn.active {
+            background: #152c6e;
+            color: white;
+            border-color: #152c6e;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #FFD700;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #152c6e;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: #152c6e;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1a3a8f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(21, 44, 110, 0.4);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: #FFD700;
+            color: #152c6e;
+        }
+
+        .btn-warning:hover {
+            background: #FF8C00;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .user-card {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 5px solid #152c6e;
+        }
+
+        .user-card h3 {
+            color: #152c6e;
+            margin-bottom: 10px;
+        }
+
+        .user-permissions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .permission-badge {
+            background: #152c6e;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .permission-badge .remove {
+            cursor: pointer;
+            font-weight: bold;
+            opacity: 0.8;
+        }
+
+        .permission-badge .remove:hover {
+            opacity: 1;
+        }
+
+        .dashboard-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .dashboard-card {
+            background: linear-gradient(135deg, #1a3a8f 0%, #152c6e 100%);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+        }
+
+        .dashboard-card h3 {
+            margin-bottom: 10px;
+        }
+
+        .dashboard-card .info {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1a3a8f 0%, #152c6e 100%);
+            padding: 25px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .label {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            background: #f8f9ff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .checkbox-label:hover {
+            background: #e8ebff;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            margin-bottom: 20px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #152c6e;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .config-section {
+            background: #f8f9ff;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .config-section h3 {
+            color: #152c6e;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                min-width: 100%;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎰 <span class="title-highlight">BB Analytics 360</span></h1>
+            <p>Administrador de Permisos</p>
+        </div>
+
+        <!-- GitHub Status -->
+        <div class="github-status">
+            <div class="status-info">
+                <div class="status-indicator" id="githubIndicator"></div>
+                <span id="githubStatusText">Configurando conexión...</span>
+            </div>
+            <div>
+                <button class="btn btn-primary" onclick="showGithubConfig()">⚙️ Configurar GitHub</button>
+                <button class="btn btn-success" onclick="syncFromGithub()" id="syncBtn" disabled>🔄 Sincronizar</button>
+                <button class="btn btn-warning" onclick="saveToGithub()" id="saveBtn" disabled>💾 Guardar en GitHub</button>
+            </div>
+        </div>
+
+        <div class="stats" id="statsContainer">
+            <div class="stat-card">
+                <div class="number" id="totalUsers">0</div>
+                <div class="label">Usuarios</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="totalDashboards">14</div>
+                <div class="label">Dashboards</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="totalPermissions">0</div>
+                <div class="label">Permisos</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="lastSync">--</div>
+                <div class="label">Última Sincronización</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('usuarios')">👤 Usuarios</button>
+            <button class="tab-btn" onclick="switchTab('dashboards')">📊 Dashboards</button>
+            <button class="tab-btn" onclick="switchTab('config')">⚙️ Configuración</button>
+        </div>
+
+        <!-- TAB: Usuarios -->
+        <div id="tab-usuarios" class="tab-content active">
+            <h2 class="section-title">Gestión de Usuarios</h2>
+
+            <div id="alertContainer"></div>
+
+            <!-- Agregar Usuario -->
+            <div class="config-section">
+                <h3>➕ Agregar Nuevo Usuario</h3>
+                <div class="form-group">
+                    <label>Email del Usuario</label>
+                    <input type="email" id="newUserEmail" placeholder="usuario@bigbola.com">
+                </div>
+                <div class="form-group">
+                    <label>Selecciona Dashboards</label>
+                    <div class="checkbox-group" id="permissionsCheckboxes"></div>
+                </div>
+                <button class="btn btn-success" onclick="addUser()">✓ Agregar Usuario</button>
+            </div>
+
+            <!-- Búsqueda -->
+            <input type="text" class="search-box" id="searchUsers" placeholder="🔍 Buscar usuario..." onkeyup="filterUsers()">
+
+            <!-- Lista de Usuarios -->
+            <div id="usersList"></div>
+        </div>
+
+        <!-- TAB: Dashboards -->
+        <div id="tab-dashboards" class="tab-content">
+            <h2 class="section-title">Dashboards Disponibles</h2>
+
+            <div class="alert alert-info">
+                <strong>ℹ️ Información:</strong> Estos son los 14 dashboards configurados en BB Analytics 360. 
+                Los dashboards están sincronizados con el sistema principal.
+            </div>
+
+            <div class="dashboard-list" id="dashboardsList"></div>
+        </div>
+
+        <!-- TAB: Configuración -->
+        <div id="tab-config" class="tab-content">
+            <h2 class="section-title">Configuración de GitHub</h2>
+
+            <div id="alertContainerConfig"></div>
+
+            <div class="config-section">
+                <h3>🔐 Credenciales de GitHub</h3>
+                <div class="form-group">
+                    <label>Usuario de GitHub</label>
+                    <input type="text" id="githubUser" placeholder="tu-usuario">
+                </div>
+                <div class="form-group">
+                    <label>Nombre del Repositorio</label>
+                    <input type="text" id="githubRepo" placeholder="bbanalytics360">
+                </div>
+                <div class="form-group">
+                    <label>Personal Access Token (con permisos de repo)</label>
+                    <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxx">
+                    <small style="color: #666; display: block; margin-top: 5px;">
+                        Crea un token en: GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
+                    </small>
+                </div>
+                <div class="form-group">
+                    <label>Archivo de Permisos</label>
+                    <input type="text" id="githubFile" value="bb_permissions.json" readonly>
+                </div>
+                <button class="btn btn-success" onclick="saveGithubConfig()">✓ Guardar Configuración</button>
+                <button class="btn btn-secondary" onclick="testGithubConnection()">🧪 Probar Conexión</button>
+            </div>
+
+            <div class="config-section">
+                <h3>📋 Importar/Exportar Manual</h3>
+                <div style="margin-bottom: 15px;">
+                    <label class="btn btn-primary" style="margin: 0; cursor: pointer;">
+                        📁 Importar desde Archivo
+                        <input type="file" id="jsonFileInput" accept=".json" style="display: none;" onchange="handleFileImport(event)">
+                    </label>
+                    <button class="btn btn-secondary" onclick="downloadJSON()">💾 Exportar como Archivo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 📊 CONFIGURACIÓN CENTRALIZADA DE DASHBOARDS (sincronizada con index.html)
+        const DASHBOARDS_CONFIG = [
+            { id: 'aforo', name: 'Aforo', groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: '97734c9c-0012-420e-9f21-af0aabc55f4f' },
+            { id: 'big_players', name: 'Big Players', groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: '0ad4c5bf-3c20-4a24-b92a-ffe1945e5cf8' },
+            { id: 'big_players_2', name: 'Big Players 2', groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: 'd8bce34f-7742-4cf5-9fc5-1f05d95bd67f' },
+            { id: 'cash_drop_drop_pot', name: 'Cash Drop/Drop Pot', groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: '8d1af17a-1b72-4f47-a56f-08f11f3a7883' },
+            { id: 'estudio_estadistico', name: 'Estudio Estadístico', groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: '49fbeed0-59a5-4c34-90a4-ab43cc1e0c83' },
+            { id: 'graficas_dinamicas', name: 'Gráficas Dinámicas', groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: 'ce6e92a9-6b33-44d5-a46a-32a15a9b5b27' },
+            { id: 'ingresos_bancarizacion', name: 'Ingresos Bancarización', groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: 'f8fa2cc1-4a2e-45bc-9e19-12d35c93b028' },
+            { id: 'ingresos_pasarelas_tarjetas', name: 'Ingresos Pasarelas Tarjetas', groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: '48e93b52-83d9-4d43-9dc0-a8bf5de2f3e4' },
+            { id: 'maquinas_activas', name: 'Máquinas Activas', groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: 'c59f7e17-a6f0-409b-a1bd-a14062bef5c6' },
+            { id: 'monitoreo_actividad', name: 'Monitoreo Actividad', groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: '40a0c8ba-9734-4c0d-9ee8-06a97c77f2d0' },
+            { id: 'productos_mas_vendidos', name: 'Productos Más Vendidos', groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: 'e54f2a2f-a4b9-4e85-96f4-5b8c7c2fae9d' },
+            { id: 'ratios', name: 'Ratios', groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: '1c577b16-c7d7-4ba0-baf2-4bbd98d0ea0e' },
+            { id: 'resultados_mes', name: 'Resultados del Mes', groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: '02cc1cb8-9a2f-4a45-b1ba-48d9ee4a29c5' },
+            { id: 'ventas_venta_cruzada', name: 'Ventas/Venta Cruzada', groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: 'e5d0e91b-0fa0-4937-b7cd-44fe97bf4c5c' }
+        ];
+
+        // Estado global
+        let permissionsData = {
+            dashboards: [],
+            users: {}
+        };
+
+        let githubConfig = {
+            user: '',
+            repo: '',
+            token: '',
+            file: 'bb_permissions.json'
+        };
+
+        // Inicializar
+        function init() {
+            loadGithubConfig();
+            initializeDashboards();
+            renderAll();
+        }
+
+        // Inicializar dashboards desde configuración
+        function initializeDashboards() {
+            permissionsData.dashboards = DASHBOARDS_CONFIG.map(dash => ({
+                id: dash.id,
+                name: dash.name,
+                groupId: dash.groupId,
+                reportId: dash.reportId,
+                mobileUrl: `https://app.powerbi.com/groups/${dash.groupId}/reports/${dash.reportId}`
+            }));
+        }
+
+        // 🔐 GITHUB INTEGRATION
+        function loadGithubConfig() {
+            const saved = localStorage.getItem('bbAnalyticsGithubConfig');
+            if (saved) {
+                githubConfig = JSON.parse(saved);
+                document.getElementById('githubUser').value = githubConfig.user || '';
+                document.getElementById('githubRepo').value = githubConfig.repo || '';
+                document.getElementById('githubToken').value = githubConfig.token || '';
+                
+                if (githubConfig.token) {
+                    updateGithubStatus(true, 'Conectado a GitHub');
+                    document.getElementById('syncBtn').disabled = false;
+                    document.getElementById('saveBtn').disabled = false;
+                    
+                    // Auto-sincronizar al cargar
+                    syncFromGithub();
+                } else {
+                    updateGithubStatus(false, 'No configurado');
+                }
+            } else {
+                updateGithubStatus(false, 'No configurado');
+            }
+        }
+
+        function saveGithubConfig() {
+            githubConfig.user = document.getElementById('githubUser').value.trim();
+            githubConfig.repo = document.getElementById('githubRepo').value.trim();
+            githubConfig.token = document.getElementById('githubToken').value.trim();
+            
+            if (!githubConfig.user || !githubConfig.repo || !githubConfig.token) {
+                showAlert('⚠️ Completa todos los campos', 'error', 'alertContainerConfig');
+                return;
+            }
+            
+            localStorage.setItem('bbAnalyticsGithubConfig', JSON.stringify(githubConfig));
+            updateGithubStatus(true, 'Configuración guardada');
+            document.getElementById('syncBtn').disabled = false;
+            document.getElementById('saveBtn').disabled = false;
+            
+            showAlert('✓ Configuración guardada. Probando conexión...', 'success', 'alertContainerConfig');
+            
+            // Probar conexión automáticamente
+            setTimeout(() => testGithubConnection(), 1000);
+        }
+
+        function showGithubConfig() {
+            switchTab('config');
+        }
+
+        async function testGithubConnection() {
+            if (!githubConfig.token) {
+                showAlert('⚠️ Configura GitHub primero', 'error', 'alertContainerConfig');
+                return;
+            }
+
+            updateGithubStatus(false, 'Probando conexión...');
+            
+            try {
+                const url = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.file}`;
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `token ${githubConfig.token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (response.ok) {
+                    updateGithubStatus(true, 'Conexión exitosa ✓');
+                    showAlert('✓ Conexión exitosa con GitHub', 'success', 'alertContainerConfig');
+                } else if (response.status === 404) {
+                    updateGithubStatus(false, 'Archivo no encontrado');
+                    showAlert('⚠️ Archivo bb_permissions.json no encontrado en el repo', 'warning', 'alertContainerConfig');
+                } else {
+                    updateGithubStatus(false, 'Error de conexión');
+                    showAlert('⚠️ Error: ' + response.statusText, 'error', 'alertContainerConfig');
+                }
+            } catch (error) {
+                updateGithubStatus(false, 'Error de red');
+                showAlert('⚠️ Error de red: ' + error.message, 'error', 'alertContainerConfig');
+            }
+        }
+
+        async function syncFromGithub() {
+            if (!githubConfig.token) {
+                showAlert('⚠️ Configura GitHub primero', 'error');
+                return;
+            }
+
+            updateGithubStatus(false, 'Sincronizando...');
+            
+            try {
+                const url = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.file}`;
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `token ${githubConfig.token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const content = atob(data.content);
+                    const importedData = JSON.parse(content);
+                    
+                    // Solo importar usuarios, mantener dashboards locales
+                    permissionsData.users = importedData.users || {};
+                    
+                    // Guardar SHA para actualizaciones futuras
+                    githubConfig.sha = data.sha;
+                    localStorage.setItem('bbAnalyticsGithubConfig', JSON.stringify(githubConfig));
+                    
+                    updateGithubStatus(true, 'Sincronizado ✓');
+                    updateLastSync();
+                    renderAll();
+                    showAlert('✓ Datos sincronizados desde GitHub', 'success');
+                } else if (response.status === 404) {
+                    updateGithubStatus(false, 'Archivo no encontrado');
+                    showAlert('⚠️ Archivo no encontrado. Guarda la configuración inicial.', 'warning');
+                } else {
+                    throw new Error(response.statusText);
+                }
+            } catch (error) {
+                updateGithubStatus(false, 'Error');
+                showAlert('⚠️ Error al sincronizar: ' + error.message, 'error');
+            }
+        }
+
+        async function saveToGithub() {
+            if (!githubConfig.token) {
+                showAlert('⚠️ Configura GitHub primero', 'error');
+                return;
+            }
+
+            if (!confirm('¿Guardar cambios en GitHub?\n\nEsto actualizará el archivo bb_permissions.json')) {
+                return;
+            }
+
+            updateGithubStatus(false, 'Guardando...');
+            
+            try {
+                const url = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.file}`;
+                const content = btoa(unescape(encodeURIComponent(JSON.stringify(permissionsData, null, 2))));
+                
+                const payload = {
+                    message: `Update permissions - ${new Date().toLocaleString('es-MX')}`,
+                    content: content,
+                    sha: githubConfig.sha
+                };
+                
+                const response = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${githubConfig.token}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    githubConfig.sha = data.content.sha;
+                    localStorage.setItem('bbAnalyticsGithubConfig', JSON.stringify(githubConfig));
+                    
+                    updateGithubStatus(true, 'Guardado ✓');
+                    updateLastSync();
+                    showAlert('✓ Cambios guardados en GitHub exitosamente', 'success');
+                } else {
+                    throw new Error(response.statusText);
+                }
+            } catch (error) {
+                updateGithubStatus(false, 'Error al guardar');
+                showAlert('⚠️ Error al guardar: ' + error.message, 'error');
+            }
+        }
+
+        function updateGithubStatus(connected, text) {
+            const indicator = document.getElementById('githubIndicator');
+            const statusText = document.getElementById('githubStatusText');
+            
+            indicator.className = `status-indicator ${connected ? 'connected' : 'disconnected'}`;
+            statusText.textContent = text;
+        }
+
+        function updateLastSync() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('lastSync').textContent = timeStr;
+        }
+
+        // Renderizar todo
+        function renderAll() {
+            updateStats();
+            renderUsers();
+            renderDashboards();
+            renderPermissionsCheckboxes();
+        }
+
+        // Actualizar estadísticas
+        function updateStats() {
+            document.getElementById('totalUsers').textContent = Object.keys(permissionsData.users).length;
+            
+            let totalPerms = 0;
+            Object.values(permissionsData.users).forEach(perms => totalPerms += perms.length);
+            document.getElementById('totalPermissions').textContent = totalPerms;
+        }
+
+        // Renderizar checkboxes de permisos
+        function renderPermissionsCheckboxes() {
+            const container = document.getElementById('permissionsCheckboxes');
+            container.innerHTML = '';
+
+            DASHBOARDS_CONFIG.forEach(dash => {
+                const label = document.createElement('label');
+                label.className = 'checkbox-label';
+                label.innerHTML = `
+                    <input type="checkbox" value="${dash.id}" class="permission-checkbox">
+                    <span>${dash.name}</span>
+                `;
+                container.appendChild(label);
+            });
+        }
+
+        // Agregar usuario
+        function addUser() {
+            const email = document.getElementById('newUserEmail').value.trim();
+            
+            if (!email || !email.includes('@')) {
+                showAlert('⚠️ Ingresa un email válido', 'error');
+                return;
+            }
+
+            if (permissionsData.users[email]) {
+                showAlert('⚠️ Este usuario ya existe', 'error');
+                return;
+            }
+
+            const checkboxes = document.querySelectorAll('.permission-checkbox:checked');
+            const permissions = Array.from(checkboxes).map(cb => cb.value);
+
+            if (permissions.length === 0) {
+                showAlert('⚠️ Selecciona al menos un dashboard', 'error');
+                return;
+            }
+
+            permissionsData.users[email] = permissions;
+            
+            document.getElementById('newUserEmail').value = '';
+            document.querySelectorAll('.permission-checkbox').forEach(cb => cb.checked = false);
+            
+            renderAll();
+            showAlert(`✓ Usuario agregado: ${email} (${permissions.length} permisos)`, 'success');
+        }
+
+        // Eliminar usuario
+        function deleteUser(email) {
+            if (confirm(`¿Eliminar a ${email}?`)) {
+                delete permissionsData.users[email];
+                renderAll();
+                showAlert(`✓ Usuario eliminado`, 'success');
+            }
+        }
+
+        // Alternar permiso
+        function togglePermission(email, dashId) {
+            const userPerms = permissionsData.users[email];
+            const index = userPerms.indexOf(dashId);
+            
+            if (index > -1) {
+                userPerms.splice(index, 1);
+            } else {
+                userPerms.push(dashId);
+            }
+            
+            renderAll();
+            showAlert(`✓ Permiso actualizado`, 'success');
+        }
+
+        // Renderizar usuarios
+        function renderUsers() {
+            const container = document.getElementById('usersList');
+            const users = Object.keys(permissionsData.users);
+
+            if (users.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <h3>No hay usuarios</h3>
+                        <p>Agrega usuarios o sincroniza desde GitHub</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = users.map(email => {
+                const perms = permissionsData.users[email];
+                const permBadges = perms.map(dashId => {
+                    const dash = DASHBOARDS_CONFIG.find(d => d.id === dashId);
+                    const dashName = dash ? dash.name : dashId;
+                    return `<span class="permission-badge">${dashName} <span class="remove" onclick="togglePermission('${email}', '${dashId}')">×</span></span>`;
+                }).join('');
+
+                return `
+                    <div class="user-card">
+                        <h3>${email}</h3>
+                        <div class="user-permissions">${permBadges}</div>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" onclick="editUserPermissions('${email}')">✏️ Editar</button>
+                            <button class="btn btn-danger" onclick="deleteUser('${email}')">🗑️ Eliminar</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Editar permisos
+        function editUserPermissions(email) {
+            const currentPerms = permissionsData.users[email];
+
+            let checkboxes = DASHBOARDS_CONFIG.map(dash => {
+                const checked = currentPerms.includes(dash.id) ? 'checked' : '';
+                return `
+                    <label class="checkbox-label">
+                        <input type="checkbox" value="${dash.id}" ${checked} class="edit-permission-checkbox">
+                        <span>${dash.name}</span>
+                    </label>
+                `;
+            }).join('');
+
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000;';
+            modal.innerHTML = `
+                <div style="background: white; padding: 30px; border-radius: 15px; max-width: 800px; width: 90%; max-height: 80vh; overflow-y: auto;">
+                    <h2 style="margin-bottom: 20px; color: #152c6e;">Editar: ${email}</h2>
+                    <div class="checkbox-group">${checkboxes}</div>
+                    <div style="margin-top: 20px; display: flex; gap: 10px;">
+                        <button class="btn btn-success" onclick="saveEditedPermissions('${email}', this)">✓ Guardar</button>
+                        <button class="btn btn-secondary" onclick="this.closest('div[style*=fixed]').remove()">Cancelar</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function saveEditedPermissions(email, btn) {
+            const checkboxes = btn.closest('div[style*=fixed]').querySelectorAll('.edit-permission-checkbox:checked');
+            const newPerms = Array.from(checkboxes).map(cb => cb.value);
+            
+            permissionsData.users[email] = newPerms;
+            renderAll();
+            showAlert(`✓ Permisos actualizados`, 'success');
+            btn.closest('div[style*=fixed]').remove();
+        }
+
+        // Filtrar usuarios
+        function filterUsers() {
+            const search = document.getElementById('searchUsers').value.toLowerCase();
+            const cards = document.querySelectorAll('.user-card');
+            
+            cards.forEach(card => {
+                const email = card.querySelector('h3').textContent.toLowerCase();
+                card.style.display = email.includes(search) ? 'block' : 'none';
+            });
+        }
+
+        // Renderizar dashboards
+        function renderDashboards() {
+            const container = document.getElementById('dashboardsList');
+
+            container.innerHTML = DASHBOARDS_CONFIG.map(dash => {
+                // Contar cuántos usuarios tienen este dashboard
+                let userCount = 0;
+                Object.values(permissionsData.users).forEach(perms => {
+                    if (perms.includes(dash.id)) userCount++;
+                });
+
+                return `
+                    <div class="dashboard-card">
+                        <h3>${dash.name}</h3>
+                        <div class="info"><strong>ID:</strong> ${dash.id}</div>
+                        <div class="info"><strong>GroupId:</strong> ${dash.groupId.substring(0, 20)}...</div>
+                        <div class="info"><strong>ReportId:</strong> ${dash.reportId.substring(0, 20)}...</div>
+                        <div class="info" style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.3);">
+                            <strong>👥 Usuarios con acceso:</strong> ${userCount}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Importar desde archivo
+        function handleFileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (importedData.users) {
+                        permissionsData.users = importedData.users;
+                        renderAll();
+                        showAlert('✓ Usuarios importados desde archivo', 'success');
+                        switchTab('usuarios');
+                    } else {
+                        showAlert('⚠️ Formato de archivo inválido', 'error', 'alertContainerConfig');
+                    }
+                } catch (error) {
+                    showAlert('⚠️ Error al leer archivo: ' + error.message, 'error', 'alertContainerConfig');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Descargar JSON
+        function downloadJSON() {
+            const json = JSON.stringify(permissionsData, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'bb_permissions.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            showAlert('✓ JSON descargado', 'success', 'alertContainerConfig');
+        }
+
+        // Mostrar alerta
+        function showAlert(message, type = 'info', containerId = 'alertContainer') {
+            const container = document.getElementById(containerId);
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            container.innerHTML = '';
+            container.appendChild(alert);
+            
+            setTimeout(() => alert.remove(), 5000);
+        }
+
+        // Cambiar tab
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tabName).classList.add('active');
+        }
+
+        // Inicializar
+        init();
+    </script>
+</body>
+</html>
