@@ -816,8 +816,29 @@ async function resetAdminPassword(email) {
 async function syncAdminsToGithub() {
     if (!githubConfig.token) { showAlert('Necesitas configurar tu token de GitHub primero', 'warning', 'alertContainerAdmins'); return; }
     try {
-        await saveAdminsToGithub(getAdmins());
-        showAlert('Admins sincronizados a GitHub correctamente', 'success', 'alertContainerAdmins');
+        // Obtener SHA fresco desde GitHub antes de escribir
+        const url = 'https://api.github.com/repos/'+githubConfig.user+'/'+githubConfig.repo+'/contents/PERMISSION_FILES_BI/admins.json';
+        const rGet = await fetch(url, { headers:{ 'Authorization':'token '+githubConfig.token, 'Accept':'application/vnd.github.v3+json' } });
+        if (rGet.ok) {
+            const d = await rGet.json();
+            localStorage.setItem('bb_admins_sha', d.sha);
+        }
+        // Ahora escribir con el SHA correcto
+        const admins  = getAdmins();
+        const payload = {
+            message: 'Sync admins - ' + new Date().toLocaleString('es-MX'),
+            content:  btoa(unescape(encodeURIComponent(JSON.stringify(admins, null, 2)))),
+            sha:      localStorage.getItem('bb_admins_sha')
+        };
+        const rPut = await fetch(url, { method:'PUT', headers:{ 'Authorization':'token '+githubConfig.token, 'Accept':'application/vnd.github.v3+json', 'Content-Type':'application/json' }, body: JSON.stringify(payload) });
+        if (rPut.ok) {
+            const d = await rPut.json();
+            localStorage.setItem('bb_admins_sha', d.content.sha);
+            showAlert('Admins sincronizados a GitHub correctamente', 'success', 'alertContainerAdmins');
+        } else {
+            const err = await rPut.json();
+            showAlert('Error GitHub: ' + (err.message||rPut.status), 'error', 'alertContainerAdmins');
+        }
     } catch(e) { showAlert('Error: ' + e.message, 'error', 'alertContainerAdmins'); }
 }
 
