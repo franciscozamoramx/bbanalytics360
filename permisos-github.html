@@ -590,7 +590,7 @@ function renderDashboards() {
     const c = document.getElementById('dashboardsList');
     c.innerHTML = DASHBOARDS_CONFIG.map(d => {
         let n = 0; Object.values(permissionsData.users).forEach(p => { if ((p||[]).includes(d.id)) n++; });
-        return '<div class="dashboard-card"><h3>'+d.name+'</h3><div class="info"><strong>ID:</strong> '+d.id+'</div><div class="info"><strong>GroupId:</strong> '+d.groupId.substring(0,20)+'...</div><div class="info"><strong>ReportId:</strong> '+d.reportId.substring(0,20)+'...</div><div class="user-count"><strong>👥 '+n+'</strong> usuario'+(n!==1?'s':'')+' con acceso</div></div>';
+        return '<div class="dashboard-card"><h3>'+d.name+'</h3><div class="info"><strong>ID:</strong> '+d.id+'</div><div class="user-count"><strong>👥 '+n+'</strong> usuario'+(n!==1?'s':'')+' con acceso</div></div>';
     }).join('');
 }
 
