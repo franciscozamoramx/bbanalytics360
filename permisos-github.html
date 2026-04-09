@@ -369,7 +369,14 @@ const DASHBOARDS_CONFIG = [
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
 let permissionsData = { users: {} };
-let githubConfig    = { user:'', repo:'', token:'', file:'PERMISSION_FILES_BI/permissions.json' };
+// Repositorio público conocido — permite leer sin token
+// El token solo se necesita para ESCRIBIR (guardar cambios)
+let githubConfig = {
+    user:  'franciscozamoramx',
+    repo:  'bbanalytics360',
+    token: '',
+    file:  'PERMISSION_FILES_BI/permissions.json'
+};
 
 // ─── AUTH ─────────────────────────────────────────────────────────────────────
 const SALT = 'bbanalytics360_v2';
@@ -784,20 +791,51 @@ function showChangePassError(msg) {
 function loadGithubConfig() {
     const saved = localStorage.getItem('bbAnalyticsGithubConfig');
     if (saved) {
-        try { githubConfig = JSON.parse(saved); } catch(e) {}
-        document.getElementById('githubUser').value  = githubConfig.user  || '';
-        document.getElementById('githubRepo').value  = githubConfig.repo  || '';
-        document.getElementById('githubToken').value = githubConfig.token || '';
-        if (githubConfig.token && githubConfig.user && githubConfig.repo) {
-            updateGithubStatus(true, 'Conectado — sincronizando...');
-            document.getElementById('syncBtn').disabled = false;
-            document.getElementById('saveBtn').disabled = false;
-            syncFromGithub();
-        } else {
-            updateGithubStatus(false, 'No configurado — ve a ⚙️ Configuración');
-        }
+        try {
+            const parsed = JSON.parse(saved);
+            // Mantener user/repo por defecto si el guardado los tiene vacíos
+            githubConfig.user  = parsed.user  || githubConfig.user;
+            githubConfig.repo  = parsed.repo  || githubConfig.repo;
+            githubConfig.token = parsed.token || '';
+            githubConfig.sha   = parsed.sha   || '';
+        } catch(e) {}
+    }
+
+    document.getElementById('githubUser').value  = githubConfig.user;
+    document.getElementById('githubRepo').value  = githubConfig.repo;
+    document.getElementById('githubToken').value = githubConfig.token || '';
+
+    if (githubConfig.token) {
+        // Token disponible: acceso completo (lectura + escritura)
+        updateGithubStatus(true, 'Conectado — sincronizando...');
+        document.getElementById('syncBtn').disabled = false;
+        document.getElementById('saveBtn').disabled = false;
+        syncFromGithub();
     } else {
-        updateGithubStatus(false, 'No configurado — ve a ⚙️ Configuración');
+        // Sin token: solo lectura via raw.githubusercontent.com (repo público)
+        updateGithubStatus(true, 'Solo lectura — configura token para guardar cambios');
+        document.getElementById('syncBtn').disabled = false;
+        document.getElementById('saveBtn').disabled = true;
+        syncFromGithubPublic();
+    }
+}
+
+// Sync sin token usando raw.githubusercontent.com (solo lectura, repo público)
+async function syncFromGithubPublic() {
+    try {
+        const url = `https://raw.githubusercontent.com/${githubConfig.user}/${githubConfig.repo}/main/${githubConfig.file}?t=${Date.now()}`;
+        const r   = await fetch(url);
+        if (r.ok) {
+            const json = await r.json();
+            permissionsData.users = parseUsersFromJSON(json);
+            const n = Object.keys(permissionsData.users).length;
+            updateGithubStatus(true, `Sincronizado ✓ — ${n} usuarios (solo lectura)`);
+            updateLastSync(); renderAll();
+        } else {
+            updateGithubStatus(false, 'Error al sincronizar');
+        }
+    } catch(e) {
+        updateGithubStatus(false, 'Error de red');
     }
 }
 
