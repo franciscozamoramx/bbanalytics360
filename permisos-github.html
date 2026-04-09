@@ -172,7 +172,7 @@
             <span id="githubStatusText">Cargando...</span>
         </div>
         <div>
-            <button class="btn btn-secondary" onclick="switchTab('config')">Configurar GitHub</button>
+            <button class="btn btn-secondary" id="btnConfigGithub" onclick="switchTab('config')">Configurar GitHub</button>
             <button class="btn btn-success" onclick="syncFromGithub()" id="syncBtn" disabled>Sincronizar</button>
             <button class="btn btn-primary" onclick="saveToGithub()" id="saveBtn" disabled>Guardar en GitHub</button>
         </div>
@@ -763,24 +763,32 @@ function downloadJSON() {
 // ─── ROLE PERMISSIONS ────────────────────────────────────────────────────────
 function applyRolePermissions() {
     const isMaster = sessionStorage.getItem('bb_is_master') === '1';
+    const show = el => { if (el) el.style.display = ''; };
+    const hide = el => { if (el) el.style.display = 'none'; };
+    const toggle = (el, show) => { if (el) el.style.display = show ? '' : 'none'; };
 
-    // Tab "Administradores": solo admin maestro
-    const tabAdmins = document.querySelector('.tab-btn[onclick*="admins"]');
-    const panelAdmins = document.getElementById('tab-admins');
-    if (tabAdmins)  tabAdmins.style.display  = isMaster ? '' : 'none';
-    if (panelAdmins) panelAdmins.dataset.restricted = isMaster ? '' : '1';
+    // Tab "Administradores" y tab "Configuración": solo admin maestro
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        const oc = btn.getAttribute('onclick') || '';
+        if (oc.includes("'admins'") || oc.includes("'config'")) {
+            toggle(btn, isMaster);
+        }
+    });
 
-    // Tab "Configuración": solo admin maestro
-    const tabConfig = document.querySelector('.tab-btn[onclick*="config"]');
-    if (tabConfig) tabConfig.style.display = isMaster ? '' : 'none';
+    // Botón "Configurar GitHub" en la barra de status
+    toggle(document.getElementById('btnConfigGithub'), isMaster);
 
-    // Botón "Configurar GitHub": solo admin maestro
-    const btnConfig = document.querySelector('.btn[onclick*="switchTab('config'"]');
-    if (btnConfig) btnConfig.style.display = isMaster ? '' : 'none';
+    // Botones Sincronizar y Guardar en GitHub
+    toggle(document.getElementById('syncBtn'), isMaster);
+    toggle(document.getElementById('saveBtn'), isMaster);
 
-    // Botones "Sincronizar" y "Guardar en GitHub": solo admin maestro
-    document.getElementById('syncBtn').style.display = isMaster ? '' : 'none';
-    document.getElementById('saveBtn').style.display = isMaster ? '' : 'none';
+    // Si el usuario está en una tab restringida, redirigir a Usuarios
+    if (!isMaster) {
+        const active = document.querySelector('.tab-content.active');
+        if (active && (active.id === 'tab-admins' || active.id === 'tab-config')) {
+            switchTab('usuarios', document.querySelector('.tab-btn'));
+        }
+    }
 }
 
 // ─── ADMIN MANAGEMENT ────────────────────────────────────────────────────────
