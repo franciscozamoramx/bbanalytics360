@@ -386,20 +386,21 @@
 
 <script>
 const DASHBOARDS_CONFIG = [
-    { id: 'aforo',                       name: 'Aforo',                       groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: '97734c9c-0012-420e-9f21-af0aabc55f4f' },
-    { id: 'big_players',                 name: 'Big Players',                 groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: '0ad4c5bf-3c20-4a24-b92a-ffe1945e5cf8' },
-    { id: 'big_players_2',               name: 'Big Players 2',               groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: 'd8bce34f-7742-4cf5-9fc5-1f05d95bd67f' },
-    { id: 'cash_drop_drop_pot',          name: 'Cash Drop/Drop Pot',          groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: '8d1af17a-1b72-4f47-a56f-08f11f3a7883' },
-    { id: 'estudio_estadistico',         name: 'Estudio Estadístico',         groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: '49fbeed0-59a5-4c34-90a4-ab43cc1e0c83' },
-    { id: 'graficas_dinamicas',          name: 'Gráficas Dinámicas',          groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: 'ce6e92a9-6b33-44d5-a46a-32a15a9b5b27' },
-    { id: 'ingresos_bancarizacion',      name: 'Ingresos Bancarización',      groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: 'f8fa2cc1-4a2e-45bc-9e19-12d35c93b028' },
-    { id: 'ingresos_pasarelas_tarjetas', name: 'Ingresos Pasarelas Tarjetas', groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: '48e93b52-83d9-4d43-9dc0-a8bf5de2f3e4' },
-    { id: 'maquinas_activas',            name: 'Máquinas Activas',            groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: 'c59f7e17-a6f0-409b-a1bd-a14062bef5c6' },
-    { id: 'monitoreo_actividad',         name: 'Monitoreo Actividad',         groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: '40a0c8ba-9734-4c0d-9ee8-06a97c77f2d0' },
-    { id: 'productos_mas_vendidos',      name: 'Productos Más Vendidos',      groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: 'e54f2a2f-a4b9-4e85-96f4-5b8c7c2fae9d' },
-    { id: 'ratios',                      name: 'Ratios',                      groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: '1c577b16-c7d7-4ba0-baf2-4bbd98d0ea0e' },
-    { id: 'resultados_mes',              name: 'Resultados del Mes',          groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: '02cc1cb8-9a2f-4a45-b1ba-48d9ee4a29c5' },
-    { id: 'ventas_venta_cruzada',        name: 'Ventas/Venta Cruzada',        groupId: '4fa19a9b-86e3-4f8a-bea3-3a49fe1c8c03', reportId: 'e5d0e91b-0fa0-4937-b7cd-44fe97bf4c5c' }
+    { id: 'principal',             name: 'Inicio'                       },
+    { id: 'adt',                   name: 'ADT'                          },
+    { id: 'auditoria',             name: 'Auditoría de Salas'           },
+    { id: 'bigplayers',            name: "Big Player's"                 },
+    { id: 'bolipoits',             name: 'Canje de Bolipoints'          },
+    { id: 'desempeno',             name: 'Desempeño de Máquinas'        },
+    { id: 'diccionario',           name: "Diccionario KPI's"            },
+    { id: 'ingreso_tarjetas',      name: 'Ingreso por Tarjetas'         },
+    { id: 'inventario',            name: 'Inventario TI'                },
+    { id: 'promociones',           name: 'Promociones'                  },
+    { id: 'proyectos',             name: 'Proyectos BI'                 },
+    { id: 'rtp',                   name: 'RTP'                          },
+    { id: 'seguimiento_auditores', name: 'Seguimiento de Auditores'     },
+    { id: 'logs_bi',               name: 'Logs BB Analytics 360'        },
+    { id: 'aforo',                 name: 'Aforo en salas'               }
 ];
 
 let permissionsData = { users: {} };
