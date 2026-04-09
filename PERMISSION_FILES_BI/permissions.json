@@ -14,8 +14,8 @@
                 "rtp",
                 "logs_bi",
                 "diccionario",
-				"ingreso_tarjetas",
-				"aforo"
+                "ingreso_tarjetas",
+                "aforo"
             ]
         },
         "guillermo.luna@bigbola.com": {
@@ -27,13 +27,13 @@
                 "desempeno",
                 "inventario",
                 "bolipoits",
-				"promociones",
+                "promociones",
                 "proyectos",
                 "rtp",
                 "logs_bi",
                 "diccionario",
-				"ingreso_tarjetas",
-				"aforo"
+                "ingreso_tarjetas",
+                "aforo"
             ]
         },
         "rafael.blanco@bigbola.com": {
@@ -42,8 +42,8 @@
                 "adt",
                 "bigplayers",
                 "diccionario",
-				"bolipoits",
-				"aforo"
+                "bolipoits",
+                "aforo"
             ]
         },
         "renato.delapena@bigbola.com": {
@@ -55,7 +55,7 @@
                 "bigplayers",
                 "bolipoits",
                 "diccionario",
-				"aforo"
+                "aforo"
             ]
         },
         "edgar.delatorre@bigbola.com": {
@@ -64,32 +64,32 @@
                 "auditoria",
                 "promociones",
                 "seguimiento_auditores",
-				"diccionario"
+                "diccionario"
             ]
         },
         "ruben.vargas@bigbola.com": {
             "dashboards": [
                 "principal",
                 "inventario",
-				"diccionario"
+                "diccionario"
             ]
         },
         "javier.dominguez@bigbola.com": {
             "dashboards": [
                 "principal",
                 "inventario",
-				"diccionario"
+                "diccionario"
             ]
         },
         "emilio.quiros@bigbola.com": {
             "dashboards": [
                 "principal",
                 "adt",
-				"bigplayers",
+                "bigplayers",
                 "auditoria",
                 "desempeno",
                 "bolipoits",
-				"rtp",
+                "rtp",
                 "diccionario"
             ]
         },
@@ -123,26 +123,21 @@
                 "auditoria"
             ]
         },
-		"rodrigo.melendez@bigbola.com": {
+        "joaquin.garcia@bigbola.com": {
             "dashboards": [
-                "principal"
-            ]
-        },
-		"joaquin.garcia@bigbola.com": {
-			"dashboards": [
-				"principal",
-				"ingreso_tarjetas"
+                "principal",
+                "ingreso_tarjetas"
             ]
         },
         "jarb@bigbola.com": {
             "dashboards": [
                 "principal",
                 "adt",
-				"bigplayers",
+                "bigplayers",
                 "auditoria",
                 "desempeno",
                 "bolipoits",
-				"rtp",
+                "rtp",
                 "diccionario"
             ]
         }
