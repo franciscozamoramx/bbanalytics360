@@ -463,19 +463,47 @@ async function checkActivationToken() {
 }
 
 async function activateAccount() {
-    const overlay = document.getElementById('changePassOverlay');
-    const token   = overlay.dataset.token;
-    const email   = overlay.dataset.email;
-    const pass1   = document.getElementById('newPass1').value;
-    const pass2   = document.getElementById('newPass2').value;
-    const errEl   = document.getElementById('changePassError');
+    const errEl = document.getElementById('changePassError');
+    const pass1 = document.getElementById('newPass1').value;
+    const pass2 = document.getElementById('newPass2').value;
+
+    // Leer siempre directo de la URL — no depende de dataset ni de carga async
+    const params = new URLSearchParams(window.location.search);
+    const token  = params.get('token');
+    const emEnc  = params.get('em');
+    const nmEnc  = params.get('nm');
+
+    if (!token || !emEnc || !nmEnc) {
+        errEl.style.display='block';
+        errEl.textContent='Error: enlace incompleto. Solicita un nuevo correo de activación.';
+        return;
+    }
+
+    let email, name;
+    try {
+        email = decodeURIComponent(atob(emEnc));
+        name  = decodeURIComponent(atob(nmEnc));
+    } catch(e) {
+        errEl.style.display='block';
+        errEl.textContent='Error al leer el enlace. Solicita un nuevo correo.';
+        return;
+    }
+
+    // Verificar token criptográficamente
+    const SECRET        = 'BBAnalytics360_' + SALT;
+    const expectedToken = (await sha256(email + SECRET)).substring(0, 40);
+    if (token !== expectedToken) {
+        errEl.style.display='block';
+        errEl.textContent='Enlace inválido. Solicita un nuevo correo de activación.';
+        return;
+    }
 
     if (pass1.length < 8) { errEl.style.display='block'; errEl.textContent='La contraseña debe tener al menos 8 caracteres'; return; }
     if (pass1 !== pass2)  { errEl.style.display='block'; errEl.textContent='Las contraseñas no coinciden'; return; }
 
     const passHash = await sha256(pass1 + SALT);
 
-    // Cargar admins frescos desde GitHub para actualizar
+    // Cargar admins desde GitHub para actualizar
     let admins = [];
     try {
         const url = 'https://raw.githubusercontent.com/franciscozamoramx/bbanalytics360/main/PERMISSION_FILES_BI/admins.json?t=' + Date.now();
@@ -483,29 +511,27 @@ async function activateAccount() {
         if (r.ok) admins = await r.json();
     } catch(e) { admins = getAdmins(); }
 
-    // Buscar por email (el token ya fue verificado criptográficamente)
     let idx = admins.findIndex(a => a.email === email);
     if (idx === -1) {
-        // Admin no existe aún en GitHub (recién creado) — crearlo
-        admins.push({ name: overlay.dataset.name || email, email, status:'pending', activationToken: token, passHash: null, createdAt: new Date().toISOString(), activatedAt: null });
+        admins.push({ name, email, status:'pending', activationToken: token, passHash: null, createdAt: new Date().toISOString(), activatedAt: null });
         idx = admins.length - 1;
     }
 
-    admins[idx].passHash         = passHash;
-    admins[idx].status           = 'active';
-    admins[idx].activationToken  = null;
-    admins[idx].activatedAt      = new Date().toISOString();
+    admins[idx].passHash        = passHash;
+    admins[idx].status          = 'active';
+    admins[idx].activationToken = null;
+    admins[idx].activatedAt     = new Date().toISOString();
+    admins[idx].name            = admins[idx].name || name;
     saveAdmins(admins);
     saveAdminsToGithub(admins);
 
-    // Limpiar token de URL
+    // Limpiar URL y mostrar portal
     window.history.replaceState({}, '', window.location.pathname);
-
-    overlay.style.display = 'none';
-    // Auto-login
+    document.documentElement.removeAttribute('data-has-token');
+    document.getElementById('changePassOverlay').style.display = 'none';
     sessionStorage.setItem('bb_admin_auth', email);
     document.getElementById('topbarLogout').style.display = 'block';
-    showAlert('✓ Cuenta activada correctamente. ¡Bienvenido!', 'success');
+    showAlert('✓ Cuenta activada. ¡Bienvenido, ' + name.split(' ')[0] + '!', 'success');
 }
 
 async function doLogin() {
