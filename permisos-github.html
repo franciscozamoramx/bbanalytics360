@@ -559,7 +559,7 @@
                 </div>
                 <div class="form-group">
                     <label>Archivo de Permisos</label>
-                    <input type="text" id="githubFile" value="bb_permissions.json" readonly>
+                    <input type="text" id="githubFile" value="PERMISSION_FILES_BI/permissions.json" readonly>
                 </div>
                 <button class="btn btn-success" onclick="saveGithubConfig()">✓ Guardar Configuración</button>
                 <button class="btn btn-secondary" onclick="testGithubConnection()">🧪 Probar Conexión</button>
@@ -607,7 +607,7 @@
             user: '',
             repo: '',
             token: '',
-            file: 'bb_permissions.json'
+            file: 'PERMISSION_FILES_BI/permissions.json'
         };
 
         // Inicializar
@@ -732,8 +732,15 @@
                     const content = atob(data.content);
                     const importedData = JSON.parse(content);
                     
-                    // Solo importar usuarios, mantener dashboards locales
-                    permissionsData.users = importedData.users || {};
+                    // Convertir estructura: users.email.dashboards[] -> users[email] = dashboards[]
+                    if (importedData.users) {
+                        permissionsData.users = {};
+                        Object.keys(importedData.users).forEach(email => {
+                            if (importedData.users[email].dashboards) {
+                                permissionsData.users[email] = importedData.users[email].dashboards;
+                            }
+                        });
+                    }
                     
                     // Guardar SHA para actualizaciones futuras
                     githubConfig.sha = data.sha;
@@ -745,7 +752,7 @@
                     showAlert('✓ Datos sincronizados desde GitHub', 'success');
                 } else if (response.status === 404) {
                     updateGithubStatus(false, 'Archivo no encontrado');
-                    showAlert('⚠️ Archivo no encontrado. Guarda la configuración inicial.', 'warning');
+                    showAlert('⚠️ Archivo no encontrado. Verifica la ruta.', 'warning');
                 } else {
                     throw new Error(response.statusText);
                 }
@@ -761,15 +768,26 @@
                 return;
             }
 
-            if (!confirm('¿Guardar cambios en GitHub?\n\nEsto actualizará el archivo bb_permissions.json')) {
+            if (!confirm('¿Guardar cambios en GitHub?\n\nEsto actualizará el archivo ' + githubConfig.file)) {
                 return;
             }
 
             updateGithubStatus(false, 'Guardando...');
             
             try {
+                // Convertir estructura: users[email] = dashboards[] -> users.email.dashboards[]
+                const outputData = {
+                    users: {}
+                };
+                
+                Object.keys(permissionsData.users).forEach(email => {
+                    outputData.users[email] = {
+                        dashboards: permissionsData.users[email]
+                    };
+                });
+                
                 const url = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.file}`;
-                const content = btoa(unescape(encodeURIComponent(JSON.stringify(permissionsData, null, 2))));
+                const content = btoa(unescape(encodeURIComponent(JSON.stringify(outputData, null, 4))));
                 
                 const payload = {
                     message: `Update permissions - ${new Date().toLocaleString('es-MX')}`,
