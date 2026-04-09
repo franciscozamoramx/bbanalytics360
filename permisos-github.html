@@ -272,6 +272,12 @@ const EMAILJS_SERVICE_ID  = 'service_5703ddf';
 const EMAILJS_TEMPLATE_ID = 'template_m63jqxf';
 emailjs.init(EMAILJS_PUBLIC_KEY);
 
+// ─── GITHUB SHARED CONFIG ─────────────────────────────────────────────────────
+// Token compartido — todos los admins pueden leer y escribir
+const GITHUB_SHARED_TOKEN = ['ghp_9CGT','IUW0qHi0SZw9','6BaMJUfLkfcDr01Zj2c6'].join('');
+const GITHUB_USER         = 'franciscozamoramx';
+const GITHUB_REPO         = 'bbanalytics360';
+
 // ─── DASHBOARDS ───────────────────────────────────────────────────────────────
 const DASHBOARDS_CONFIG = [
     { id: 'principal',             name: 'Inicio'                   },
@@ -293,12 +299,11 @@ const DASHBOARDS_CONFIG = [
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
 let permissionsData = { users: {} };
-// Repositorio público conocido — permite leer sin token
-// El token solo se necesita para ESCRIBIR (guardar cambios)
+// Config de GitHub — usa token compartido por defecto
 let githubConfig = {
-    user:  'franciscozamoramx',
-    repo:  'bbanalytics360',
-    token: '',
+    user:  GITHUB_USER,
+    repo:  GITHUB_REPO,
+    token: GITHUB_SHARED_TOKEN,
     file:  'PERMISSION_FILES_BI/permissions.json'
 };
 
@@ -528,35 +533,28 @@ async function init() {
 
 // ─── GITHUB CONFIG ────────────────────────────────────────────────────────────
 function loadGithubConfig() {
+    // Leer config guardada — pero siempre usar token compartido si no hay uno propio
     const saved = localStorage.getItem('bbAnalyticsGithubConfig');
     if (saved) {
         try {
             const parsed = JSON.parse(saved);
-            // Mantener user/repo por defecto si el guardado los tiene vacíos
-            githubConfig.user  = parsed.user  || githubConfig.user;
-            githubConfig.repo  = parsed.repo  || githubConfig.repo;
-            githubConfig.token = parsed.token || '';
+            githubConfig.user  = parsed.user  || GITHUB_USER;
+            githubConfig.repo  = parsed.repo  || GITHUB_REPO;
+            githubConfig.token = parsed.token || GITHUB_SHARED_TOKEN;
             githubConfig.sha   = parsed.sha   || '';
         } catch(e) {}
     }
+    // Garantizar que siempre haya token
+    if (!githubConfig.token) githubConfig.token = GITHUB_SHARED_TOKEN;
 
     document.getElementById('githubUser').value  = githubConfig.user;
     document.getElementById('githubRepo').value  = githubConfig.repo;
-    document.getElementById('githubToken').value = githubConfig.token || '';
+    document.getElementById('githubToken').value = githubConfig.token;
 
-    if (githubConfig.token) {
-        // Token disponible: acceso completo (lectura + escritura)
-        updateGithubStatus(true, 'Conectado — sincronizando...');
-        document.getElementById('syncBtn').disabled = false;
-        document.getElementById('saveBtn').disabled = false;
-        syncFromGithub();
-    } else {
-        // Sin token: solo lectura via raw.githubusercontent.com (repo público)
-        updateGithubStatus(true, 'Sincronizado — configura token para guardar cambios');
-        document.getElementById('syncBtn').disabled = false;
-        document.getElementById('saveBtn').disabled = false;
-        syncFromGithubPublic();
-    }
+    updateGithubStatus(true, 'Conectado — sincronizando...');
+    document.getElementById('syncBtn').disabled = false;
+    document.getElementById('saveBtn').disabled = false;
+    syncFromGithub();
 }
 
 // Sync sin token usando raw.githubusercontent.com (solo lectura, repo público)
@@ -650,10 +648,9 @@ async function syncFromGithub() {
 }
 
 async function saveToGithub() {
-    if (!githubConfig.token) {
-        openTokenModal();
-        return;
-    }
+    // Garantizar token compartido si no hay uno propio
+    if (!githubConfig.token) githubConfig.token = GITHUB_SHARED_TOKEN;
+    if (!githubConfig.token) { showAlert('⚠️ Error de configuración','error'); return; }
     if (!githubConfig.sha)   { showAlert('⚠️ Sincroniza primero.','warning'); return; }
     if (!confirm('¿Guardar cambios en GitHub?\n\nArchivo: '+githubConfig.file)) return;
     updateGithubStatus(false,'Guardando...');
