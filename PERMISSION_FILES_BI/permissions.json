@@ -6,15 +6,16 @@
                 "adt",
                 "auditoria",
                 "bigplayers",
-                "desempeno",
-                "inventario",
-                "proyectos",
                 "bolipoits",
+                "desempeno",
+                "diccionario",
+                "ingreso_tarjetas",
+                "inventario",
                 "promociones",
+                "proyectos",
                 "rtp",
                 "logs_bi",
-                "diccionario",
-                "ingreso_tarjetas"
+                "aforo"
             ]
         },
         "guillermo.luna@bigbola.com": {
