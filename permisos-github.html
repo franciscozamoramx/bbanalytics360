@@ -1,4 +1,4 @@
-<!-- Version: 1775743612 -->
+<!-- Version: 1775743613 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,338 +6,147 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BB Analytics 360 - Admin Permisos</title>
     <link rel="icon" type="image/png" href="./icon_crystal.png">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-
-        body {
-            background: linear-gradient(135deg, #1a3a8f 0%, #152c6e 100%);
-            min-height: 100vh;
-            padding: 20px;
-            color: white;
-        }
-
+        body { background: linear-gradient(135deg, #1a3a8f 0%, #152c6e 100%); min-height: 100vh; padding: 20px; color: white; }
         .container { max-width: 1400px; margin: 0 auto; }
 
+        /* ── LOGIN OVERLAY ── */
+        .login-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: linear-gradient(135deg, #1a3a8f 0%, #152c6e 100%); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+        .login-box { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 15px; padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); text-align: center; }
+        .login-box h2 { color: white; font-size: 1.6em; margin-bottom: 6px; }
+        .login-box h2 span { color: #FFD700; }
+        .login-box .subtitle { color: rgba(255,255,255,0.6); font-size: 0.9em; margin-bottom: 28px; }
+        .login-box .lock-icon { font-size: 2.5em; margin-bottom: 12px; }
+        .login-error { background: rgba(239,68,68,0.2); color: #fca5a5; border: 1px solid rgba(239,68,68,0.4); border-radius: 8px; padding: 10px 14px; font-size: 0.88em; margin-bottom: 14px; display: none; }
+
         /* ── HEADER ── */
-        .header {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            margin-bottom: 25px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
+        .header { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 25px; text-align: center; border: 1px solid rgba(255,255,255,0.2); }
         .header h1 { font-size: 2.2em; margin-bottom: 8px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
         .title-highlight { color: #FFD700; font-weight: bold; }
         .header p { font-size: 1em; color: rgba(255,255,255,0.75); }
 
         /* ── STATUS BAR ── */
-        .github-status {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            padding: 16px 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 15px;
-            border: 1px solid rgba(255,255,255,0.2);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-        }
+        .github-status { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 16px 20px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; border: 1px solid rgba(255,255,255,0.2); }
         .status-info { display: flex; align-items: center; gap: 10px; }
         .status-indicator { width: 12px; height: 12px; border-radius: 50%; animation: pulse 2s infinite; flex-shrink: 0; }
         .status-indicator.connected { background: #10b981; box-shadow: 0 0 6px #10b981; }
         .status-indicator.disconnected { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
-        @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
-        #githubStatusText { font-size: 0.95em; color: rgba(255,255,255,0.85); }
+        @keyframes pulse { 0%,100%{opacity:1;}50%{opacity:0.4;} }
 
         /* ── STATS ── */
         .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .stat-card {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            padding: 22px 20px;
-            border-radius: 12px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.2);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
-        }
+        .stat-card { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 22px 20px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.2); transition: transform 0.2s; }
         .stat-card:hover { transform: translateY(-3px); }
-        .stat-card .number { font-size: 2.4em; font-weight: bold; color: #FFD700; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .stat-card .number { font-size: 2.4em; font-weight: bold; color: #FFD700; }
         .stat-card .label { font-size: 0.9em; color: rgba(255,255,255,0.75); margin-top: 4px; }
 
         /* ── TABS ── */
         .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .tab-btn {
-            flex: 1; min-width: 180px;
-            padding: 13px 20px;
-            background: rgba(255,255,255,0.1);
-            border: 2px solid rgba(255,255,255,0.2);
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 0.95em;
-            font-weight: 600;
-            transition: all 0.3s;
-            color: rgba(255,255,255,0.8);
-            backdrop-filter: blur(10px);
-        }
+        .tab-btn { flex: 1; min-width: 160px; padding: 13px 20px; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); border-radius: 10px; cursor: pointer; font-size: 0.95em; font-weight: 600; transition: all 0.3s; color: rgba(255,255,255,0.8); backdrop-filter: blur(10px); }
         .tab-btn:hover { background: rgba(255,255,255,0.2); border-color: #FFD700; color: white; }
-        .tab-btn.active {
-            background: linear-gradient(to bottom, #FFD700, #FF8C00);
-            color: #152c6e;
-            border-color: transparent;
-            box-shadow: 0 5px 15px rgba(255,215,0,0.4);
-        }
+        .tab-btn.active { background: linear-gradient(to bottom, #FFD700, #FF8C00); color: #152c6e; border-color: transparent; box-shadow: 0 5px 15px rgba(255,215,0,0.4); }
 
         /* ── TAB CONTENT ── */
-        .tab-content {
-            display: none;
-            background: rgba(255,255,255,0.08);
-            backdrop-filter: blur(10px);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            border: 1px solid rgba(255,255,255,0.15);
-        }
+        .tab-content { display: none; background: rgba(255,255,255,0.08); backdrop-filter: blur(10px); padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.15); }
         .tab-content.active { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-
-        .section-title {
-            font-size: 1.6em;
-            color: white;
-            margin-bottom: 22px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #FFD700;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-        }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);} }
+        .section-title { font-size: 1.6em; color: white; margin-bottom: 22px; padding-bottom: 10px; border-bottom: 3px solid #FFD700; }
 
         /* ── FORMS ── */
         .form-group { margin-bottom: 18px; }
         .form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: rgba(255,255,255,0.9); font-size: 0.95em; }
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 8px;
-            font-size: 1em;
-            background: rgba(255,255,255,0.1);
-            color: white;
-            transition: border-color 0.3s, background 0.3s;
-            backdrop-filter: blur(5px);
-        }
+        .form-group input, .form-group select { width: 100%; padding: 12px 15px; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; font-size: 1em; background: rgba(255,255,255,0.1); color: white; transition: border-color 0.3s; }
         .form-group input::placeholder { color: rgba(255,255,255,0.5); }
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: #FFD700;
-            background: rgba(255,255,255,0.18);
-        }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #FFD700; background: rgba(255,255,255,0.18); }
         .form-group input[readonly] { opacity: 0.6; cursor: not-allowed; }
         .form-group small { color: rgba(255,255,255,0.55); font-size: 0.82em; display: block; margin-top: 5px; }
+        .form-group select option { background: #152c6e; color: white; }
 
         /* ── BUTTONS ── */
-        .btn {
-            padding: 12px 26px;
-            border: none;
-            border-radius: 50px;
-            font-size: 0.95em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-right: 8px;
-            margin-bottom: 8px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
+        .btn { padding: 12px 26px; border: none; border-radius: 50px; font-size: 0.95em; font-weight: bold; cursor: pointer; transition: all 0.3s; margin-right: 8px; margin-bottom: 8px; display: inline-flex; align-items: center; gap: 6px; }
         .btn-primary { background: linear-gradient(to bottom, #FFD700, #FF8C00); color: #152c6e; box-shadow: 0 4px 12px rgba(255,215,0,0.35); }
-        .btn-primary:hover { background: linear-gradient(to bottom, #FFE600, #FF9E00); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(255,215,0,0.5); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(255,215,0,0.5); }
         .btn-success { background: linear-gradient(to bottom, #10b981, #059669); color: white; box-shadow: 0 4px 12px rgba(16,185,129,0.35); }
-        .btn-success:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(16,185,129,0.5); }
-        .btn-danger { background: linear-gradient(to bottom, #ef4444, #dc2626); color: white; box-shadow: 0 4px 12px rgba(239,68,68,0.3); }
+        .btn-success:hover { transform: translateY(-2px); }
+        .btn-danger { background: linear-gradient(to bottom, #ef4444, #dc2626); color: white; }
         .btn-danger:hover { transform: translateY(-2px); }
         .btn-secondary { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); }
         .btn-secondary:hover { background: rgba(255,255,255,0.25); transform: translateY(-2px); }
+        .btn-warning { background: linear-gradient(to bottom, #f59e0b, #d97706); color: white; }
+        .btn-warning:hover { transform: translateY(-2px); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .btn-login { width: 100%; padding: 13px; background: linear-gradient(to bottom, #FFD700, #FF8C00); border: none; border-radius: 50px; color: #152c6e; font-weight: bold; font-size: 1em; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(255,215,0,0.4); margin-top: 8px; }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,215,0,0.6); }
+
+        /* ── TOPBAR LOGOUT ── */
+        .topbar-logout { position: fixed; top: 16px; right: 20px; z-index: 1000; }
+        .btn-logout { background: rgba(239,68,68,0.25); border: 1px solid rgba(239,68,68,0.5); color: #fca5a5; padding: 8px 18px; border-radius: 50px; font-size: 0.85em; font-weight: 600; cursor: pointer; transition: all 0.3s; backdrop-filter: blur(10px); }
+        .btn-logout:hover { background: rgba(239,68,68,0.5); color: white; }
 
         /* ── ALERTS ── */
-        .alert { padding: 14px 18px; border-radius: 10px; margin-bottom: 18px; font-weight: 500; font-size: 0.95em; backdrop-filter: blur(5px); }
+        .alert { padding: 14px 18px; border-radius: 10px; margin-bottom: 18px; font-weight: 500; font-size: 0.95em; }
         .alert-success { background: rgba(16,185,129,0.2); color: #6ee7b7; border-left: 4px solid #10b981; }
-        .alert-error   { background: rgba(239,68,68,0.2); color: #fca5a5; border-left: 4px solid #ef4444; }
-        .alert-info    { background: rgba(59,130,246,0.2); color: #93c5fd; border-left: 4px solid #3b82f6; }
-        .alert-warning { background: rgba(245,158,11,0.2); color: #fcd34d; border-left: 4px solid #f59e0b; }
+        .alert-error   { background: rgba(239,68,68,0.2);  color: #fca5a5; border-left: 4px solid #ef4444; }
+        .alert-info    { background: rgba(59,130,246,0.2);  color: #93c5fd; border-left: 4px solid #3b82f6; }
+        .alert-warning { background: rgba(245,158,11,0.2);  color: #fcd34d; border-left: 4px solid #f59e0b; }
 
         /* ── CONFIG SECTION ── */
-        .config-section {
-            background: rgba(255,255,255,0.07);
-            padding: 22px;
-            border-radius: 12px;
-            margin-bottom: 18px;
-            border: 1px solid rgba(255,255,255,0.12);
-        }
+        .config-section { background: rgba(255,255,255,0.07); padding: 22px; border-radius: 12px; margin-bottom: 18px; border: 1px solid rgba(255,255,255,0.12); }
         .config-section h3 { color: #FFD700; margin-bottom: 15px; font-size: 1.05em; }
 
         /* ── SEARCH BOX ── */
-        .search-box {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 8px;
-            font-size: 1em;
-            margin-bottom: 18px;
-            background: rgba(255,255,255,0.1);
-            color: white;
-            backdrop-filter: blur(5px);
-        }
+        .search-box { width: 100%; padding: 12px 15px; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; font-size: 1em; margin-bottom: 18px; background: rgba(255,255,255,0.1); color: white; }
         .search-box::placeholder { color: rgba(255,255,255,0.5); }
         .search-box:focus { outline: none; border-color: #FFD700; }
 
         /* ── USER CARDS ── */
-        .user-card {
-            background: rgba(255,255,255,0.08);
-            padding: 18px 20px;
-            border-radius: 12px;
-            margin-bottom: 12px;
-            border-left: 5px solid #FFD700;
-            transition: background 0.2s;
-        }
+        .user-card { background: rgba(255,255,255,0.08); padding: 18px 20px; border-radius: 12px; margin-bottom: 12px; border-left: 5px solid #FFD700; transition: background 0.2s; }
         .user-card:hover { background: rgba(255,255,255,0.12); }
         .user-card h3 { color: #FFD700; margin-bottom: 8px; font-size: 1em; }
+        .user-card .meta { font-size: 0.82em; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
         .user-permissions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
-        .permission-badge {
-            background: rgba(255,215,0,0.2);
-            color: #FFD700;
-            border: 1px solid rgba(255,215,0,0.4);
-            padding: 4px 11px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .permission-badge .remove { cursor: pointer; opacity: 0.7; font-weight: bold; }
+        .permission-badge { background: rgba(255,215,0,0.2); color: #FFD700; border: 1px solid rgba(255,215,0,0.4); padding: 4px 11px; border-radius: 20px; font-size: 0.8em; display: inline-flex; align-items: center; gap: 5px; }
+        .permission-badge .remove { cursor: pointer; opacity: 0.7; }
         .permission-badge .remove:hover { opacity: 1; color: #ef4444; }
         .action-buttons { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
 
+        /* ── ADMIN CARDS ── */
+        .admin-card { background: rgba(255,255,255,0.08); padding: 18px 20px; border-radius: 12px; margin-bottom: 12px; border-left: 5px solid #10b981; transition: background 0.2s; }
+        .admin-card:hover { background: rgba(255,255,255,0.12); }
+        .admin-card h3 { color: #10b981; margin-bottom: 4px; font-size: 1em; }
+        .admin-card .meta { font-size: 0.82em; color: rgba(255,255,255,0.5); }
+        .status-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.78em; font-weight: 600; margin-left: 8px; }
+        .status-active   { background: rgba(16,185,129,0.2); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.4); }
+        .status-pending  { background: rgba(245,158,11,0.2); color: #fcd34d; border: 1px solid rgba(245,158,11,0.4); }
+
         /* ── CHECKBOX GROUP ── */
         .checkbox-group { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; margin-top: 10px; }
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 9px 12px;
-            background: rgba(255,255,255,0.07);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.2s;
-            border: 1px solid rgba(255,255,255,0.1);
-            color: rgba(255,255,255,0.85);
-            font-size: 0.9em;
-        }
+        .checkbox-label { display: flex; align-items: center; gap: 8px; padding: 9px 12px; background: rgba(255,255,255,0.07); border-radius: 8px; cursor: pointer; transition: background 0.2s; border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); font-size: 0.9em; }
         .checkbox-label:hover { background: rgba(255,215,0,0.15); border-color: rgba(255,215,0,0.4); }
         .checkbox-label input[type="checkbox"] { width: auto; cursor: pointer; accent-color: #FFD700; }
 
         /* ── DASHBOARD CARDS ── */
         .dashboard-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 15px; margin-top: 15px; }
-        .dashboard-card {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            padding: 18px;
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.2);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .dashboard-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+        .dashboard-card { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); transition: transform 0.2s; }
+        .dashboard-card:hover { transform: translateY(-3px); }
         .dashboard-card h3 { color: #FFD700; margin-bottom: 10px; font-size: 1em; }
         .dashboard-card .info { font-size: 0.85em; color: rgba(255,255,255,0.7); margin-bottom: 4px; }
-        .dashboard-card .info strong { color: rgba(255,255,255,0.9); }
-        .dashboard-card .user-count {
-            margin-top: 12px;
-            padding-top: 10px;
-            border-top: 1px solid rgba(255,255,255,0.15);
-            font-size: 0.85em;
-            color: rgba(255,255,255,0.7);
-        }
+        .dashboard-card .user-count { margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.15); font-size: 0.85em; color: rgba(255,255,255,0.7); }
         .dashboard-card .user-count strong { color: #FFD700; }
 
         /* ── EMPTY STATE ── */
         .empty-state { text-align: center; padding: 50px 20px; color: rgba(255,255,255,0.4); }
         .empty-state svg { width: 80px; height: 80px; margin-bottom: 16px; opacity: 0.3; }
-        .empty-state h3 { font-size: 1.1em; margin-bottom: 6px; }
-        .empty-state p { font-size: 0.9em; }
 
         /* ── MODAL ── */
         .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.75); display:flex; align-items:center; justify-content:center; z-index:1000; backdrop-filter: blur(4px); }
         .modal-box { background: linear-gradient(135deg, #1a3a8f 0%, #152c6e 100%); padding: 30px; border-radius: 15px; max-width: 820px; width: 90%; max-height: 82vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
         .modal-box h2 { color: #FFD700; margin-bottom: 20px; font-size: 1.2em; }
 
-
-        /* ── LOGIN OVERLAY ── */
-        .login-overlay {
-            position: fixed; top:0; left:0; right:0; bottom:0;
-            background: linear-gradient(135deg, #1a3a8f 0%, #152c6e 100%);
-            display: flex; align-items: center; justify-content: center;
-            z-index: 9999;
-        }
-        .login-box {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 15px;
-            padding: 40px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-            text-align: center;
-        }
-        .login-box h2 { color: white; font-size: 1.6em; margin-bottom: 6px; }
-        .login-box h2 span { color: #FFD700; }
-        .login-box .subtitle { color: rgba(255,255,255,0.6); font-size: 0.9em; margin-bottom: 28px; }
-        .login-box .form-group { text-align: left; margin-bottom: 16px; }
-        .login-box .form-group label { color: rgba(255,255,255,0.85); font-size: 0.9em; font-weight: 600; display:block; margin-bottom:6px; }
-        .login-box .form-group input {
-            width: 100%; padding: 12px 15px;
-            background: rgba(255,255,255,0.12);
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 8px; color: white; font-size: 1em;
-        }
-        .login-box .form-group input::placeholder { color: rgba(255,255,255,0.4); }
-        .login-box .form-group input:focus { outline: none; border-color: #FFD700; background: rgba(255,255,255,0.18); }
-        .login-box .btn-login {
-            width: 100%; padding: 13px;
-            background: linear-gradient(to bottom, #FFD700, #FF8C00);
-            border: none; border-radius: 50px;
-            color: #152c6e; font-weight: bold; font-size: 1em;
-            cursor: pointer; transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(255,215,0,0.4);
-            margin-top: 8px;
-        }
-        .login-box .btn-login:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,215,0,0.6); }
-        .login-error {
-            background: rgba(239,68,68,0.2); color: #fca5a5;
-            border: 1px solid rgba(239,68,68,0.4);
-            border-radius: 8px; padding: 10px 14px;
-            font-size: 0.88em; margin-bottom: 14px; display: none;
-        }
-        .login-box .lock-icon { font-size: 2.5em; margin-bottom: 12px; }
-
-        /* ── TOPBAR LOGOUT ── */
-        .topbar-logout {
-            position: fixed; top: 16px; right: 20px; z-index: 1000;
-        }
-        .btn-logout {
-            background: rgba(239,68,68,0.25);
-            border: 1px solid rgba(239,68,68,0.5);
-            color: #fca5a5; padding: 8px 18px;
-            border-radius: 50px; font-size: 0.85em; font-weight: 600;
-            cursor: pointer; transition: all 0.3s;
-            backdrop-filter: blur(10px);
-        }
-        .btn-logout:hover { background: rgba(239,68,68,0.5); color: white; transform: translateY(-1px); }
+        /* ── CHANGE PASSWORD OVERLAY ── */
+        .change-pass-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: linear-gradient(135deg, #1a3a8f 0%, #152c6e 100%); display:flex; align-items:center; justify-content:center; z-index:9999; }
 
         @media (max-width: 768px) {
             .header h1 { font-size: 1.7em; }
@@ -356,12 +165,12 @@
         <div class="lock-icon">🔐</div>
         <h2>BB <span>Analytics 360</span></h2>
         <p class="subtitle">Administrador de Permisos — Acceso restringido</p>
-        <div class="login-error" id="loginError">Usuario o contraseña incorrectos</div>
-        <div class="form-group">
+        <div class="login-error" id="loginError"></div>
+        <div class="form-group" style="text-align:left">
             <label>Usuario</label>
-            <input type="text" id="loginUser" placeholder="admin" autocomplete="username">
+            <input type="text" id="loginUser" placeholder="usuario@bigbola.com" autocomplete="username">
         </div>
-        <div class="form-group">
+        <div class="form-group" style="text-align:left">
             <label>Contraseña</label>
             <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password"
                    onkeydown="if(event.key==='Enter') doLogin()">
@@ -370,13 +179,32 @@
     </div>
 </div>
 
-<!-- BOTÓN SALIR (visible solo cuando está logueado) -->
+<!-- CHANGE PASSWORD OVERLAY (activación por token) -->
+<div class="change-pass-overlay" id="changePassOverlay" style="display:none;">
+    <div class="login-box">
+        <div class="lock-icon">🔑</div>
+        <h2>BB <span>Analytics 360</span></h2>
+        <p class="subtitle">Activa tu cuenta estableciendo una contraseña</p>
+        <div class="login-error" id="changePassError"></div>
+        <div class="form-group" style="text-align:left">
+            <label>Nueva contraseña</label>
+            <input type="password" id="newPass1" placeholder="Mínimo 8 caracteres">
+        </div>
+        <div class="form-group" style="text-align:left">
+            <label>Confirmar contraseña</label>
+            <input type="password" id="newPass2" placeholder="Repite la contraseña"
+                   onkeydown="if(event.key==='Enter') activateAccount()">
+        </div>
+        <button class="btn-login" onclick="activateAccount()">✓ Activar cuenta</button>
+    </div>
+</div>
+
+<!-- BOTÓN SALIR -->
 <div class="topbar-logout" id="topbarLogout" style="display:none;">
     <button class="btn-logout" onclick="doLogout()">⬅️ Salir</button>
 </div>
 
 <div class="container">
-
     <div class="header">
         <h1>🎰 BB <span class="title-highlight">Analytics 360</span></h1>
         <p>Administrador de Permisos</p>
@@ -396,13 +224,14 @@
 
     <div class="stats">
         <div class="stat-card"><div class="number" id="totalUsers">0</div><div class="label">Usuarios</div></div>
-        <div class="stat-card"><div class="number" id="totalDashboards">14</div><div class="label">Dashboards</div></div>
+        <div class="stat-card"><div class="number" id="totalDashboards">15</div><div class="label">Dashboards</div></div>
         <div class="stat-card"><div class="number" id="totalPermissions">0</div><div class="label">Permisos</div></div>
         <div class="stat-card"><div class="number" id="lastSync">--</div><div class="label">Última Sincronización</div></div>
     </div>
 
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('usuarios', this)">👤 Usuarios</button>
+        <button class="tab-btn"        onclick="switchTab('admins', this)">🛡️ Administradores</button>
         <button class="tab-btn"        onclick="switchTab('dashboards', this)">📊 Dashboards</button>
         <button class="tab-btn"        onclick="switchTab('config', this)">⚙️ Configuración</button>
     </div>
@@ -427,11 +256,36 @@
         <div id="usersList"></div>
     </div>
 
+    <!-- TAB: Administradores -->
+    <div id="tab-admins" class="tab-content">
+        <h2 class="section-title">Administradores del Sistema</h2>
+        <div id="alertContainerAdmins"></div>
+        <div class="config-section">
+            <h3>➕ Agregar Nuevo Administrador</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div class="form-group">
+                    <label>Nombre completo</label>
+                    <input type="text" id="newAdminName" placeholder="Nombre Apellido">
+                </div>
+                <div class="form-group">
+                    <label>Email corporativo</label>
+                    <input type="email" id="newAdminEmail" placeholder="usuario@bigbola.com">
+                </div>
+            </div>
+            <p style="font-size:0.85em;color:rgba(255,255,255,0.6);margin-bottom:12px;">
+                📧 Se enviará un correo automático con el enlace para que el usuario establezca su contraseña.
+            </p>
+            <button class="btn btn-success" onclick="createAdmin()" id="createAdminBtn">✓ Crear Administrador y Enviar Correo</button>
+        </div>
+        <input type="text" class="search-box" id="searchAdmins" placeholder="🔍 Buscar administrador..." onkeyup="filterAdmins()">
+        <div id="adminsList"></div>
+    </div>
+
     <!-- TAB: Dashboards -->
     <div id="tab-dashboards" class="tab-content">
         <h2 class="section-title">Dashboards Disponibles</h2>
         <div class="alert alert-info">
-            <strong>ℹ️ Información:</strong> Estos son los 14 dashboards configurados en BB Analytics 360. Los dashboards están sincronizados con el sistema principal.
+            <strong>ℹ️ Información:</strong> Estos son los 15 dashboards configurados en BB Analytics 360.
         </div>
         <div class="dashboard-list" id="dashboardsList"></div>
     </div>
@@ -453,7 +307,7 @@
             <div class="form-group">
                 <label>Personal Access Token (con permisos de repo)</label>
                 <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxx">
-                <small>Crea un token en: GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)</small>
+                <small>GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)</small>
             </div>
             <div class="form-group">
                 <label>Archivo de Permisos</label>
@@ -471,66 +325,130 @@
             <button class="btn btn-secondary" onclick="downloadJSON()">💾 Exportar como Archivo</button>
         </div>
     </div>
-
 </div>
 
 <script>
+// ─── EMAILJS CONFIG ───────────────────────────────────────────────────────────
+const EMAILJS_PUBLIC_KEY  = 'O9qBbBnJTakwM5iSk';
+const EMAILJS_SERVICE_ID  = 'service_5703ddf';
+const EMAILJS_TEMPLATE_ID = 'template_m63jqxf';
+emailjs.init(EMAILJS_PUBLIC_KEY);
+
+// ─── DASHBOARDS ───────────────────────────────────────────────────────────────
 const DASHBOARDS_CONFIG = [
-    { id: 'principal',             name: 'Inicio'                       },
-    { id: 'adt',                   name: 'ADT'                          },
-    { id: 'auditoria',             name: 'Auditoría de Salas'           },
-    { id: 'bigplayers',            name: "Big Player's"                 },
-    { id: 'bolipoits',             name: 'Canje de Bolipoints'          },
-    { id: 'desempeno',             name: 'Desempeño de Máquinas'        },
-    { id: 'diccionario',           name: "Diccionario KPI's"            },
-    { id: 'ingreso_tarjetas',      name: 'Ingreso por Tarjetas'         },
-    { id: 'inventario',            name: 'Inventario TI'                },
-    { id: 'promociones',           name: 'Promociones'                  },
-    { id: 'proyectos',             name: 'Proyectos BI'                 },
-    { id: 'rtp',                   name: 'RTP'                          },
-    { id: 'seguimiento_auditores', name: 'Seguimiento de Auditores'     },
-    { id: 'logs_bi',               name: 'Logs BB Analytics 360'        },
-    { id: 'aforo',                 name: 'Aforo en salas'               }
+    { id: 'principal',             name: 'Inicio'                   },
+    { id: 'adt',                   name: 'ADT'                      },
+    { id: 'auditoria',             name: 'Auditoría de Salas'       },
+    { id: 'bigplayers',            name: "Big Player's"             },
+    { id: 'bolipoits',             name: 'Canje de Bolipoints'      },
+    { id: 'desempeno',             name: 'Desempeño de Máquinas'    },
+    { id: 'diccionario',           name: "Diccionario KPI's"        },
+    { id: 'ingreso_tarjetas',      name: 'Ingreso por Tarjetas'     },
+    { id: 'inventario',            name: 'Inventario TI'            },
+    { id: 'promociones',           name: 'Promociones'              },
+    { id: 'proyectos',             name: 'Proyectos BI'             },
+    { id: 'rtp',                   name: 'RTP'                      },
+    { id: 'seguimiento_auditores', name: 'Seguimiento de Auditores' },
+    { id: 'logs_bi',               name: 'Logs BB Analytics 360'    },
+    { id: 'aforo',                 name: 'Aforo en salas'           }
 ];
 
+// ─── STATE ────────────────────────────────────────────────────────────────────
 let permissionsData = { users: {} };
 let githubConfig    = { user:'', repo:'', token:'', file:'PERMISSION_FILES_BI/permissions.json' };
 
-
 // ─── AUTH ─────────────────────────────────────────────────────────────────────
-const SALT = 'bbanalytics360';
-// Credenciales hasheadas (SHA-256): admin / BB@Admin2024
-// Para cambiar: genera los hashes con SHA-256(usuario+salt) y SHA-256(contraseña+salt)
-const VALID_CREDENTIALS = [
-    {
-        userHash: '589a0dcd13def224e143ac7987144066f02c5a95a9e3cda25f0305f07d90c6bf',
-        passHash: 'b4be387dbb966d51187eb3b81046d7b582ea601fe7b1494a77099d5a7be9c507'
-    }
-];
+const SALT = 'bbanalytics360_v2';
 
 async function sha256(text) {
     const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+function getAdmins() {
+    try { return JSON.parse(localStorage.getItem('bb_admins') || '[]'); } catch(e) { return []; }
+}
+function saveAdmins(admins) {
+    localStorage.setItem('bb_admins', JSON.stringify(admins));
+}
+
+// Verificar token de activación en URL
+async function checkActivationToken() {
+    const params = new URLSearchParams(window.location.search);
+    const token  = params.get('token');
+    if (!token) return false;
+
+    const admins = getAdmins();
+    const admin  = admins.find(a => a.activationToken === token && a.status === 'pending');
+
+    if (!admin) {
+        // Token inválido o ya usado
+        return false;
+    }
+
+    // Mostrar pantalla de cambio de contraseña
+    document.getElementById('changePassOverlay').style.display = 'flex';
+    document.getElementById('changePassOverlay').dataset.token = token;
+    document.getElementById('changePassOverlay').dataset.email = admin.email;
+    return true;
+}
+
+async function activateAccount() {
+    const overlay = document.getElementById('changePassOverlay');
+    const token   = overlay.dataset.token;
+    const email   = overlay.dataset.email;
+    const pass1   = document.getElementById('newPass1').value;
+    const pass2   = document.getElementById('newPass2').value;
+    const errEl   = document.getElementById('changePassError');
+
+    if (pass1.length < 8) { errEl.style.display='block'; errEl.textContent='La contraseña debe tener al menos 8 caracteres'; return; }
+    if (pass1 !== pass2)  { errEl.style.display='block'; errEl.textContent='Las contraseñas no coinciden'; return; }
+
+    const passHash = await sha256(pass1 + SALT);
+    const admins   = getAdmins();
+    const idx      = admins.findIndex(a => a.activationToken === token);
+
+    if (idx === -1) { errEl.style.display='block'; errEl.textContent='Token inválido'; return; }
+
+    admins[idx].passHash         = passHash;
+    admins[idx].status           = 'active';
+    admins[idx].activationToken  = null;
+    admins[idx].activatedAt      = new Date().toISOString();
+    saveAdmins(admins);
+
+    // Limpiar token de URL
+    window.history.replaceState({}, '', window.location.pathname);
+
+    overlay.style.display = 'none';
+    // Auto-login
+    sessionStorage.setItem('bb_admin_auth', email);
+    document.getElementById('topbarLogout').style.display = 'block';
+    showAlert('✓ Cuenta activada correctamente. ¡Bienvenido!', 'success');
 }
 
 async function doLogin() {
-    const user = document.getElementById('loginUser').value.trim();
-    const pass = document.getElementById('loginPass').value;
+    const user  = document.getElementById('loginUser').value.trim().toLowerCase();
+    const pass  = document.getElementById('loginPass').value;
     const errEl = document.getElementById('loginError');
+
     if (!user || !pass) { errEl.style.display='block'; errEl.textContent='Completa usuario y contraseña'; return; }
 
-    const uHash = await sha256(user + SALT);
-    const pHash = await sha256(pass + SALT);
+    const passHash = await sha256(pass + SALT);
+    const admins   = getAdmins();
+    const admin    = admins.find(a => a.email.toLowerCase() === user && a.passHash === passHash && a.status === 'active');
 
-    const ok = VALID_CREDENTIALS.some(c => c.userHash === uHash && c.passHash === pHash);
-    if (ok) {
-        sessionStorage.setItem('bb_admin_auth', '1');
-        document.getElementById('loginOverlay').style.display = 'none';
-        document.getElementById('topbarLogout').style.display = 'block';
+    // Compatibilidad: admin maestro hardcodeado (francisco.zamora)
+    const masterHash = await sha256('BB@Admin2024' + SALT);
+    const isMaster   = (user === 'francisco.zamora@bigbola.com' || user === 'admin') && passHash === masterHash;
+
+    if (admin || isMaster) {
+        sessionStorage.setItem('bb_admin_auth', user);
+        document.getElementById('loginOverlay').style.display  = 'none';
+        document.getElementById('topbarLogout').style.display  = 'block';
         errEl.style.display = 'none';
     } else {
         errEl.style.display = 'block';
-        errEl.textContent = 'Usuario o contraseña incorrectos';
+        errEl.textContent   = 'Usuario o contraseña incorrectos';
         document.getElementById('loginPass').value = '';
         document.getElementById('loginPass').focus();
     }
@@ -538,26 +456,172 @@ async function doLogin() {
 
 function doLogout() {
     sessionStorage.removeItem('bb_admin_auth');
-    document.getElementById('loginOverlay').style.display = 'flex';
-    document.getElementById('topbarLogout').style.display = 'none';
+    document.getElementById('loginOverlay').style.display  = 'flex';
+    document.getElementById('topbarLogout').style.display  = 'none';
     document.getElementById('loginUser').value = '';
     document.getElementById('loginPass').value = '';
 }
 
 function checkAuth() {
-    if (sessionStorage.getItem('bb_admin_auth') === '1') {
+    if (sessionStorage.getItem('bb_admin_auth')) {
         document.getElementById('loginOverlay').style.display = 'none';
         document.getElementById('topbarLogout').style.display = 'block';
     }
-    // Si no hay sesión, el overlay ya está visible por defecto
+}
+
+// ─── ADMIN MANAGEMENT ────────────────────────────────────────────────────────
+async function createAdmin() {
+    const name  = document.getElementById('newAdminName').value.trim();
+    const email = document.getElementById('newAdminEmail').value.trim().toLowerCase();
+    const btn   = document.getElementById('createAdminBtn');
+
+    if (!name)  { showAlert('⚠️ Ingresa el nombre completo', 'error', 'alertContainerAdmins'); return; }
+    if (!email || !email.includes('@')) { showAlert('⚠️ Ingresa un email válido', 'error', 'alertContainerAdmins'); return; }
+
+    const admins = getAdmins();
+    if (admins.find(a => a.email.toLowerCase() === email)) {
+        showAlert('⚠️ Este correo ya tiene una cuenta de administrador', 'error', 'alertContainerAdmins'); return;
+    }
+
+    // Generar token único de activación
+    const tokenRaw = email + Date.now() + Math.random().toString(36);
+    const token    = await sha256(tokenRaw);
+    const shortToken = token.substring(0, 32);
+
+    const activationLink = `${window.location.origin}${window.location.pathname}?token=${shortToken}`;
+
+    // Guardar admin como pendiente
+    const newAdmin = {
+        name, email, status: 'pending',
+        activationToken: shortToken,
+        passHash: null,
+        createdAt: new Date().toISOString(),
+        activatedAt: null
+    };
+    admins.push(newAdmin);
+    saveAdmins(admins);
+
+    // Enviar correo via EmailJS
+    btn.disabled   = true;
+    btn.textContent = '📧 Enviando correo...';
+
+    try {
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+            to_name:         name,
+            to_email:        email,
+            activation_link: activationLink
+        });
+
+        showAlert(`✓ Administrador creado y correo enviado a ${email}`, 'success', 'alertContainerAdmins');
+        document.getElementById('newAdminName').value  = '';
+        document.getElementById('newAdminEmail').value = '';
+        renderAdmins();
+    } catch(err) {
+        // Si falla el correo, igual quedó creado — mostrar link manual
+        showAlert(`⚠️ No se pudo enviar el correo (${err.text||err}). Comparte este link manualmente: ${activationLink}`, 'warning', 'alertContainerAdmins');
+        renderAdmins();
+    }
+
+    btn.disabled    = false;
+    btn.textContent = '✓ Crear Administrador y Enviar Correo';
+}
+
+async function resendAdminEmail(email) {
+    const admins = getAdmins();
+    const admin  = admins.find(a => a.email === email && a.status === 'pending');
+    if (!admin) { showAlert('⚠️ No se encontró el administrador o ya está activo', 'error', 'alertContainerAdmins'); return; }
+
+    const activationLink = `${window.location.origin}${window.location.pathname}?token=${admin.activationToken}`;
+
+    try {
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+            to_name:         admin.name,
+            to_email:        admin.email,
+            activation_link: activationLink
+        });
+        showAlert(`✓ Correo reenviado a ${email}`, 'success', 'alertContainerAdmins');
+    } catch(err) {
+        showAlert(`⚠️ Error al reenviar: ${err.text||err}. Link: ${activationLink}`, 'warning', 'alertContainerAdmins');
+    }
+}
+
+function deleteAdmin(email) {
+    if (!confirm(`¿Eliminar a ${email}?\nEsta acción no se puede deshacer.`)) return;
+    const admins = getAdmins().filter(a => a.email !== email);
+    saveAdmins(admins);
+    renderAdmins();
+    showAlert('✓ Administrador eliminado', 'success', 'alertContainerAdmins');
+}
+
+function resetAdminPassword(email) {
+    if (!confirm(`¿Restablecer contraseña de ${email}?\nSe enviará un nuevo correo de activación.`)) return;
+    const admins = getAdmins();
+    const idx    = admins.findIndex(a => a.email === email);
+    if (idx === -1) return;
+
+    sha256(email + Date.now() + Math.random()).then(token => {
+        const shortToken = token.substring(0, 32);
+        admins[idx].activationToken = shortToken;
+        admins[idx].status          = 'pending';
+        admins[idx].passHash        = null;
+        saveAdmins(admins);
+
+        const activationLink = `${window.location.origin}${window.location.pathname}?token=${shortToken}`;
+        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+            to_name: admins[idx].name, to_email: email, activation_link: activationLink
+        }).then(() => {
+            showAlert(`✓ Correo de restablecimiento enviado a ${email}`, 'success', 'alertContainerAdmins');
+        }).catch(err => {
+            showAlert(`⚠️ Error al enviar correo. Link: ${activationLink}`, 'warning', 'alertContainerAdmins');
+        });
+        renderAdmins();
+    });
+}
+
+function renderAdmins() {
+    const c      = document.getElementById('adminsList');
+    const admins = getAdmins();
+
+    if (!admins.length) {
+        c.innerHTML = '<div class="empty-state"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg><h3>No hay administradores</h3><p>Agrega el primero usando el formulario de arriba</p></div>';
+        return;
+    }
+
+    c.innerHTML = admins.map(a => {
+        const badge   = a.status === 'active'
+            ? '<span class="status-badge status-active">✓ Activo</span>'
+            : '<span class="status-badge status-pending">⏳ Pendiente activación</span>';
+        const created = new Date(a.createdAt).toLocaleDateString('es-MX');
+        const actions = a.status === 'pending'
+            ? `<button class="btn btn-warning" onclick="resendAdminEmail('${a.email}')">📧 Reenviar correo</button>`
+            : `<button class="btn btn-warning" onclick="resetAdminPassword('${a.email}')">🔑 Restablecer contraseña</button>`;
+
+        return `<div class="admin-card">
+            <h3>${a.name} ${badge}</h3>
+            <div class="meta">${a.email} · Creado: ${created}</div>
+            <div class="action-buttons">
+                ${actions}
+                <button class="btn btn-danger" onclick="deleteAdmin('${a.email}')">🗑️ Eliminar</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function filterAdmins() {
+    const s = document.getElementById('searchAdmins').value.toLowerCase();
+    document.querySelectorAll('.admin-card').forEach(c => {
+        c.style.display = c.textContent.toLowerCase().includes(s) ? 'block' : 'none';
+    });
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
-function init() {
-    checkAuth();
+async function init() {
+    const hasToken = await checkActivationToken();
+    if (!hasToken) checkAuth();
     loadGithubConfig();
     renderPermissionsCheckboxes();
     renderDashboards();
+    renderAdmins();
     updateStats();
     renderUsers();
 }
@@ -604,64 +668,63 @@ async function testGithubConnection() {
     updateGithubStatus(false, 'Probando conexión...');
     try {
         const r = await fetch(`https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.file}`,
-            { headers: { 'Authorization': 'token ' + githubConfig.token, 'Accept': 'application/vnd.github.v3+json' } });
-        if (r.ok)             { updateGithubStatus(true,  'Conexión exitosa ✓');   showAlert('✓ Conexión exitosa. Archivo encontrado: ' + githubConfig.file, 'success', 'alertContainerConfig'); }
-        else if (r.status===404) { updateGithubStatus(false, 'Archivo no encontrado'); showAlert('⚠️ Archivo no encontrado: ' + githubConfig.file, 'warning', 'alertContainerConfig'); }
-        else if (r.status===401) { updateGithubStatus(false, 'Token inválido');        showAlert('⚠️ Token inválido o expirado.', 'error', 'alertContainerConfig'); }
-        else                  { updateGithubStatus(false, 'Error ' + r.status);    showAlert('⚠️ Error: ' + r.status + ' ' + r.statusText, 'error', 'alertContainerConfig'); }
-    } catch(e) { updateGithubStatus(false,'Error de red'); showAlert('⚠️ Error de red: '+e.message,'error','alertContainerConfig'); }
+            { headers:{ 'Authorization':'token '+githubConfig.token,'Accept':'application/vnd.github.v3+json' } });
+        if (r.ok)              { updateGithubStatus(true,'Conexión exitosa ✓'); showAlert('✓ Conexión exitosa.','success','alertContainerConfig'); }
+        else if (r.status===404) { updateGithubStatus(false,'Archivo no encontrado'); showAlert('⚠️ Archivo no encontrado: '+githubConfig.file,'warning','alertContainerConfig'); }
+        else if (r.status===401) { updateGithubStatus(false,'Token inválido'); showAlert('⚠️ Token inválido o expirado.','error','alertContainerConfig'); }
+        else                   { updateGithubStatus(false,'Error '+r.status); showAlert('⚠️ Error: '+r.status,'error','alertContainerConfig'); }
+    } catch(e) { updateGithubStatus(false,'Error de red'); showAlert('⚠️ '+e.message,'error','alertContainerConfig'); }
 }
 
-// ─── PARSER DUAL DE FORMATOS ──────────────────────────────────────────────────
+// ─── PARSER DUAL ─────────────────────────────────────────────────────────────
 function parseUsersFromJSON(data) {
     const r = {};
     if (!data.users) return r;
     Object.keys(data.users).forEach(email => {
         const v = data.users[email];
-        if (Array.isArray(v))                     r[email] = v;             // formato B legacy
-        else if (v && Array.isArray(v.dashboards)) r[email] = v.dashboards; // formato A estándar
-        else                                       r[email] = [];
+        if (Array.isArray(v))                      r[email] = v;
+        else if (v && Array.isArray(v.dashboards)) r[email] = v.dashboards;
+        else                                        r[email] = [];
     });
     return r;
 }
 
-// ─── SYNC FROM GITHUB ─────────────────────────────────────────────────────────
+// ─── SYNC ────────────────────────────────────────────────────────────────────
 async function syncFromGithub() {
     if (!githubConfig.token || !githubConfig.user || !githubConfig.repo) {
-        updateGithubStatus(false, 'No configurado — ve a ⚙️ Configuración'); return;
+        updateGithubStatus(false,'No configurado — ve a ⚙️ Configuración'); return;
     }
-    updateGithubStatus(false, 'Sincronizando...');
+    updateGithubStatus(false,'Sincronizando...');
     try {
         const r = await fetch(`https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.file}`,
-            { headers: { 'Authorization': 'token ' + githubConfig.token, 'Accept': 'application/vnd.github.v3+json' } });
+            { headers:{ 'Authorization':'token '+githubConfig.token,'Accept':'application/vnd.github.v3+json' } });
         if (r.ok) {
-            const d = await r.json();
+            const d    = await r.json();
             const json = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));
             permissionsData.users = parseUsersFromJSON(json);
             githubConfig.sha = d.sha;
             localStorage.setItem('bbAnalyticsGithubConfig', JSON.stringify(githubConfig));
             const n = Object.keys(permissionsData.users).length;
-            updateGithubStatus(true, 'Sincronizado ✓ — ' + n + ' usuarios');
+            updateGithubStatus(true,'Sincronizado ✓ — '+n+' usuarios');
             updateLastSync(); renderAll();
-            showAlert('✓ Sincronizado: ' + n + ' usuarios cargados', 'success');
+            showAlert('✓ Sincronizado: '+n+' usuarios cargados','success');
         } else if (r.status===404) { updateGithubStatus(false,'Archivo no encontrado'); showAlert('⚠️ Archivo no encontrado: '+githubConfig.file,'warning'); }
-        else if (r.status===401) { updateGithubStatus(false,'Token inválido'); showAlert('⚠️ Token inválido o expirado.','error'); }
-        else { throw new Error('HTTP '+r.status+' '+r.statusText); }
+        else if (r.status===401)   { updateGithubStatus(false,'Token inválido'); showAlert('⚠️ Token inválido.','error'); }
+        else { throw new Error('HTTP '+r.status); }
     } catch(e) { updateGithubStatus(false,'Error al sincronizar'); showAlert('⚠️ '+e.message,'error'); }
 }
 
-// ─── SAVE TO GITHUB ───────────────────────────────────────────────────────────
 async function saveToGithub() {
     if (!githubConfig.token) { showAlert('⚠️ Configura GitHub primero','error'); return; }
-    if (!githubConfig.sha)   { showAlert('⚠️ Sincroniza primero para obtener la versión actual.','warning'); return; }
+    if (!githubConfig.sha)   { showAlert('⚠️ Sincroniza primero.','warning'); return; }
     if (!confirm('¿Guardar cambios en GitHub?\n\nArchivo: '+githubConfig.file)) return;
     updateGithubStatus(false,'Guardando...');
     try {
         const out = { users:{} };
-        Object.keys(permissionsData.users).forEach(e => { out.users[e] = { dashboards: permissionsData.users[e] }; });
+        Object.keys(permissionsData.users).forEach(e => { out.users[e]={ dashboards: permissionsData.users[e] }; });
         const r = await fetch(`https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.file}`, {
-            method: 'PUT',
-            headers: { 'Authorization':'token '+githubConfig.token, 'Accept':'application/vnd.github.v3+json', 'Content-Type':'application/json' },
+            method:'PUT',
+            headers:{ 'Authorization':'token '+githubConfig.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json' },
             body: JSON.stringify({ message:'Update permissions - '+new Date().toLocaleString('es-MX'), content: btoa(unescape(encodeURIComponent(JSON.stringify(out,null,4)))), sha: githubConfig.sha })
         });
         if (r.ok) {
@@ -669,128 +732,111 @@ async function saveToGithub() {
             githubConfig.sha = d.content.sha;
             localStorage.setItem('bbAnalyticsGithubConfig', JSON.stringify(githubConfig));
             updateGithubStatus(true,'Guardado en GitHub ✓'); updateLastSync();
-            showAlert('✓ Cambios guardados en GitHub exitosamente','success');
+            showAlert('✓ Cambios guardados en GitHub','success');
         } else if (r.status===409) { updateGithubStatus(false,'Conflicto'); showAlert('⚠️ Conflicto: sincroniza primero.','error'); }
-        else { throw new Error('HTTP '+r.status+' '+r.statusText); }
-    } catch(e) { updateGithubStatus(false,'Error al guardar'); showAlert('⚠️ '+e.message,'error'); }
+        else { throw new Error('HTTP '+r.status); }
+    } catch(e) { updateGithubStatus(false,'Error'); showAlert('⚠️ '+e.message,'error'); }
 }
 
-// ─── UI HELPERS ───────────────────────────────────────────────────────────────
+// ─── UI HELPERS ──────────────────────────────────────────────────────────────
 function updateGithubStatus(connected, text) {
-    document.getElementById('githubIndicator').className = 'status-indicator ' + (connected ? 'connected' : 'disconnected');
+    document.getElementById('githubIndicator').className = 'status-indicator '+(connected?'connected':'disconnected');
     document.getElementById('githubStatusText').textContent = text;
 }
 function updateLastSync() {
     document.getElementById('lastSync').textContent = new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
 }
 function switchTab(tabName, btn) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
     if (btn) btn.classList.add('active');
-    else document.querySelectorAll('.tab-btn').forEach(b => { if ((b.getAttribute('onclick')||'').includes("'"+tabName+"'")) b.classList.add('active'); });
+    else document.querySelectorAll('.tab-btn').forEach(b=>{ if((b.getAttribute('onclick')||'').includes("'"+tabName+"'")) b.classList.add('active'); });
     document.getElementById('tab-'+tabName).classList.add('active');
 }
 function showAlert(msg, type, cid) {
-    cid = cid || 'alertContainer'; type = type || 'info';
+    cid  = cid  || 'alertContainer';
+    type = type || 'info';
     const c = document.getElementById(cid); if (!c) return;
-    const a = document.createElement('div'); a.className = 'alert alert-'+type; a.textContent = msg;
-    c.innerHTML = ''; c.appendChild(a);
-    setTimeout(() => { if (a.parentNode) a.remove(); }, 5000);
+    const a = document.createElement('div'); a.className='alert alert-'+type; a.textContent=msg;
+    c.innerHTML=''; c.appendChild(a);
+    setTimeout(()=>{ if(a.parentNode) a.remove(); }, 6000);
 }
 
-// ─── RENDER ───────────────────────────────────────────────────────────────────
+// ─── RENDER ──────────────────────────────────────────────────────────────────
 function renderAll() { updateStats(); renderUsers(); renderDashboards(); }
 
 function updateStats() {
     document.getElementById('totalUsers').textContent = Object.keys(permissionsData.users).length;
-    let t = 0; Object.values(permissionsData.users).forEach(p => t += (p||[]).length);
+    let t=0; Object.values(permissionsData.users).forEach(p=>t+=(p||[]).length);
     document.getElementById('totalPermissions').textContent = t;
 }
 
 function renderPermissionsCheckboxes() {
-    const c = document.getElementById('permissionsCheckboxes'); c.innerHTML = '';
+    const c = document.getElementById('permissionsCheckboxes'); c.innerHTML='';
     DASHBOARDS_CONFIG.forEach(d => {
-        const l = document.createElement('label'); l.className = 'checkbox-label';
-        l.innerHTML = '<input type="checkbox" value="'+d.id+'" class="permission-checkbox"><span>'+d.name+'</span>';
+        const l=document.createElement('label'); l.className='checkbox-label';
+        l.innerHTML='<input type="checkbox" value="'+d.id+'" class="permission-checkbox"><span>'+d.name+'</span>';
         c.appendChild(l);
     });
 }
 
 function renderUsers() {
-    const c = document.getElementById('usersList');
-    const users = Object.keys(permissionsData.users);
-    if (!users.length) {
-        c.innerHTML = '<div class="empty-state"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg><h3>No hay usuarios</h3><p>Agrega usuarios o sincroniza desde GitHub</p></div>';
-        return;
-    }
-    c.innerHTML = users.map(email => {
-        const perms = permissionsData.users[email] || [];
-        const badges = perms.map(id => {
-            const d = DASHBOARDS_CONFIG.find(x => x.id===id);
-            return '<span class="permission-badge">'+(d?d.name:id)+' <span class="remove" onclick="togglePermission(\''+email+'\',\''+id+'\')">×</span></span>';
-        }).join('');
+    const c=document.getElementById('usersList'), users=Object.keys(permissionsData.users);
+    if (!users.length) { c.innerHTML='<div class="empty-state"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg><h3>No hay usuarios</h3><p>Agrega usuarios o sincroniza desde GitHub</p></div>'; return; }
+    c.innerHTML=users.map(email=>{
+        const perms=permissionsData.users[email]||[];
+        const badges=perms.map(id=>{ const d=DASHBOARDS_CONFIG.find(x=>x.id===id); return '<span class="permission-badge">'+(d?d.name:id)+' <span class="remove" onclick="togglePermission(\''+email+'\',\''+id+'\')">×</span></span>'; }).join('');
         return '<div class="user-card"><h3>'+email+'</h3><div class="user-permissions">'+(badges||'<em style="color:rgba(255,255,255,0.4);font-size:0.85em;">Sin permisos asignados</em>')+'</div><div class="action-buttons"><button class="btn btn-primary" onclick="editUserPermissions(\''+email+'\')">✏️ Editar</button><button class="btn btn-danger" onclick="deleteUser(\''+email+'\')">🗑️ Eliminar</button></div></div>';
     }).join('');
 }
 
 function renderDashboards() {
-    const c = document.getElementById('dashboardsList');
-    c.innerHTML = DASHBOARDS_CONFIG.map(d => {
-        let n = 0; Object.values(permissionsData.users).forEach(p => { if ((p||[]).includes(d.id)) n++; });
-        return '<div class="dashboard-card"><h3>'+d.name+'</h3><div class="info"><strong>ID:</strong> '+d.id+'</div><div class="user-count"><strong>👥 '+n+'</strong> usuario'+(n!==1?'s':'')+' con acceso</div></div>';
-    }).join('');
+    const c=document.getElementById('dashboardsList');
+    c.innerHTML=DASHBOARDS_CONFIG.map(d=>{ let n=0; Object.values(permissionsData.users).forEach(p=>{ if((p||[]).includes(d.id)) n++; }); return '<div class="dashboard-card"><h3>'+d.name+'</h3><div class="info"><strong>ID:</strong> '+d.id+'</div><div class="user-count"><strong>👥 '+n+'</strong> usuario'+(n!==1?'s':'')+' con acceso</div></div>'; }).join('');
 }
 
-// ─── USUARIOS ─────────────────────────────────────────────────────────────────
+// ─── USUARIOS ────────────────────────────────────────────────────────────────
 function addUser() {
-    const email = document.getElementById('newUserEmail').value.trim();
+    const email=document.getElementById('newUserEmail').value.trim();
     if (!email||!email.includes('@')) { showAlert('⚠️ Ingresa un email válido','error'); return; }
     if (permissionsData.users[email]) { showAlert('⚠️ Este usuario ya existe','error'); return; }
-    const perms = Array.from(document.querySelectorAll('.permission-checkbox:checked')).map(cb=>cb.value);
+    const perms=Array.from(document.querySelectorAll('.permission-checkbox:checked')).map(cb=>cb.value);
     if (!perms.length) { showAlert('⚠️ Selecciona al menos un dashboard','error'); return; }
-    permissionsData.users[email] = perms;
-    document.getElementById('newUserEmail').value = '';
+    permissionsData.users[email]=perms;
+    document.getElementById('newUserEmail').value='';
     document.querySelectorAll('.permission-checkbox').forEach(cb=>cb.checked=false);
     renderAll(); showAlert('✓ Usuario agregado: '+email+' ('+perms.length+' permisos)','success');
 }
 function deleteUser(email) {
     if (confirm('¿Eliminar a '+email+'?')) { delete permissionsData.users[email]; renderAll(); showAlert('✓ Usuario eliminado','success'); }
 }
-function togglePermission(email, id) {
-    const p = permissionsData.users[email]; const i = p.indexOf(id);
+function togglePermission(email,id) {
+    const p=permissionsData.users[email],i=p.indexOf(id);
     if (i>-1) p.splice(i,1); else p.push(id);
     renderAll(); showAlert('✓ Permiso actualizado','success');
 }
 function editUserPermissions(email) {
-    const cur = permissionsData.users[email]||[];
-    const cbs = DASHBOARDS_CONFIG.map(d=>'<label class="checkbox-label"><input type="checkbox" value="'+d.id+'" '+(cur.includes(d.id)?'checked':'')+' class="edit-cb"><span>'+d.name+'</span></label>').join('');
-    const m = document.createElement('div'); m.className='modal-overlay';
+    const cur=permissionsData.users[email]||[];
+    const cbs=DASHBOARDS_CONFIG.map(d=>'<label class="checkbox-label"><input type="checkbox" value="'+d.id+'" '+(cur.includes(d.id)?'checked':'')+' class="edit-cb"><span>'+d.name+'</span></label>').join('');
+    const m=document.createElement('div'); m.className='modal-overlay';
     m.innerHTML='<div class="modal-box"><h2>Editar: '+email+'</h2><div class="checkbox-group">'+cbs+'</div><div style="margin-top:20px;display:flex;gap:10px;"><button class="btn btn-success" onclick="saveEditedPerms(\''+email+'\',this)">✓ Guardar</button><button class="btn btn-secondary" onclick="this.closest(\'.modal-overlay\').remove()">Cancelar</button></div></div>';
     document.body.appendChild(m);
 }
-function saveEditedPerms(email, btn) {
-    const m = btn.closest('.modal-overlay');
-    permissionsData.users[email] = Array.from(m.querySelectorAll('.edit-cb:checked')).map(cb=>cb.value);
+function saveEditedPerms(email,btn) {
+    const m=btn.closest('.modal-overlay');
+    permissionsData.users[email]=Array.from(m.querySelectorAll('.edit-cb:checked')).map(cb=>cb.value);
     renderAll(); showAlert('✓ Permisos actualizados','success'); m.remove();
 }
 function filterUsers() {
-    const s = document.getElementById('searchUsers').value.toLowerCase();
+    const s=document.getElementById('searchUsers').value.toLowerCase();
     document.querySelectorAll('.user-card').forEach(c=>{ c.style.display=c.querySelector('h3').textContent.toLowerCase().includes(s)?'block':'none'; });
 }
 
-// ─── IMPORTAR / EXPORTAR ──────────────────────────────────────────────────────
+// ─── IMPORTAR / EXPORTAR ─────────────────────────────────────────────────────
 function handleFileImport(event) {
-    const file = event.target.files[0]; if (!file) return;
-    const r = new FileReader();
-    r.onload = e => {
-        try {
-            const d = JSON.parse(e.target.result);
-            if (!d.users) { showAlert('⚠️ Formato inválido: falta la clave "users"','error','alertContainerConfig'); return; }
-            permissionsData.users = parseUsersFromJSON(d);
-            renderAll(); showAlert('✓ '+Object.keys(permissionsData.users).length+' usuarios importados','success');
-            switchTab('usuarios');
-        } catch(err) { showAlert('⚠️ Error al leer archivo: '+err.message,'error','alertContainerConfig'); }
-    };
+    const file=event.target.files[0]; if (!file) return;
+    const r=new FileReader();
+    r.onload=e=>{ try { const d=JSON.parse(e.target.result); if (!d.users) { showAlert('⚠️ Formato inválido','error','alertContainerConfig'); return; } permissionsData.users=parseUsersFromJSON(d); renderAll(); showAlert('✓ '+Object.keys(permissionsData.users).length+' usuarios importados','success'); switchTab('usuarios'); } catch(err) { showAlert('⚠️ '+err.message,'error','alertContainerConfig'); } };
     r.readAsText(file);
 }
 function downloadJSON() {
