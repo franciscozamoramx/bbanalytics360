@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "name": "Francisco Zamora X",
+    "email": "coordinador.bi.bb@gmail.com",
+    "status": "pending",
+    "passHash": null,
+    "createdAt": "2026-04-09T16:59:34.355Z",
+    "activatedAt": null
+  }
+]
