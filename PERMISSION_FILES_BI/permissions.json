@@ -3,6 +3,7 @@
         "francisco.zamora@bigbola.com": {
             "dashboards": [
                 "principal",
+                "adt",
                 "bigplayers",
                 "bolipoits",
                 "ingreso_tarjetas",
