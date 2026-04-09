@@ -162,7 +162,7 @@
 <!-- LOGIN OVERLAY -->
 <div class="login-overlay" id="loginOverlay" style="display:none;">
     <div class="login-box">
-        <div class="lock-icon">🔐</div>
+        <img src="./icon_crystal.png" style="width:72px;height:72px;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto;">
         <h2>BB <span>Analytics 360</span></h2>
         <p class="subtitle">Administrador de Permisos — Acceso restringido</p>
         <div class="login-error" id="loginError"></div>
@@ -182,7 +182,7 @@
 <!-- CHANGE PASSWORD OVERLAY (activación por token) -->
 <div class="change-pass-overlay" id="changePassOverlay" style="display:none;">
     <div class="login-box">
-        <div class="lock-icon">🔑</div>
+        <img src="./icon_crystal.png" style="width:72px;height:72px;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto;">
         <h2>BB <span>Analytics 360</span></h2>
         <p class="subtitle">Activa tu cuenta estableciendo una contraseña</p>
         <div class="login-error" id="changePassError"></div>
@@ -206,7 +206,7 @@
 
 <div class="container">
     <div class="header">
-        <h1>🎰 BB <span class="title-highlight">Analytics 360</span></h1>
+        <h1><img src="./icon_crystal.png" style="width:40px;height:40px;vertical-align:middle;margin-right:10px;">BB <span class="title-highlight">Analytics 360</span></h1>
         <p>Administrador de Permisos</p>
     </div>
 
@@ -365,11 +365,46 @@ async function sha256(text) {
     return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
+// ── Admins: cache local + GitHub como fuente de verdad ──────────────────────
 function getAdmins() {
-    try { return JSON.parse(localStorage.getItem('bb_admins') || '[]'); } catch(e) { return []; }
+    try { return JSON.parse(localStorage.getItem('bb_admins_cache') || '[]'); } catch(e) { return []; }
 }
 function saveAdmins(admins) {
-    localStorage.setItem('bb_admins', JSON.stringify(admins));
+    localStorage.setItem('bb_admins_cache', JSON.stringify(admins));
+}
+
+// Cargar admins desde GitHub al iniciar (para que el token funcione en cualquier browser)
+async function loadAdminsFromGithub() {
+    if (!githubConfig.token || !githubConfig.user || !githubConfig.repo) return;
+    try {
+        const url = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/PERMISSION_FILES_BI/admins.json`;
+        const r = await fetch(url, { headers: { 'Authorization': 'token ' + githubConfig.token, 'Accept': 'application/vnd.github.v3+json' } });
+        if (r.ok) {
+            const d    = await r.json();
+            const admins = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));
+            localStorage.setItem('bb_admins_cache', JSON.stringify(admins));
+            localStorage.setItem('bb_admins_sha', d.sha);
+            return admins;
+        }
+    } catch(e) { console.warn('No se pudo cargar admins desde GitHub:', e); }
+    return null;
+}
+
+async function saveAdminsToGithub(admins) {
+    if (!githubConfig.token || !githubConfig.user || !githubConfig.repo) return;
+    try {
+        const url     = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/PERMISSION_FILES_BI/admins.json`;
+        const sha     = localStorage.getItem('bb_admins_sha');
+        const payload = { message: 'Update admins - ' + new Date().toLocaleString('es-MX'), content: btoa(unescape(encodeURIComponent(JSON.stringify(admins, null, 2)))) };
+        if (sha) payload.sha = sha;
+        const r = await fetch(url, { method: 'PUT', headers: { 'Authorization': 'token ' + githubConfig.token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        if (r.ok) {
+            const d = await r.json();
+            localStorage.setItem('bb_admins_sha', d.content.sha);
+        }
+    } catch(e) { console.warn('No se pudo guardar admins en GitHub:', e); }
+    // Siempre actualizar cache local
+    saveAdmins(admins);
 }
 
 // Verificar token de activación en URL
@@ -377,6 +412,14 @@ async function checkActivationToken() {
     const params = new URLSearchParams(window.location.search);
     const token  = params.get('token');
     if (!token) return false;
+
+    // Intentar cargar desde GitHub para que funcione en cualquier browser/dispositivo
+    // githubConfig puede no estar listo aún — leerlo directo de localStorage
+    const savedConfig = JSON.parse(localStorage.getItem('bbAnalyticsGithubConfig') || '{}');
+    if (savedConfig.token && savedConfig.user && savedConfig.repo) {
+        githubConfig = savedConfig;
+        await loadAdminsFromGithub();
+    }
 
     const admins = getAdmins();
     const admin  = admins.find(a => a.activationToken === token && a.status === 'pending');
@@ -416,6 +459,7 @@ async function activateAccount() {
     admins[idx].activationToken  = null;
     admins[idx].activatedAt      = new Date().toISOString();
     saveAdmins(admins);
+    saveAdminsToGithub(admins);
 
     // Limpiar token de URL
     window.history.replaceState({}, '', window.location.pathname);
@@ -500,7 +544,8 @@ async function createAdmin() {
         activatedAt: null
     };
     admins.push(newAdmin);
-    saveAdmins(admins);
+    saveAdmins(admins);  // cache local inmediato
+    saveAdminsToGithub(admins);  // persistir en GitHub
 
     // Enviar correo via EmailJS
     btn.disabled   = true;
@@ -550,6 +595,7 @@ function deleteAdmin(email) {
     if (!confirm(`¿Eliminar a ${email}?\nEsta acción no se puede deshacer.`)) return;
     const admins = getAdmins().filter(a => a.email !== email);
     saveAdmins(admins);
+    saveAdminsToGithub(admins);
     renderAdmins();
     showAlert('✓ Administrador eliminado', 'success', 'alertContainerAdmins');
 }
@@ -566,6 +612,7 @@ function resetAdminPassword(email) {
         admins[idx].status          = 'pending';
         admins[idx].passHash        = null;
         saveAdmins(admins);
+        saveAdminsToGithub(admins);
 
         const activationLink = `${window.location.origin}${window.location.pathname}?token=${shortToken}`;
         emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
@@ -617,6 +664,10 @@ function filterAdmins() {
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 async function init() {
+    // Precargar config de GitHub desde localStorage
+    const savedCfg = JSON.parse(localStorage.getItem('bbAnalyticsGithubConfig') || '{}');
+    if (savedCfg.token) githubConfig = savedCfg;
+
     // Si hay token de activación en la URL, mostrar solo esa pantalla
     const params = new URLSearchParams(window.location.search);
     if (params.get('token')) {
