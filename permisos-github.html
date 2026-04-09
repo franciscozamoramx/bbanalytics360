@@ -778,9 +778,9 @@ function applyRolePermissions() {
     // Botón "Configurar GitHub" en la barra de status
     toggle(document.getElementById('btnConfigGithub'), isMaster);
 
-    // Botones Sincronizar y Guardar en GitHub
-    toggle(document.getElementById('syncBtn'), isMaster);
-    toggle(document.getElementById('saveBtn'), isMaster);
+    // Botones Sincronizar y Guardar en GitHub: visibles para TODOS los admins
+    // (se habilitan solo cuando el token de GitHub está configurado)
+    // No se ocultan por rol — solo por disponibilidad de token
 
     // Si el usuario está en una tab restringida, redirigir a Usuarios
     if (!isMaster) {
