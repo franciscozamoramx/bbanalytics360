@@ -525,13 +525,10 @@ async function activateAccount() {
     saveAdmins(admins);
     saveAdminsToGithub(admins);
 
-    // Limpiar URL y mostrar portal
-    window.history.replaceState({}, '', window.location.pathname);
-    document.documentElement.removeAttribute('data-has-token');
-    document.getElementById('changePassOverlay').style.display = 'none';
+    // Guardar sesión y recargar la página sin el token en la URL
     sessionStorage.setItem('bb_admin_auth', email);
-    document.getElementById('topbarLogout').style.display = 'block';
-    showAlert('✓ Cuenta activada. ¡Bienvenido, ' + name.split(' ')[0] + '!', 'success');
+    sessionStorage.setItem('bb_just_activated', '1');
+    window.location.href = window.location.pathname;
 }
 
 async function doLogin() {
@@ -761,6 +758,12 @@ async function init() {
         } else {
             document.getElementById('loginOverlay').style.display = 'flex';
         }
+    }
+    // Mostrar bienvenida si viene de activación recién completada
+    const justActivated = sessionStorage.getItem('bb_just_activated');
+    if (justActivated) {
+        sessionStorage.removeItem('bb_just_activated');
+        setTimeout(() => showAlert('✓ Cuenta activada correctamente. ¡Bienvenido!', 'success'), 500);
     }
 
     loadGithubConfig();
