@@ -533,9 +533,9 @@ function loadGithubConfig() {
         syncFromGithub();
     } else {
         // Sin token: solo lectura via raw.githubusercontent.com (repo público)
-        updateGithubStatus(true, 'Solo lectura — configura token para guardar cambios');
+        updateGithubStatus(true, 'Sincronizado — configura token para guardar cambios');
         document.getElementById('syncBtn').disabled = false;
-        document.getElementById('saveBtn').disabled = true;
+        document.getElementById('saveBtn').disabled = false;
         syncFromGithubPublic();
     }
 }
@@ -603,7 +603,11 @@ function parseUsersFromJSON(data) {
 
 // ─── SYNC ────────────────────────────────────────────────────────────────────
 async function syncFromGithub() {
-    if (!githubConfig.token || !githubConfig.user || !githubConfig.repo) {
+    // Si no hay token, sincronizar via URL pública (solo lectura)
+    if (!githubConfig.token) {
+        return syncFromGithubPublic();
+    }
+    if (!githubConfig.user || !githubConfig.repo) {
         updateGithubStatus(false,'No configurado — ve a ⚙️ Configuración'); return;
     }
     updateGithubStatus(false,'Sincronizando...');
@@ -627,7 +631,10 @@ async function syncFromGithub() {
 }
 
 async function saveToGithub() {
-    if (!githubConfig.token) { showAlert('⚠️ Configura GitHub primero','error'); return; }
+    if (!githubConfig.token) {
+        showAlert('⚠️ Necesitas un Personal Access Token para guardar. Ve a ⚙️ Configuración.', 'warning');
+        return;
+    }
     if (!githubConfig.sha)   { showAlert('⚠️ Sincroniza primero.','warning'); return; }
     if (!confirm('¿Guardar cambios en GitHub?\n\nArchivo: '+githubConfig.file)) return;
     updateGithubStatus(false,'Guardando...');
