@@ -347,46 +347,65 @@ function showActivationError(msg) {
 }
 
 async function confirmActivation() {
-    const screen  = document.getElementById('activationScreen');
-    const email   = screen.dataset.email;
-    const name    = screen.dataset.name;
-    const pass1   = document.getElementById('actPass1').value;
-    const pass2   = document.getElementById('actPass2').value;
-    const errEl   = document.getElementById('activationError');
-
+    const errEl = document.getElementById('activationError');
+    const pass1 = document.getElementById('actPass1').value;
+    const pass2 = document.getElementById('actPass2').value;
     errEl.style.display = 'none';
-    if (!email) { errEl.style.display='block'; errEl.textContent='Error: recarga la página e intenta de nuevo.'; return; }
-    if (pass1.length < 8) { errEl.style.display='block'; errEl.textContent='Mínimo 8 caracteres'; return; }
-    if (pass1 !== pass2)  { errEl.style.display='block'; errEl.textContent='Las contraseñas no coinciden'; return; }
+
+    // Leer SIEMPRE desde la URL — nunca depender de dataset
+    const params = new URLSearchParams(window.location.search);
+    const token  = params.get('token');
+    const emEnc  = params.get('em');
+    const nmEnc  = params.get('nm');
+
+    if (!token || !emEnc || !nmEnc) {
+        errEl.style.display='block';
+        errEl.textContent='Enlace incompleto. Solicita un nuevo correo de activacion.';
+        return;
+    }
+
+    let email, name;
+    try { email = decodeURIComponent(atob(emEnc)); name = decodeURIComponent(atob(nmEnc)); }
+    catch(e) { errEl.style.display='block'; errEl.textContent='Enlace invalido.'; return; }
+
+    // Verificar token criptograficamente
+    const expected = (await sha256(email + SECRET)).substring(0, 40);
+    if (token !== expected) {
+        errEl.style.display='block';
+        errEl.textContent='Enlace no valido. Solicita un nuevo correo.';
+        return;
+    }
+
+    if (pass1.length < 8) { errEl.style.display='block'; errEl.textContent='Minimo 8 caracteres'; return; }
+    if (pass1 !== pass2)  { errEl.style.display='block'; errEl.textContent='Las contrasenas no coinciden'; return; }
 
     const btn = document.getElementById('actBtn');
     btn.disabled = true; btn.textContent = 'Activando...';
 
     const passHash = await sha256(pass1 + SALT);
 
-    // Cargar admins frescos desde GitHub
-    let admins = [];
-    try {
-        const r = await fetch(`https://raw.githubusercontent.com/franciscozamoramx/bbanalytics360/main/PERMISSION_FILES_BI/admins.json?t=${Date.now()}`);
-        if (r.ok) admins = await r.json();
-    } catch(e) { admins = getAdmins(); }
-
+    // Guardar en localStorage — esto SIEMPRE funciona sin importar el browser
+    let admins = getAdmins();
     let idx = admins.findIndex(a => a.email === email);
     if (idx === -1) {
-        admins.push({ name, email, status:'pending', passHash:null, createdAt:new Date().toISOString(), activatedAt:null });
-        idx = admins.length - 1;
+        admins.push({ name, email, status:'active', passHash, createdAt:new Date().toISOString(), activatedAt:new Date().toISOString() });
+    } else {
+        admins[idx].passHash    = passHash;
+        admins[idx].status      = 'active';
+        admins[idx].activatedAt = new Date().toISOString();
+        admins[idx].name        = admins[idx].name || name;
     }
-    admins[idx].passHash    = passHash;
-    admins[idx].status      = 'active';
-    admins[idx].activatedAt = new Date().toISOString();
-    admins[idx].name        = admins[idx].name || name;
     saveAdmins(admins);
-    await saveAdminsToGithub(admins);
 
-    // Redirigir al login limpio
-    // Guardar flag para que init() no sobreescriba localStorage con GitHub
+    // Intentar guardar en GitHub (puede fallar si no hay token — no es bloqueante)
+    saveAdminsToGithub(admins).catch(()=>{});
+
+    // Marcar sesion activa directamente — no necesita pasar por login
+    sessionStorage.setItem('bb_admin_auth', email);
     sessionStorage.setItem('bb_activated_name', name.split(' ')[0]);
     sessionStorage.setItem('bb_skip_github_admins', '1');
+
+    // Ir al portal directamente
     window.location.href = window.location.pathname;
 }
 
