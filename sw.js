@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bb-analytics-360-v1.76';
+const CACHE_NAME = 'bb-analytics-360-v1.81';
 const ASSETS = [
     '/bbanalytics360/',
     '/bbanalytics360/index.html',
