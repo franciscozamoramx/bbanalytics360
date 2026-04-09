@@ -213,6 +213,10 @@
             <p style="font-size:0.85em;color:rgba(255,255,255,0.6);margin-bottom:12px;">Se enviara un correo con el enlace para establecer contrasena.</p>
             <button class="btn btn-success" onclick="createAdmin()" id="createAdminBtn">Crear Administrador y Enviar Correo</button>
         </div>
+        <div id="adminsSyncBar" style="display:none; margin-bottom:12px;">
+            <button class="btn btn-warning" onclick="syncAdminsToGithub()">☁️ Sincronizar admins a GitHub</button>
+            <span style="font-size:0.82em; color:rgba(255,255,255,0.6); margin-left:8px;">Actualiza el JSON con los datos locales</span>
+        </div>
         <input type="text" class="search-box" id="searchAdmins" placeholder="Buscar administrador..." onkeyup="filterAdmins()">
         <div id="adminsList"></div>
     </div>
@@ -809,7 +813,17 @@ async function resetAdminPassword(email) {
     renderAdmins();
 }
 
+async function syncAdminsToGithub() {
+    if (!githubConfig.token) { showAlert('Necesitas configurar tu token de GitHub primero', 'warning', 'alertContainerAdmins'); return; }
+    try {
+        await saveAdminsToGithub(getAdmins());
+        showAlert('Admins sincronizados a GitHub correctamente', 'success', 'alertContainerAdmins');
+    } catch(e) { showAlert('Error: ' + e.message, 'error', 'alertContainerAdmins'); }
+}
+
 function renderAdmins() {
+    const syncBar = document.getElementById('adminsSyncBar');
+    if (syncBar) syncBar.style.display = githubConfig.token ? 'block' : 'none';
     const c=document.getElementById('adminsList'); const admins=getAdmins();
     if(!admins.length){c.innerHTML='<div class="empty-state"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg><h3>No hay administradores</h3><p>Agrega el primero usando el formulario</p></div>';return;}
     c.innerHTML=admins.map(a=>{
