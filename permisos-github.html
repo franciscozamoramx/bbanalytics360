@@ -696,10 +696,10 @@
                 
                 if (response.ok) {
                     updateGithubStatus(true, 'Conexión exitosa ✓');
-                    showAlert('✓ Conexión exitosa con GitHub', 'success', 'alertContainerConfig');
+                    showAlert(`✓ Conexión exitosa con GitHub. Archivo encontrado: ${githubConfig.file}`, 'success', 'alertContainerConfig');
                 } else if (response.status === 404) {
                     updateGithubStatus(false, 'Archivo no encontrado');
-                    showAlert('⚠️ Archivo bb_permissions.json no encontrado en el repo', 'warning', 'alertContainerConfig');
+                    showAlert(`⚠️ Archivo no encontrado: ${githubConfig.file}`, 'warning', 'alertContainerConfig');
                 } else {
                     updateGithubStatus(false, 'Error de conexión');
                     showAlert('⚠️ Error: ' + response.statusText, 'error', 'alertContainerConfig');
