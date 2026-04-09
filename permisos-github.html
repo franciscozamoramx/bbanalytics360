@@ -411,6 +411,7 @@ async function doLogin() {
         document.getElementById('topbarLogout').style.display = 'block';
         // Cargar admins desde GitHub ahora que tenemos acceso
         loadGithubConfig();
+        renderAdmins();
     } else {
         errEl.style.display = 'block';
         errEl.textContent   = 'Usuario o contraseña incorrectos';
@@ -443,6 +444,7 @@ async function init() {
         const newName = sessionStorage.getItem('bb_activated_name');
         if (newName) { sessionStorage.removeItem('bb_activated_name'); setTimeout(()=>showAlert('✓ Cuenta activada. ¡Bienvenido, '+newName+'!','success'), 400); }
         loadGithubConfig();
+        renderAdmins();
     } else {
         // 3. Sin sesión → mostrar login
         document.getElementById('loginOverlay').style.display = 'flex';
@@ -704,6 +706,78 @@ function downloadJSON() {
     const b=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});
     const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='permissions.json'; a.click();
     URL.revokeObjectURL(a.href); showAlert('✓ JSON descargado','success','alertContainerConfig');
+}
+
+
+// ─── ADMIN MANAGEMENT ────────────────────────────────────────────────────────
+async function createAdmin() {
+    const name  = document.getElementById('newAdminName').value.trim();
+    const email = document.getElementById('newAdminEmail').value.trim().toLowerCase();
+    const btn   = document.getElementById('createAdminBtn');
+    if (!name)  { showAlert('Ingresa el nombre completo', 'error', 'alertContainerAdmins'); return; }
+    if (!email||!email.includes('@')) { showAlert('Ingresa un email valido', 'error', 'alertContainerAdmins'); return; }
+    const admins = getAdmins();
+    if (admins.find(a=>a.email.toLowerCase()===email)) { showAlert('Este correo ya existe', 'error', 'alertContainerAdmins'); return; }
+    const tok  = (await sha256(email+SECRET)).substring(0,40);
+    const em   = btoa(encodeURIComponent(email));
+    const nm   = btoa(encodeURIComponent(name));
+    const link = window.location.origin+window.location.pathname+'?token='+tok+'&em='+em+'&nm='+nm;
+    admins.push({name,email,status:'pending',passHash:null,createdAt:new Date().toISOString(),activatedAt:null});
+    saveAdmins(admins);
+    saveAdminsToGithub(admins);
+    btn.disabled=true; btn.textContent='Enviando correo...';
+    try {
+        await emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{to_name:name,to_email:email,activation_link:link});
+        showAlert('Administrador creado y correo enviado a '+email,'success','alertContainerAdmins');
+        document.getElementById('newAdminName').value='';
+        document.getElementById('newAdminEmail').value='';
+        renderAdmins();
+    } catch(err) {
+        showAlert('Correo no enviado ('+( err.text||err)+'). Link: '+link,'warning','alertContainerAdmins');
+        renderAdmins();
+    }
+    btn.disabled=false; btn.textContent='Crear Administrador y Enviar Correo';
+}
+
+async function resendAdminEmail(email) {
+    const admins=getAdmins(); const admin=admins.find(a=>a.email===email);
+    if(!admin){showAlert('No encontrado','error','alertContainerAdmins');return;}
+    const tok=(await sha256(email+SECRET)).substring(0,40);
+    const link=window.location.origin+window.location.pathname+'?token='+tok+'&em='+btoa(encodeURIComponent(email))+'&nm='+btoa(encodeURIComponent(admin.name));
+    try { await emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{to_name:admin.name,to_email:email,activation_link:link}); showAlert('Correo reenviado a '+email,'success','alertContainerAdmins'); }
+    catch(err){ showAlert('Error al reenviar. Link: '+link,'warning','alertContainerAdmins'); }
+}
+
+function deleteAdmin(email) {
+    if(!confirm('Eliminar a '+email+'?')) return;
+    const admins=getAdmins().filter(a=>a.email!==email);
+    saveAdmins(admins); saveAdminsToGithub(admins); renderAdmins();
+    showAlert('Administrador eliminado','success','alertContainerAdmins');
+}
+
+async function resetAdminPassword(email) {
+    if(!confirm('Restablecer contrasena de '+email+'?')) return;
+    const admins=getAdmins(); const idx=admins.findIndex(a=>a.email===email); if(idx===-1)return;
+    admins[idx].passHash=null; admins[idx].status='pending';
+    saveAdmins(admins); saveAdminsToGithub(admins);
+    const tok=(await sha256(email+SECRET)).substring(0,40);
+    const link=window.location.origin+window.location.pathname+'?token='+tok+'&em='+btoa(encodeURIComponent(email))+'&nm='+btoa(encodeURIComponent(admins[idx].name));
+    try { await emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{to_name:admins[idx].name,to_email:email,activation_link:link}); showAlert('Correo enviado a '+email,'success','alertContainerAdmins'); }
+    catch(err){ showAlert('Error. Link: '+link,'warning','alertContainerAdmins'); }
+    renderAdmins();
+}
+
+function renderAdmins() {
+    const c=document.getElementById('adminsList'); const admins=getAdmins();
+    if(!admins.length){c.innerHTML='<div class="empty-state"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg><h3>No hay administradores</h3><p>Agrega el primero usando el formulario</p></div>';return;}
+    c.innerHTML=admins.map(a=>{
+        const badge=a.status==='active'?'<span class="status-badge status-active">Activo</span>':'<span class="status-badge status-pending">Pendiente</span>';
+        const created=new Date(a.createdAt).toLocaleDateString('es-MX');
+        const actions=a.status==='active'
+            ?'<button class="btn btn-warning" onclick="resetAdminPassword(\''+a.email+'\')">Restablecer contrasena</button>'
+            :'<button class="btn btn-warning" onclick="resendAdminEmail(\''+a.email+'\')">Reenviar correo</button>';
+        return '<div class="admin-card"><h3>'+a.name+' '+badge+'</h3><div class="meta">'+a.email+' · Creado: '+created+'</div><div class="action-buttons">'+actions+'<button class="btn btn-danger" onclick="deleteAdmin(\''+a.email+'\')">Eliminar</button></div></div>';
+    }).join('');
 }
 
 init();
