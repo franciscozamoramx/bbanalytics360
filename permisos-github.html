@@ -7,6 +7,20 @@
     <title>BB Analytics 360 - Admin Permisos</title>
     <link rel="icon" type="image/png" href="./icon_crystal.png">
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script>
+        // Ejecutar ANTES del render — detectar token en URL
+        (function() {
+            var token = new URLSearchParams(window.location.search).get('token');
+            if (token) {
+                document.documentElement.setAttribute('data-has-token', '1');
+            }
+        })();
+    </script>
+    <style>
+        /* Si hay token: mostrar solo changePassOverlay al cargar */
+        html[data-has-token="1"] #loginOverlay    { display: none !important; }
+        html[data-has-token="1"] #changePassOverlay { display: flex !important; }
+    </style>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: linear-gradient(135deg, #1a3a8f 0%, #152c6e 100%); min-height: 100vh; padding: 20px; color: white; }
@@ -679,29 +693,30 @@ function filterAdmins() {
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 async function init() {
-    // Precargar config de GitHub desde localStorage
     const savedCfg = JSON.parse(localStorage.getItem('bbAnalyticsGithubConfig') || '{}');
     if (savedCfg.token) githubConfig = savedCfg;
 
-    // Si hay token de activación en la URL, mostrar solo esa pantalla
     const params = new URLSearchParams(window.location.search);
-    if (params.get('token')) {
-        document.getElementById('changePassOverlay').style.display = 'flex';
+    const token  = params.get('token');
+
+    if (token) {
+        // El CSS ya muestra changePassOverlay — solo validar el token
         const valid = await checkActivationToken();
         if (!valid) {
-            // Token inválido o ya usado — mostrar login normal
             document.getElementById('changePassOverlay').style.display = 'none';
-            document.getElementById('changePassError').style.display = 'none';
-            document.getElementById('loginOverlay').style.display = 'flex';
+            document.documentElement.removeAttribute('data-has-token');
             showChangePassError('Este enlace ya fue usado o ha expirado. Solicita uno nuevo al administrador.');
+            document.getElementById('loginOverlay').style.display = 'flex';
         }
     } else {
-        // Sin token — flujo normal de login
-        checkAuth();
-        if (!sessionStorage.getItem('bb_admin_auth')) {
+        // Sin token — mostrar login si no hay sesión activa
+        if (sessionStorage.getItem('bb_admin_auth')) {
+            document.getElementById('topbarLogout').style.display = 'block';
+        } else {
             document.getElementById('loginOverlay').style.display = 'flex';
         }
     }
+
     loadGithubConfig();
     renderPermissionsCheckboxes();
     renderDashboards();
