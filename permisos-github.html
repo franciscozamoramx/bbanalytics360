@@ -246,6 +246,25 @@
 </div>
 </div>
 
+<!-- MODAL: Ingresar token para guardar -->
+<div id="tokenModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);z-index:3000;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+    <div style="background:linear-gradient(135deg,#1a3a8f,#152c6e);padding:30px;border-radius:15px;max-width:420px;width:90%;border:1px solid rgba(255,255,255,0.2);box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+        <h3 style="color:#FFD700;margin-bottom:8px;font-size:1.1em;">🔐 Token de GitHub requerido</h3>
+        <p style="color:rgba(255,255,255,0.7);font-size:0.85em;margin-bottom:16px;">Para guardar cambios necesitas un Personal Access Token con permisos de <strong>repo</strong>.</p>
+        <div id="tokenModalAlert" style="display:none;background:rgba(239,68,68,0.2);color:#fca5a5;border:1px solid rgba(239,68,68,0.4);border-radius:8px;padding:10px;font-size:0.85em;margin-bottom:12px;"></div>
+        <input type="password" id="tokenModalInput" placeholder="ghp_xxxxxxxxxxxx"
+               style="width:100%;padding:11px 14px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.3);border-radius:8px;color:white;font-size:0.95em;margin-bottom:16px;"
+               onkeydown="if(event.key==='Enter') confirmTokenModal()">
+        <div style="display:flex;gap:10px;">
+            <button onclick="confirmTokenModal()" style="flex:1;padding:11px;background:linear-gradient(to bottom,#FFD700,#FF8C00);border:none;border-radius:50px;color:#152c6e;font-weight:bold;cursor:pointer;">✓ Guardar</button>
+            <button onclick="closeTokenModal()" style="flex:1;padding:11px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:50px;color:white;cursor:pointer;">Cancelar</button>
+        </div>
+        <p style="color:rgba(255,255,255,0.4);font-size:0.75em;margin-top:12px;text-align:center;">
+            GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
+        </p>
+    </div>
+</div>
+
 <script>
 // ─── EMAILJS CONFIG ───────────────────────────────────────────────────────────
 const EMAILJS_PUBLIC_KEY  = 'O9qBbBnJTakwM5iSk';
@@ -632,7 +651,7 @@ async function syncFromGithub() {
 
 async function saveToGithub() {
     if (!githubConfig.token) {
-        showAlert('⚠️ Necesitas un Personal Access Token para guardar. Ve a ⚙️ Configuración.', 'warning');
+        openTokenModal();
         return;
     }
     if (!githubConfig.sha)   { showAlert('⚠️ Sincroniza primero.','warning'); return; }
@@ -766,6 +785,48 @@ function downloadJSON() {
 }
 
 
+
+
+// ─── TOKEN MODAL ─────────────────────────────────────────────────────────────
+function openTokenModal() {
+    const modal = document.getElementById('tokenModal');
+    modal.style.display = 'flex';
+    document.getElementById('tokenModalInput').value = '';
+    document.getElementById('tokenModalAlert').style.display = 'none';
+    setTimeout(() => document.getElementById('tokenModalInput').focus(), 100);
+}
+
+function closeTokenModal() {
+    document.getElementById('tokenModal').style.display = 'none';
+}
+
+async function confirmTokenModal() {
+    const token = document.getElementById('tokenModalInput').value.trim();
+    const alertEl = document.getElementById('tokenModalAlert');
+    if (!token || !token.startsWith('ghp_')) {
+        alertEl.style.display = 'block';
+        alertEl.textContent = 'Token inválido. Debe comenzar con ghp_';
+        return;
+    }
+    // Verificar que el token funciona
+    alertEl.style.display = 'none';
+    try {
+        const url = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.file}`;
+        const r = await fetch(url, { headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' } });
+        if (r.status === 401) { alertEl.style.display='block'; alertEl.textContent='Token inválido o expirado'; return; }
+        if (r.status === 403) { alertEl.style.display='block'; alertEl.textContent='Token sin permisos de escritura (necesita scope repo)'; return; }
+        if (r.ok) { const d = await r.json(); githubConfig.sha = d.sha; }
+    } catch(e) { alertEl.style.display='block'; alertEl.textContent='Error de red: ' + e.message; return; }
+
+    // Token válido — guardarlo y proceder
+    githubConfig.token = token;
+    const saved = JSON.parse(localStorage.getItem('bbAnalyticsGithubConfig') || '{}');
+    saved.token = token;
+    localStorage.setItem('bbAnalyticsGithubConfig', JSON.stringify(saved));
+    document.getElementById('syncBtn').disabled = false;
+    closeTokenModal();
+    saveToGithub(); // Reintentar ahora con el token
+}
 
 // ─── ROLE PERMISSIONS ────────────────────────────────────────────────────────
 function applyRolePermissions() {
