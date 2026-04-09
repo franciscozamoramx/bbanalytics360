@@ -421,15 +421,22 @@ async function checkActivationToken() {
     const token  = params.get('token');
     if (!token) return false;
 
-    // Intentar cargar desde GitHub para que funcione en cualquier browser/dispositivo
-    // githubConfig puede no estar listo aún — leerlo directo de localStorage
-    const savedConfig = JSON.parse(localStorage.getItem('bbAnalyticsGithubConfig') || '{}');
-    if (savedConfig.token && savedConfig.user && savedConfig.repo) {
-        githubConfig = savedConfig;
-        await loadAdminsFromGithub();
+    // Leer admins.json directamente desde URL pública — sin necesitar config ni localStorage
+    // Funciona en cualquier browser, incluso la primera vez que el usuario abre la página
+    let admins = [];
+    try {
+        const url = 'https://raw.githubusercontent.com/franciscozamoramx/bbanalytics360/main/PERMISSION_FILES_BI/admins.json?t=' + Date.now();
+        const r   = await fetch(url);
+        if (r.ok) {
+            admins = await r.json();
+            // Guardar en cache local también
+            localStorage.setItem('bb_admins_cache', JSON.stringify(admins));
+        }
+    } catch(e) {
+        // Fallback: intentar desde cache local
+        admins = getAdmins();
     }
 
-    const admins = getAdmins();
     const admin  = admins.find(a => a.activationToken === token && a.status === 'pending');
 
     if (!admin) return false;
