@@ -431,12 +431,15 @@ async function doLogin() {
 
     if (admin || isMaster) {
         sessionStorage.setItem('bb_admin_auth', user);
+        // Solo el admin maestro tiene acceso completo
+        if (isMaster) sessionStorage.setItem('bb_is_master', '1');
+        else          sessionStorage.removeItem('bb_is_master');
         document.getElementById('loginOverlay').style.display = 'none';
         document.getElementById('portalRoot').style.display   = 'block';
         document.getElementById('topbarLogout').style.display = 'block';
-        // Cargar admins desde GitHub ahora que tenemos acceso
         loadGithubConfig();
         renderAdmins();
+        applyRolePermissions();
     } else {
         errEl.style.display = 'block';
         errEl.textContent   = 'Usuario o contraseña incorrectos';
@@ -469,6 +472,7 @@ async function init() {
         const newName = sessionStorage.getItem('bb_activated_name');
         if (newName) { sessionStorage.removeItem('bb_activated_name'); setTimeout(()=>showAlert('✓ Cuenta activada. ¡Bienvenido, '+newName+'!','success'), 400); }
         loadGithubConfig();
+        applyRolePermissions();
         renderAdmins();
     } else {
         // 3. Sin sesión → mostrar login
@@ -754,6 +758,30 @@ function downloadJSON() {
     URL.revokeObjectURL(a.href); showAlert('✓ JSON descargado','success','alertContainerConfig');
 }
 
+
+
+// ─── ROLE PERMISSIONS ────────────────────────────────────────────────────────
+function applyRolePermissions() {
+    const isMaster = sessionStorage.getItem('bb_is_master') === '1';
+
+    // Tab "Administradores": solo admin maestro
+    const tabAdmins = document.querySelector('.tab-btn[onclick*="admins"]');
+    const panelAdmins = document.getElementById('tab-admins');
+    if (tabAdmins)  tabAdmins.style.display  = isMaster ? '' : 'none';
+    if (panelAdmins) panelAdmins.dataset.restricted = isMaster ? '' : '1';
+
+    // Tab "Configuración": solo admin maestro
+    const tabConfig = document.querySelector('.tab-btn[onclick*="config"]');
+    if (tabConfig) tabConfig.style.display = isMaster ? '' : 'none';
+
+    // Botón "Configurar GitHub": solo admin maestro
+    const btnConfig = document.querySelector('.btn[onclick*="switchTab('config'"]');
+    if (btnConfig) btnConfig.style.display = isMaster ? '' : 'none';
+
+    // Botones "Sincronizar" y "Guardar en GitHub": solo admin maestro
+    document.getElementById('syncBtn').style.display = isMaster ? '' : 'none';
+    document.getElementById('saveBtn').style.display = isMaster ? '' : 'none';
+}
 
 // ─── ADMIN MANAGEMENT ────────────────────────────────────────────────────────
 async function createAdmin() {
