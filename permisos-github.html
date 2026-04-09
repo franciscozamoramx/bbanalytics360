@@ -160,7 +160,7 @@
 <body>
 
 <!-- LOGIN OVERLAY -->
-<div class="login-overlay" id="loginOverlay">
+<div class="login-overlay" id="loginOverlay" style="display:none;">
     <div class="login-box">
         <div class="lock-icon">🔐</div>
         <h2>BB <span>Analytics 360</span></h2>
@@ -381,15 +381,16 @@ async function checkActivationToken() {
     const admins = getAdmins();
     const admin  = admins.find(a => a.activationToken === token && a.status === 'pending');
 
-    if (!admin) {
-        // Token inválido o ya usado
-        return false;
-    }
+    if (!admin) return false;
 
-    // Mostrar pantalla de cambio de contraseña
-    document.getElementById('changePassOverlay').style.display = 'flex';
+    // Guardar datos en el overlay para usarlos al activar
     document.getElementById('changePassOverlay').dataset.token = token;
     document.getElementById('changePassOverlay').dataset.email = admin.email;
+
+    // Personalizar saludo
+    const subtitle = document.querySelector('#changePassOverlay .subtitle');
+    if (subtitle) subtitle.textContent = 'Hola ' + admin.name.split(' ')[0] + ', establece tu contraseña para activar tu cuenta';
+
     return true;
 }
 
@@ -616,14 +617,37 @@ function filterAdmins() {
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 async function init() {
-    const hasToken = await checkActivationToken();
-    if (!hasToken) checkAuth();
+    // Si hay token de activación en la URL, mostrar solo esa pantalla
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('token')) {
+        document.getElementById('changePassOverlay').style.display = 'flex';
+        const valid = await checkActivationToken();
+        if (!valid) {
+            // Token inválido o ya usado — mostrar login normal
+            document.getElementById('changePassOverlay').style.display = 'none';
+            document.getElementById('changePassError').style.display = 'none';
+            document.getElementById('loginOverlay').style.display = 'flex';
+            showChangePassError('Este enlace ya fue usado o ha expirado. Solicita uno nuevo al administrador.');
+        }
+    } else {
+        // Sin token — flujo normal de login
+        checkAuth();
+        if (!sessionStorage.getItem('bb_admin_auth')) {
+            document.getElementById('loginOverlay').style.display = 'flex';
+        }
+    }
     loadGithubConfig();
     renderPermissionsCheckboxes();
     renderDashboards();
     renderAdmins();
     updateStats();
     renderUsers();
+}
+
+function showChangePassError(msg) {
+    const el = document.getElementById('changePassError');
+    el.style.display = 'block';
+    el.textContent   = msg;
 }
 
 // ─── GITHUB CONFIG ────────────────────────────────────────────────────────────
