@@ -2,10 +2,10 @@
   {
     "name": "Francisco Zamora G",
     "email": "coordinador.bi.bb@gmail.com",
-    "status": "pending",
-    "activationToken": "3259e3558dfc78c154b9799f03a1552a",
-    "passHash": null,
+    "status": "active",
+    "activationToken": null,
+    "passHash": "6242686170693fc59c598545e22a936c207f65958e92c8aefd297a9a12c3088d",
     "createdAt": "2026-04-09T16:02:22.117Z",
-    "activatedAt": null
+    "activatedAt": "2026-04-09T16:02:59.672Z"
   }
 ]
