@@ -433,35 +433,31 @@ async function saveAdminsToGithub(admins) {
 async function checkActivationToken() {
     const params = new URLSearchParams(window.location.search);
     const token  = params.get('token');
-    if (!token) return false;
+    const emEnc  = params.get('em');
+    const nmEnc  = params.get('nm');
+    if (!token || !emEnc || !nmEnc) return false;
 
-    // Leer admins.json directamente desde URL pública — sin necesitar config ni localStorage
-    // Funciona en cualquier browser, incluso la primera vez que el usuario abre la página
-    let admins = [];
+    // Decodificar email y nombre desde la URL
+    let email, name;
     try {
-        const url = 'https://raw.githubusercontent.com/franciscozamoramx/bbanalytics360/main/PERMISSION_FILES_BI/admins.json?t=' + Date.now();
-        const r   = await fetch(url);
-        if (r.ok) {
-            admins = await r.json();
-            // Guardar en cache local también
-            localStorage.setItem('bb_admins_cache', JSON.stringify(admins));
-        }
-    } catch(e) {
-        // Fallback: intentar desde cache local
-        admins = getAdmins();
-    }
+        email = decodeURIComponent(atob(emEnc));
+        name  = decodeURIComponent(atob(nmEnc));
+    } catch(e) { return false; }
 
-    const admin  = admins.find(a => a.activationToken === token && a.status === 'pending');
+    // Verificar token localmente — no requiere leer GitHub
+    const SECRET        = 'BBAnalytics360_' + SALT;
+    const expectedToken = (await sha256(email + SECRET)).substring(0, 40);
+    if (token !== expectedToken) return false;
 
-    if (!admin) return false;
-
-    // Guardar datos en el overlay para usarlos al activar
-    document.getElementById('changePassOverlay').dataset.token = token;
-    document.getElementById('changePassOverlay').dataset.email = admin.email;
+    // Token válido — guardar datos en el overlay
+    const overlay = document.getElementById('changePassOverlay');
+    overlay.dataset.token = token;
+    overlay.dataset.email = email;
+    overlay.dataset.name  = name;
 
     // Personalizar saludo
-    const subtitle = document.querySelector('#changePassOverlay .subtitle');
-    if (subtitle) subtitle.textContent = 'Hola ' + admin.name.split(' ')[0] + ', establece tu contraseña para activar tu cuenta';
+    const subtitle = overlay.querySelector('.subtitle');
+    if (subtitle) subtitle.textContent = 'Hola ' + name.split(' ')[0] + ', establece tu contraseña para activar tu cuenta';
 
     return true;
 }
@@ -478,10 +474,22 @@ async function activateAccount() {
     if (pass1 !== pass2)  { errEl.style.display='block'; errEl.textContent='Las contraseñas no coinciden'; return; }
 
     const passHash = await sha256(pass1 + SALT);
-    const admins   = getAdmins();
-    const idx      = admins.findIndex(a => a.activationToken === token);
 
-    if (idx === -1) { errEl.style.display='block'; errEl.textContent='Token inválido'; return; }
+    // Cargar admins frescos desde GitHub para actualizar
+    let admins = [];
+    try {
+        const url = 'https://raw.githubusercontent.com/franciscozamoramx/bbanalytics360/main/PERMISSION_FILES_BI/admins.json?t=' + Date.now();
+        const r   = await fetch(url);
+        if (r.ok) admins = await r.json();
+    } catch(e) { admins = getAdmins(); }
+
+    // Buscar por email (el token ya fue verificado criptográficamente)
+    let idx = admins.findIndex(a => a.email === email);
+    if (idx === -1) {
+        // Admin no existe aún en GitHub (recién creado) — crearlo
+        admins.push({ name: overlay.dataset.name || email, email, status:'pending', activationToken: token, passHash: null, createdAt: new Date().toISOString(), activatedAt: null });
+        idx = admins.length - 1;
+    }
 
     admins[idx].passHash         = passHash;
     admins[idx].status           = 'active';
@@ -557,12 +565,16 @@ async function createAdmin() {
         showAlert('⚠️ Este correo ya tiene una cuenta de administrador', 'error', 'alertContainerAdmins'); return;
     }
 
-    // Generar token único de activación
-    const tokenRaw = email + Date.now() + Math.random().toString(36);
-    const token    = await sha256(tokenRaw);
-    const shortToken = token.substring(0, 32);
+    // Generar token firmado con datos embebidos en la URL
+    // Formato: sha256(email + SECRET) — verificable sin leer GitHub
+    const SECRET      = 'BBAnalytics360_' + SALT;
+    const tokenHash   = await sha256(email + SECRET);
+    const shortToken  = tokenHash.substring(0, 40);
 
-    const activationLink = `${window.location.origin}${window.location.pathname}?token=${shortToken}`;
+    // El link lleva email y nombre codificados + token de verificación
+    const encodedEmail = btoa(encodeURIComponent(email));
+    const encodedName  = btoa(encodeURIComponent(name));
+    const activationLink = `${window.location.origin}${window.location.pathname}?token=${shortToken}&em=${encodedEmail}&nm=${encodedName}`;
 
     // Guardar admin como pendiente
     const newAdmin = {
@@ -573,8 +585,8 @@ async function createAdmin() {
         activatedAt: null
     };
     admins.push(newAdmin);
-    saveAdmins(admins);  // cache local inmediato
-    saveAdminsToGithub(admins);  // persistir en GitHub
+    saveAdmins(admins);
+    saveAdminsToGithub(admins);
 
     // Enviar correo via EmailJS
     btn.disabled   = true;
@@ -606,7 +618,11 @@ async function resendAdminEmail(email) {
     const admin  = admins.find(a => a.email === email && a.status === 'pending');
     if (!admin) { showAlert('⚠️ No se encontró el administrador o ya está activo', 'error', 'alertContainerAdmins'); return; }
 
-    const activationLink = `${window.location.origin}${window.location.pathname}?token=${admin.activationToken}`;
+    const SECRET2       = 'BBAnalytics360_' + SALT;
+    const reToken       = (await sha256(admin.email + SECRET2)).substring(0, 40);
+    const encodedEmail2 = btoa(encodeURIComponent(admin.email));
+    const encodedName2  = btoa(encodeURIComponent(admin.name));
+    const activationLink = `${window.location.origin}${window.location.pathname}?token=${reToken}&em=${encodedEmail2}&nm=${encodedName2}`;
 
     try {
         await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
@@ -643,7 +659,11 @@ function resetAdminPassword(email) {
         saveAdmins(admins);
         saveAdminsToGithub(admins);
 
-        const activationLink = `${window.location.origin}${window.location.pathname}?token=${shortToken}`;
+        const SECRET3        = 'BBAnalytics360_' + SALT;
+        const reToken3       = (await sha256(admins[idx].email + SECRET3)).substring(0, 40);
+        const encodedEmail3  = btoa(encodeURIComponent(admins[idx].email));
+        const encodedName3   = btoa(encodeURIComponent(admins[idx].name));
+        const activationLink = `${window.location.origin}${window.location.pathname}?token=${reToken3}&em=${encodedEmail3}&nm=${encodedName3}`;
         emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
             to_name: admins[idx].name, to_email: email, activation_link: activationLink
         }).then(() => {
