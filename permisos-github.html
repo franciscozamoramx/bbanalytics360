@@ -1,3 +1,4 @@
+<!-- Version: 1775743610 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1069,7 +1070,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'bb_permissions.json';
+            a.download = 'permissions.json';
             a.click();
             URL.revokeObjectURL(url);
             showAlert('✓ JSON descargado', 'success', 'alertContainerConfig');
