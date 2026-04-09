@@ -2,10 +2,10 @@
   {
     "name": "Francisco Surain",
     "email": "coordinador.bi.bb@gmail.com",
-    "status": "pending",
-    "activationToken": "d8eb31f68efc3fc75828bab304660094",
-    "passHash": null,
+    "status": "active",
+    "activationToken": null,
+    "passHash": "6242686170693fc59c598545e22a936c207f65958e92c8aefd297a9a12c3088d",
     "createdAt": "2026-04-09T15:56:27.745Z",
-    "activatedAt": null
+    "activatedAt": "2026-04-09T15:57:04.819Z"
   }
 ]
