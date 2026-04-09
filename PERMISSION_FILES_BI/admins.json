@@ -2,9 +2,9 @@
   {
     "name": "Francisco Zamora",
     "email": "francisco.zamora@bigbola.com",
-    "status": "pending",
-    "passHash": null,
+    "status": "active",
+    "passHash": "6242686170693fc59c598545e22a936c207f65958e92c8aefd297a9a12c3088d",
     "createdAt": "2026-04-09T17:03:31.236Z",
-    "activatedAt": "2026-04-09T17:05:16.328Z"
+    "activatedAt": "2026-04-09T17:06:36.266Z"
   }
 ]
