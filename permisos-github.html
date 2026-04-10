@@ -749,8 +749,7 @@ async function addUser() {
     const dashNames = perms.map(id => {
         const d = DASHBOARDS_CONFIG.find(x => x.id === id);
         return '• ' + (d ? d.name : id);
-    }).join('
-');
+    }).join('\n');
 
     // Extraer nombre del correo (parte antes del @)
     const namePart = email.split('@')[0].split('.').map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(' ');
