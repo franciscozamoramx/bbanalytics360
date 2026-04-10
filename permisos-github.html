@@ -753,7 +753,7 @@ async function addUser() {
 ');
 
     // Extraer nombre del correo (parte antes del @)
-    const namePart = email.split('@')[0].replace(/[._]/g,' ').replace(/\w/g, c=>c.toUpperCase());
+    const namePart = email.split('@')[0].split('.').map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(' ');
 
     // Enviar correo de bienvenida
     try {
