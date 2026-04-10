@@ -267,9 +267,10 @@
 
 <script>
 // ─── EMAILJS CONFIG ───────────────────────────────────────────────────────────
-const EMAILJS_PUBLIC_KEY  = 'O9qBbBnJTakwM5iSk';
-const EMAILJS_SERVICE_ID  = 'service_5703ddf';
-const EMAILJS_TEMPLATE_ID = 'template_m63jqxf';
+const EMAILJS_PUBLIC_KEY       = 'O9qBbBnJTakwM5iSk';
+const EMAILJS_SERVICE_ID       = 'service_5703ddf';
+const EMAILJS_TEMPLATE_ID      = 'template_m63jqxf';   // Admins: activación de cuenta
+const EMAILJS_TEMPLATE_USUARIO = 'template_x3alsku';    // Usuarios: bienvenida a dashboards
 emailjs.init(EMAILJS_PUBLIC_KEY);
 
 // ─── GITHUB SHARED CONFIG ─────────────────────────────────────────────────────
@@ -731,16 +732,40 @@ function renderDashboards() {
 }
 
 // ─── USUARIOS ────────────────────────────────────────────────────────────────
-function addUser() {
+async function addUser() {
     const email=document.getElementById('newUserEmail').value.trim();
     if (!email||!email.includes('@')) { showAlert('⚠️ Ingresa un email válido','error'); return; }
     if (permissionsData.users[email]) { showAlert('⚠️ Este usuario ya existe','error'); return; }
     const perms=Array.from(document.querySelectorAll('.permission-checkbox:checked')).map(cb=>cb.value);
     if (!perms.length) { showAlert('⚠️ Selecciona al menos un dashboard','error'); return; }
-    permissionsData.users[email]=perms;
+
+    permissionsData.users[email] = perms;
     document.getElementById('newUserEmail').value='';
     document.querySelectorAll('.permission-checkbox').forEach(cb=>cb.checked=false);
-    renderAll(); showAlert('✓ Usuario agregado: '+email+' ('+perms.length+' permisos)','success');
+    renderAll();
+    showAlert('✓ Usuario agregado: '+email+' ('+perms.length+' permisos). Enviando correo...','success');
+
+    // Construir lista de dashboards con nombres legibles
+    const dashNames = perms.map(id => {
+        const d = DASHBOARDS_CONFIG.find(x => x.id === id);
+        return '• ' + (d ? d.name : id);
+    }).join('
+');
+
+    // Extraer nombre del correo (parte antes del @)
+    const namePart = email.split('@')[0].replace(/[._]/g,' ').replace(/\w/g, c=>c.toUpperCase());
+
+    // Enviar correo de bienvenida
+    try {
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_USUARIO, {
+            to_name:        namePart,
+            to_email:       email,
+            dashboards_list: dashNames
+        });
+        showAlert('✓ Usuario agregado y correo de bienvenida enviado a '+email, 'success');
+    } catch(err) {
+        showAlert('✓ Usuario agregado. Correo no enviado: '+(err.text||err), 'warning');
+    }
 }
 function deleteUser(email) {
     if (confirm('¿Eliminar a '+email+'?')) { delete permissionsData.users[email]; renderAll(); showAlert('✓ Usuario eliminado','success'); }
