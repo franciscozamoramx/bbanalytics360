@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_89.html -->
+<!-- saved from url=(0044)file:///C:/Users/SCU/Downloads/index_82.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BB Analytics 360 - Big Bola</title>
-    <link rel="icon" type="image/png" href="./icon_crystal.png">
-    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" type="image/png" href="./index_files/icon_crystal.png">
+    <link rel="manifest" href="file:///C:/Users/SCU/Downloads/manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -256,7 +256,7 @@
 <body>
     <!-- Contenedor de login -->
     <div class="login-container" id="loginContainer">
-        <img src="./icon_crystal.png" alt="Big Bola Casinos" class="logo">
+        <img src="./index_files/icon_crystal.png" alt="Big Bola Casinos" class="logo">
         <h1>BB <span class="title-highlight">Analytics 360</span><span class="version">V1.80</span></h1>
         <p>Ingresa con tu correo corporativo</p>
         
@@ -1973,15 +1973,27 @@
                 return false;
             });
             
-            function openWhatsApp() {
+            function openHelp() {
                 const phone = '524421974414';
                 const message = 'Hola, necesito ayuda con BB Analytics 360';
-                window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(message), '_blank');
+                const waDeepLink = 'whatsapp://send?phone=' + phone + '&text=' + encodeURIComponent(message);
+                const waWebLink = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(message);
+                const telegramUrl = 'https://t.me/Business_Intelligence_BB';
+
+                // Intentar abrir WhatsApp via deep link
+                const start = Date.now();
+                window.location = waDeepLink;
+
+                // Si después de 1.5s el usuario sigue aquí, WhatsApp no está instalado → abrir Telegram
+                setTimeout(function() {
+                    // Si la página no perdió foco (app no se abrió), redirigir a Telegram
+                    if (Date.now() - start < 2500) {
+                        window.open(telegramUrl, '_blank');
+                    }
+                }, 1500);
             }
 
             function openTelegram() {
-                const phoneNumber = '+524421974414';
-                const message = 'Hola, necesito ayuda en BB Analytics 360';
                 const url = 'https://t.me/Business_Intelligence_BB';
                 window.open(url, '_blank');
             }
@@ -2302,7 +2314,7 @@
             });
             
             mobileWhatsappBtn.addEventListener('click', function() {
-                openTelegram();
+                openHelp();
             });
             
             // Botón de cerrar sesión
@@ -3690,4 +3702,5 @@
         }
     </script>
 
-<div id="contextMenuMessageLogin" style="position: fixed; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.7); color: white; padding: 10px; border-radius: 5px; z-index: 10000; font-size: 14px; display: none; animation: 3s ease-in-out 0s 1 normal none running fadeInOut;">Menú contextual deshabilitado</div></body></html>
+<div id="contextMenuMessageLogin" style="position: fixed; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.7); color: white; padding: 10px; border-radius: 5px; z-index: 10000; font-size: 14px; display: none; animation: 3s ease-in-out 0s 1 normal none running fadeInOut;">Menú contextual deshabilitado</div>
+</body></html>
