@@ -1976,21 +1976,7 @@
             function openHelp() {
                 const phone = '524421974414';
                 const message = 'Hola, necesito ayuda con BB Analytics 360';
-                const waDeepLink = 'whatsapp://send?phone=' + phone + '&text=' + encodeURIComponent(message);
-                const waWebLink = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(message);
-                const telegramUrl = 'https://t.me/Business_Intelligence_BB';
-
-                // Intentar abrir WhatsApp via deep link
-                const start = Date.now();
-                window.location = waDeepLink;
-
-                // Si después de 1.5s el usuario sigue aquí, WhatsApp no está instalado → abrir Telegram
-                setTimeout(function() {
-                    // Si la página no perdió foco (app no se abrió), redirigir a Telegram
-                    if (Date.now() - start < 2500) {
-                        window.open(telegramUrl, '_blank');
-                    }
-                }, 1500);
+                window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(message), '_blank');
             }
 
             function openTelegram() {
