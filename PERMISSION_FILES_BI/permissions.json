@@ -8,6 +8,7 @@
                 "bolipoits",
                 "diccionario",
                 "ingreso_tarjetas",
+                "promociones",
                 "proyectos",
                 "logs_bi",
                 "aforo"
@@ -134,6 +135,12 @@
                 "bolipoits",
                 "rtp",
                 "diccionario"
+            ]
+        },
+        "iker.larrea@bigbola.com": {
+            "dashboards": [
+                "principal",
+                "ingreso_tarjetas"
             ]
         }
     }
