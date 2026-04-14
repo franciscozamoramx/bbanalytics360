@@ -712,7 +712,7 @@ function showAlert(msg, type, cid) {
 }
 
 // ─── RENDER ──────────────────────────────────────────────────────────────────
-function renderAll() { updateStats(); renderUsers(); renderDashboards(); }
+function renderAll() { updateStats(); renderUsers(); renderDashboards(); renderPermissionsCheckboxes(); }
 
 function updateStats() {
     document.getElementById('totalUsers').textContent = Object.keys(permissionsData.users).length;
