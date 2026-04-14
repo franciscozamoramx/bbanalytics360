@@ -103,13 +103,26 @@
         .checkbox-label { display:flex; align-items:center; gap:8px; padding:9px 12px; background:rgba(255,255,255,0.07); border-radius:8px; cursor:pointer; transition:background 0.2s; border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.85); font-size:0.9em; }
         .checkbox-label:hover { background:rgba(255,215,0,0.15); border-color:rgba(255,215,0,0.4); }
         .checkbox-label input[type="checkbox"] { width:auto; cursor:pointer; accent-color:#FFD700; }
-        .dashboard-list { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:15px; margin-top:15px; }
-        .dashboard-card { background:rgba(255,255,255,0.1); padding:18px; border-radius:12px; border:1px solid rgba(255,255,255,0.2); transition:transform 0.2s; }
-        .dashboard-card:hover { transform:translateY(-3px); }
-        .dashboard-card h3 { color:#FFD700; margin-bottom:10px; font-size:1em; }
-        .dashboard-card .info { font-size:0.85em; color:rgba(255,255,255,0.7); margin-bottom:4px; }
-        .dashboard-card .user-count { margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.15); font-size:0.85em; color:rgba(255,255,255,0.7); }
-        .dashboard-card .user-count strong { color:#FFD700; }
+        .dashboard-list { }
+        .dashboard-accordion { display:flex; flex-direction:column; gap:8px; }
+        .db-item { background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); border-radius:12px; overflow:hidden; transition:border-color 0.2s; }
+        .db-item.open { border-color:rgba(255,215,0,0.5); background:rgba(255,255,255,0.1); }
+        .db-header { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; cursor:pointer; user-select:none; transition:background 0.2s; gap:12px; }
+        .db-header:hover { background:rgba(255,255,255,0.06); }
+        .db-header-left { display:flex; align-items:center; gap:12px; flex:1; min-width:0; }
+        .db-chevron { font-size:0.75em; color:rgba(255,255,255,0.5); transition:transform 0.25s; flex-shrink:0; }
+        .db-item.open .db-chevron { transform:rotate(90deg); color:#FFD700; }
+        .db-name { color:#FFD700; font-weight:600; font-size:0.95em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .db-id-badge { font-size:0.72em; color:rgba(255,255,255,0.4); background:rgba(255,255,255,0.07); border-radius:6px; padding:2px 8px; white-space:nowrap; flex-shrink:0; }
+        .db-badge-count { background:rgba(255,215,0,0.15); color:#FFD700; border:1px solid rgba(255,215,0,0.3); border-radius:20px; padding:3px 12px; font-size:0.8em; font-weight:700; white-space:nowrap; flex-shrink:0; }
+        .db-badge-count.zero { background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.35); border-color:rgba(255,255,255,0.1); }
+        .db-body { display:none; padding:0 18px 14px; border-top:1px solid rgba(255,255,255,0.08); }
+        .db-item.open .db-body { display:block; }
+        .db-user-list { display:flex; flex-direction:column; gap:6px; margin-top:10px; }
+        .db-user-row { display:flex; align-items:center; gap:10px; padding:8px 12px; background:rgba(255,255,255,0.05); border-radius:8px; font-size:0.85em; }
+        .db-user-avatar { width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg,#1a3a8f,#FFD700); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.75em; color:#fff; flex-shrink:0; }
+        .db-user-email { color:rgba(255,255,255,0.85); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .db-no-users { color:rgba(255,255,255,0.35); font-size:0.85em; font-style:italic; margin-top:8px; text-align:center; padding:10px; }
         .empty-state { text-align:center; padding:50px 20px; color:rgba(255,255,255,0.4); }
         .empty-state svg { width:80px; height:80px; margin-bottom:16px; opacity:0.3; }
         .modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.75); display:flex; align-items:center; justify-content:center; z-index:2000; backdrop-filter:blur(4px); }
@@ -222,7 +235,7 @@
     </div>
     <div id="tab-dashboards" class="tab-content">
         <h2 class="section-title">Dashboards Disponibles</h2>
-        <div class="alert alert-info">15 dashboards configurados en BB Analytics 360.</div>
+        <div class="alert alert-info">15 dashboards configurados — haz clic en cualquiera para ver sus usuarios con acceso.</div>
         <div class="dashboard-list" id="dashboardsList"></div>
     </div>
     <div id="tab-config" class="tab-content">
@@ -727,8 +740,48 @@ function renderUsers() {
 }
 
 function renderDashboards() {
-    const c=document.getElementById('dashboardsList');
-    c.innerHTML=DASHBOARDS_CONFIG.map(d=>{ let n=0; Object.values(permissionsData.users).forEach(p=>{ if((p||[]).includes(d.id)) n++; }); return '<div class="dashboard-card"><h3>'+d.name+'</h3><div class="info"><strong>ID:</strong> '+d.id+'</div><div class="user-count"><strong>👥 '+n+'</strong> usuario'+(n!==1?'s':'')+' con acceso</div></div>'; }).join('');
+    const c = document.getElementById('dashboardsList');
+    c.innerHTML = '<div class="dashboard-accordion">' +
+        DASHBOARDS_CONFIG.map(d => {
+            // Collect users with access to this dashboard
+            const usersWithAccess = Object.entries(permissionsData.users)
+                .filter(([email, perms]) => (perms || []).includes(d.id));
+            const n = usersWithAccess.length;
+
+            // Build user rows
+            const userRows = n === 0
+                ? '<div class="db-no-users">Sin usuarios asignados</div>'
+                : usersWithAccess.map(([email]) => {
+                    const initials = email.split('@')[0].slice(0,2).toUpperCase();
+                    return '<div class="db-user-row">' +
+                        '<div class="db-user-avatar">' + initials + '</div>' +
+                        '<span class="db-user-email">' + email + '</span>' +
+                    '</div>';
+                }).join('');
+
+            const badgeClass = n === 0 ? 'db-badge-count zero' : 'db-badge-count';
+            const badgeLabel = n === 0 ? 'Sin acceso' : '👥 ' + n + ' usuario' + (n !== 1 ? 's' : '');
+
+            return '<div class="db-item" id="db-item-' + d.id + '">' +
+                '<div class="db-header" onclick="toggleDashboard(\'' + d.id + '\')">' +
+                    '<div class="db-header-left">' +
+                        '<span class="db-chevron">▶</span>' +
+                        '<span class="db-name">' + d.name + '</span>' +
+                        '<span class="db-id-badge">' + d.id + '</span>' +
+                    '</div>' +
+                    '<span class="' + badgeClass + '">' + badgeLabel + '</span>' +
+                '</div>' +
+                '<div class="db-body">' +
+                    '<div class="db-user-list">' + userRows + '</div>' +
+                '</div>' +
+            '</div>';
+        }).join('') +
+    '</div>';
+}
+
+function toggleDashboard(id) {
+    const item = document.getElementById('db-item-' + id);
+    if (item) item.classList.toggle('open');
 }
 
 // ─── USUARIOS ────────────────────────────────────────────────────────────────
