@@ -536,9 +536,7 @@
                     fields: {
                         "FechaHora": logEntry.timestamp,
                         "Usuario": logEntry.user,
-                        "Accion": logEntry.action,
-                        "Dashboard": logEntry.dashboard || '',
-                        "DashboardNombre": logEntry.dashboardName || '',
+                        "Accion": logEntry.action + (logEntry.dashboardName ? ' — ' + logEntry.dashboardName : ''),
                         "Dispositivo": logEntry.deviceType,
                         "IP": logEntry.ip,
                         "UserAgent": logEntry.userAgent.substring(0, 300),
@@ -932,7 +930,7 @@
         // Función para cargar los permisos desde el JSON
         async function loadPermissions() {
             const CACHE_KEY = 'bb_permissions_cache';
-            const CACHE_TTL = 5 * 60 * 1000; // 5 minutos en ms
+            const CACHE_TTL = 30 * 1000; // 30 segundos — evita bloquear usuarios recién dados de alta
 
             // ✅ CAMBIO 2: Usar caché de sessionStorage para evitar fetch en cada visita
             try {
@@ -1060,10 +1058,26 @@
                 }, 200);
                 
             } else {
-                // Fire-and-forget para login fallido también
-                logger.log('login_failed', null, email);
-                
-                showStatus('No tienes permisos para acceder a BB Analytics 360 o el correo no está registrado.', 'error');
+                // Si el usuario no existe, puede ser caché vieja — intentar recargar permisos frescos
+                const cacheKey = 'bb_permissions_cache';
+                const hadCache = !!sessionStorage.getItem(cacheKey);
+                if (hadCache) {
+                    sessionStorage.removeItem(cacheKey);
+                    showStatus('Verificando permisos actualizados...', 'success');
+                    setTimeout(async () => {
+                        await loadPermissions();
+                        if (permissionsData.users && permissionsData.users[email]) {
+                            handleLogin(); // reintentar con datos frescos
+                        } else {
+                            logger.log('login_failed', null, email);
+                            showStatus('No tienes permisos para acceder a BB Analytics 360 o el correo no está registrado.', 'error');
+                        }
+                    }, 500);
+                } else {
+                    // Fire-and-forget para login fallido también
+                    logger.log('login_failed', null, email);
+                    showStatus('No tienes permisos para acceder a BB Analytics 360 o el correo no está registrado.', 'error');
+                }
             }
         }
 
