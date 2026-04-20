@@ -536,7 +536,9 @@
                     fields: {
                         "FechaHora": logEntry.timestamp,
                         "Usuario": logEntry.user,
-                        "Accion": logEntry.action + (logEntry.dashboardName ? ' — ' + logEntry.dashboardName : ''),
+                        "Accion": logEntry.action,
+                        "Dashboard": logEntry.dashboard || '',
+                        "DashboardNombre": logEntry.dashboardName || '',
                         "Dispositivo": logEntry.deviceType,
                         "IP": logEntry.ip,
                         "UserAgent": logEntry.userAgent.substring(0, 300),
