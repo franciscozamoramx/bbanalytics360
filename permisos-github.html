@@ -283,8 +283,8 @@
 const EMAILJS_PUBLIC_KEY       = 'O9qBbBnJTakwM5iSk';
 const EMAILJS_SERVICE_ID       = 'service_5703ddf';
 const EMAILJS_TEMPLATE_ID      = 'template_m63jqxf';   // Admins: activación de cuenta
-const EMAILJS_TEMPLATE_USUARIO      = 'template_x3alsku';    // Usuarios: bienvenida a dashboards
-const EMAILJS_TEMPLATE_NUEVO_ACCESO = 'template_x3alsku';    // Usuarios: nuevos dashboards asignados — pon aquí el ID de tu nueva plantilla
+const EMAILJS_TEMPLATE_USUARIO      = 'template_x3alsku';    // Plantilla unificada: bienvenida + notificación de nuevos dashboards
+const EMAILJS_TEMPLATE_NUEVO_ACCESO = EMAILJS_TEMPLATE_USUARIO;
 emailjs.init(EMAILJS_PUBLIC_KEY);
 
 // ─── GITHUB SHARED CONFIG ─────────────────────────────────────────────────────
@@ -812,9 +812,14 @@ async function addUser() {
     // Enviar correo de bienvenida
     try {
         await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_USUARIO, {
-            to_name:        namePart,
-            to_email:       email,
-            dashboards_list: dashNames
+            to_name:         namePart,
+            to_email:        email,
+            dashboards_list: dashNames,
+            portal_url:      'https://franciscozamoramx.github.io/bbanalytics360/',
+            email_subject:   '¡Bienvenido a BB Analytics 360! Tu acceso está listo',
+            message_intro:   'Tu cuenta ha sido creada y ya tienes acceso a los siguientes dashboards de Big Bola Casinos:',
+            cta_label:       'Ir al Portal →',
+            show_welcome:    'true'
         });
         showAlert('✓ Usuario agregado y correo de bienvenida enviado a '+email, 'success');
     } catch(err) {
@@ -864,7 +869,11 @@ async function saveEditedPerms(email,btn) {
                 to_name:         namePart,
                 to_email:        email,
                 dashboards_list: dashNames,
-                portal_url:      portalUrl
+                portal_url:      portalUrl,
+                email_subject:   'Tienes nuevos dashboards disponibles en BB Analytics 360',
+                message_intro:   'Se te han asignado nuevos accesos en BB Analytics 360. Ya puedes ver los siguientes dashboards:',
+                cta_label:       'Validar mis dashboards →',
+                show_welcome:    'false'
             });
             showAlert('✓ Permisos actualizados y notificación enviada a '+email+' ('+added.length+' nuevo'+(added.length>1?'s':'')+' dashboard'+(added.length>1?'s':'')+')','success');
         } catch(err) {
