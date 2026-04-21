@@ -283,7 +283,8 @@
 const EMAILJS_PUBLIC_KEY       = 'O9qBbBnJTakwM5iSk';
 const EMAILJS_SERVICE_ID       = 'service_5703ddf';
 const EMAILJS_TEMPLATE_ID      = 'template_m63jqxf';   // Admins: activación de cuenta
-const EMAILJS_TEMPLATE_USUARIO = 'template_x3alsku';    // Usuarios: bienvenida a dashboards
+const EMAILJS_TEMPLATE_USUARIO      = 'template_x3alsku';    // Usuarios: bienvenida a dashboards
+const EMAILJS_TEMPLATE_NUEVO_ACCESO = 'template_x3alsku';    // Usuarios: nuevos dashboards asignados — pon aquí el ID de tu nueva plantilla
 emailjs.init(EMAILJS_PUBLIC_KEY);
 
 // ─── GITHUB SHARED CONFIG ─────────────────────────────────────────────────────
@@ -835,10 +836,43 @@ function editUserPermissions(email) {
     m.innerHTML='<div class="modal-box"><h2>Editar: '+email+'</h2><div class="checkbox-group">'+cbs+'</div><div style="margin-top:20px;display:flex;gap:10px;"><button class="btn btn-success" onclick="saveEditedPerms(\''+email+'\',this)">✓ Guardar</button><button class="btn btn-secondary" onclick="this.closest(\'.modal-overlay\').remove()">Cancelar</button></div></div>';
     document.body.appendChild(m);
 }
-function saveEditedPerms(email,btn) {
+async function saveEditedPerms(email,btn) {
     const m=btn.closest('.modal-overlay');
-    permissionsData.users[email]=Array.from(m.querySelectorAll('.edit-cb:checked')).map(cb=>cb.value);
-    renderAll(); showAlert('✓ Permisos actualizados','success'); m.remove();
+    const prevPerms = (permissionsData.users[email] || []).slice();
+    const newPerms  = Array.from(m.querySelectorAll('.edit-cb:checked')).map(cb=>cb.value);
+
+    // Detectar dashboards recién agregados (que no estaban antes)
+    const added = newPerms.filter(id => !prevPerms.includes(id));
+
+    permissionsData.users[email] = newPerms;
+    renderAll();
+    m.remove();
+
+    if (added.length > 0) {
+        // Construir lista legible de dashboards nuevos
+        const dashNames = added.map(id => {
+            const d = DASHBOARDS_CONFIG.find(x => x.id === id);
+            return '• ' + (d ? d.name : id);
+        }).join('\n');
+
+        const namePart = email.split('@')[0].split('.').map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(' ');
+        const portalUrl = 'https://franciscozamoramx.github.io/bbanalytics360/';
+
+        showAlert('✓ Permisos actualizados. Enviando notificación a '+email+'...','success');
+        try {
+            await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_NUEVO_ACCESO, {
+                to_name:         namePart,
+                to_email:        email,
+                dashboards_list: dashNames,
+                portal_url:      portalUrl
+            });
+            showAlert('✓ Permisos actualizados y notificación enviada a '+email+' ('+added.length+' nuevo'+(added.length>1?'s':'')+' dashboard'+(added.length>1?'s':'')+')','success');
+        } catch(err) {
+            showAlert('✓ Permisos actualizados. No se pudo enviar notificación: '+(err.text||err),'warning');
+        }
+    } else {
+        showAlert('✓ Permisos actualizados','success');
+    }
 }
 function filterUsers() {
     const s=document.getElementById('searchUsers').value.toLowerCase();
