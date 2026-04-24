@@ -1173,7 +1173,7 @@
 
                 const itemsHTML = available.map(d => `
                     <button class="mobile-menu-item mobile-area-child" data-src="${dashboardUrls[d]}">
-                        <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;margin-right:8px;flex-shrink:0;opacity:0.8;vertical-align:middle;"></span>${dashboardNames[d]}
+                        <i class="${dashboardIcons[d]}" style="width:16px;text-align:center;margin-right:8px;flex-shrink:0;opacity:0.85;font-size:12px;"></i>${dashboardNames[d]}
                     </button>
                 `).join('');
 
@@ -2438,7 +2438,7 @@
 
                 const itemsHTML = available.map(d => `
                     <button class="menu-item area-child" data-src="${dashboardUrls[d]}">
-                        <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;margin-right:8px;flex-shrink:0;opacity:0.8;vertical-align:middle;"></span>${dashboardNames[d]}
+                        <i class="${dashboardIcons[d]}" style="width:16px;text-align:center;margin-right:8px;flex-shrink:0;opacity:0.85;font-size:12px;"></i>${dashboardNames[d]}
                     </button>
                 `).join('');
 
