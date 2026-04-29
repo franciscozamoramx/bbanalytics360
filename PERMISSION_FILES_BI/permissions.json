@@ -12,6 +12,7 @@
                 "ingreso_tarjetas",
                 "inventario",
                 "proyectos",
+                "oficina_proyectos",
                 "logs_bi",
                 "aforo"
             ]
@@ -70,8 +71,9 @@
         "ruben.vargas@bigbola.com": {
             "dashboards": [
                 "principal",
+                "diccionario",
                 "inventario",
-                "diccionario"
+                "oficina_proyectos"
             ]
         },
         "javier.dominguez@bigbola.com": {
@@ -127,7 +129,8 @@
         "joaquin.garcia@bigbola.com": {
             "dashboards": [
                 "principal",
-                "ingreso_tarjetas"
+                "ingreso_tarjetas",
+                "oficina_proyectos"
             ]
         },
         "jarb@bigbola.com": {
@@ -149,6 +152,18 @@
             ]
         },
         "marco.gonzalez@bigbola.com": {
+            "dashboards": [
+                "principal",
+                "oficina_proyectos"
+            ]
+        },
+        "samuel.flores@bigbola.com": {
+            "dashboards": [
+                "principal",
+                "oficina_proyectos"
+            ]
+        },
+        "marco.fernandez@bigbola.com": {
             "dashboards": [
                 "principal",
                 "oficina_proyectos"
