@@ -3296,20 +3296,13 @@
                             
                             // Click en imagen
                             slideImages.forEach(img => {
-                                img.addEventListener('click', function() {
+                                img.addEventListener('click', async function() {
                                     const dashboardKey = this.getAttribute('data-key');
                                     if (dashboardKey && dashboardUrls[dashboardKey]) {
-                                        if (window.opener && !window.opener.closed) {
-                                            window.opener.postMessage({
-                                                type: 'dashboard_access',
-                                                dashboardKey: dashboardKey,
-                                                user: currentUser,
-                                                sessionId: currentSessionId,
-                                                timestamp: new Date().toISOString(),
-                                                dashboardName: dashboardNames[dashboardKey] || dashboardKey,
-                                                action: 'dashboard_view'
-                                            }, '*');
-                                        }
+                                        await logger.log('dashboard_view', dashboardKey, currentUser, {
+                                            source: 'desktop_carrusel_click',
+                                            timestamp: new Date().toISOString()
+                                        });
                                         loadDashboard(dashboardUrls[dashboardKey], dashboardKey);
                                     }
                                 });
@@ -3323,20 +3316,13 @@
 
                             // Click en botón CTA
                             document.querySelectorAll('.slide-cta').forEach(btn => {
-                                btn.addEventListener('click', function() {
+                                btn.addEventListener('click', async function() {
                                     const dashboardKey = this.getAttribute('data-key');
                                     if (dashboardKey && dashboardUrls[dashboardKey]) {
-                                        if (window.opener && !window.opener.closed) {
-                                            window.opener.postMessage({
-                                                type: 'dashboard_access',
-                                                dashboardKey: dashboardKey,
-                                                user: currentUser,
-                                                sessionId: currentSessionId,
-                                                timestamp: new Date().toISOString(),
-                                                dashboardName: dashboardNames[dashboardKey] || dashboardKey,
-                                                action: 'dashboard_view'
-                                            }, '*');
-                                        }
+                                        await logger.log('dashboard_view', dashboardKey, currentUser, {
+                                            source: 'desktop_cta_click',
+                                            timestamp: new Date().toISOString()
+                                        });
                                         loadDashboard(dashboardUrls[dashboardKey], dashboardKey);
                                     }
                                 });
@@ -3641,7 +3627,7 @@
                             
                             // ✅ CORRECCIÓN: Event listeners para los botones del menú
                             menuItems.forEach(item => {
-                                item.addEventListener('click', function() {
+                                item.addEventListener('click', async function() {
                                     const dashboardUrl = this.getAttribute('data-src');
                                     const dashboardKey = Object.keys(dashboardUrls).find(key => 
                                         dashboardUrls[key] === dashboardUrl
@@ -3654,15 +3640,12 @@
                                         });
                                         this.classList.add('active');
                                         
-                                        // Enviar log si no es el carrusel
-                                        if (dashboardKey && dashboardKey !== 'principal' && window.opener && !window.opener.closed) {
-                                            window.opener.postMessage({
-                                                type: 'log_dashboard_view',
-                                                dashboardKey: dashboardKey,
-                                                user: currentUser,
-                                                sessionId: currentSessionId,
+                                        // Registrar acceso si no es el carrusel
+                                        if (dashboardKey && dashboardKey !== 'principal') {
+                                            await logger.log('dashboard_view', dashboardKey, currentUser, {
+                                                source: 'desktop_menu_click',
                                                 timestamp: new Date().toISOString()
-                                            }, '*');
+                                            });
                                         }
                                         
                                         // Cargar el dashboard usando la función global loadDashboard
