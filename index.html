@@ -345,7 +345,7 @@
 
         // Mapeo de íconos para dashboards
         const dashboardIcons = {
-            "principal": "fas fa-images",
+            "principal": "fas fa-home",
             "adt": "fas fa-chart-line",
             "auditoria": "fas fa-search",
             "bigplayers": "fas fa-gem",
@@ -1150,7 +1150,7 @@
             if (currentUserPermissions.includes('principal')) {
                 inicioHTML = `
                     <button class="mobile-menu-item active" data-src="carrusel_integrado">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" style="width:15px;height:15px;fill:currentColor;margin-right:8px;flex-shrink:0;vertical-align:middle;"><path d="M0 80C0 53.5 21.5 32 48 32H80c26.5 0 48 21.5 48 48V80h96V48c0-26.5 21.5-48 48-48h32c26.5 0 48 21.5 48 48V80h96V48c0-26.5 21.5-48 48-48h32c26.5 0 48 21.5 48 48V80c17.7 0 32 14.3 32 32v32c0 17.7-14.3 32-32 32v208c17.7 0 32 14.3 32 32v32c0 17.7-14.3 32-32 32H48c-17.7 0-32-14.3-32-32V368c-17.7 0-32-14.3-32-32V272c-17.7 0-32-14.3-32-32V112C-32 94.3-17.7 80 0 80zm112 160c0-8.8-7.2-16-16-16s-16 7.2-16 16v96c0 8.8 7.2 16 16 16s16-7.2 16-16V240zm80-48c0-8.8-7.2-16-16-16s-16 7.2-16 16v144c0 8.8 7.2 16 16 16s16-7.2 16-16V192zm80 80c0-8.8-7.2-16-16-16s-16 7.2-16 16v64c0 8.8 7.2 16 16 16s16-7.2 16-16V272zm80-112c0-8.8-7.2-16-16-16s-16 7.2-16 16v176c0 8.8 7.2 16 16 16s16-7.2 16-16V160zm80 64c0-8.8-7.2-16-16-16s-16 7.2-16 16v112c0 8.8 7.2 16 16 16s16-7.2 16-16V224z"/></svg> ${dashboardNames.principal}
+                        <i class="fas fa-home" style="width:15px;text-align:center;margin-right:8px;flex-shrink:0;font-size:13px;color:#FFD700;"></i> ${dashboardNames.principal}
                     </button>
                 `;
             }
@@ -1882,7 +1882,7 @@
                     'Comercial': 'fas fa-gem',
                     'Finanzas': 'fas fa-credit-card',
                     'TI': 'fas fa-desktop',
-                    'Inicio': 'fas fa-images'
+                    'Inicio': 'fas fa-home'
                 };
 
                 const slidesHTML = mobileCarruselData.map((slide, index) => `
@@ -2416,7 +2416,7 @@
             if (currentUserPermissions.includes('principal')) {
                 inicioHTML = `
                     <button class="menu-item active" data-src="carrusel_integrado">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" style="width:15px;height:15px;fill:currentColor;margin-right:8px;flex-shrink:0;vertical-align:middle;"><path d="M0 80C0 53.5 21.5 32 48 32H80c26.5 0 48 21.5 48 48V80h96V48c0-26.5 21.5-48 48-48h32c26.5 0 48 21.5 48 48V80h96V48c0-26.5 21.5-48 48-48h32c26.5 0 48 21.5 48 48V80c17.7 0 32 14.3 32 32v32c0 17.7-14.3 32-32 32v208c17.7 0 32 14.3 32 32v32c0 17.7-14.3 32-32 32H48c-17.7 0-32-14.3-32-32V368c-17.7 0-32-14.3-32-32V272c-17.7 0-32-14.3-32-32V112C-32 94.3-17.7 80 0 80zm112 160c0-8.8-7.2-16-16-16s-16 7.2-16 16v96c0 8.8 7.2 16 16 16s16-7.2 16-16V240zm80-48c0-8.8-7.2-16-16-16s-16 7.2-16 16v144c0 8.8 7.2 16 16 16s16-7.2 16-16V192zm80 80c0-8.8-7.2-16-16-16s-16 7.2-16 16v64c0 8.8 7.2 16 16 16s16-7.2 16-16V272zm80-112c0-8.8-7.2-16-16-16s-16 7.2-16 16v176c0 8.8 7.2 16 16 16s16-7.2 16-16V160zm80 64c0-8.8-7.2-16-16-16s-16 7.2-16 16v112c0 8.8 7.2 16 16 16s16-7.2 16-16V224z"/></svg> ${dashboardNames.principal}
+                        <i class="fas fa-home" style="width:15px;text-align:center;margin-right:8px;flex-shrink:0;font-size:13px;color:#FFD700;"></i> ${dashboardNames.principal}
                     </button>
                 `;
             }
@@ -3220,7 +3220,7 @@
                                 'Comercial': 'fas fa-gem',
                                 'Finanzas': 'fas fa-credit-card',
                                 'TI': 'fas fa-desktop',
-                                'Inicio': 'fas fa-images'
+                                'Inicio': 'fas fa-home'
                             };
 
                             // Generar HTML del carrusel - layout 2 columnas
