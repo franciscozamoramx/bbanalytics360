@@ -1886,12 +1886,12 @@
                 };
 
                 const slidesHTML = mobileCarruselData.map((slide, index) => `
-                    <div class="carrusel-slide ${index === 0 ? 'active' : ''}" data-index="${index}" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px 16px;gap:14px;">
+                    <div class="carrusel-slide ${index === 0 ? 'active' : ''}" data-index="${index}" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 16px 40px;gap:10px;">
                         <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,0.12);border:1px solid rgba(255,215,0,0.25);color:#FFD700;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:3px 10px;border-radius:20px;">
                             <i class="${areaIcons[areaLabels[slide.key]] || 'fas fa-chart-bar'}" style="font-size:10px;"></i> ${areaLabels[slide.key] || 'Dashboard'}
                         </span>
                         <img src="${slide.image}" alt="${slide.title}" data-key="${slide.key}"
-                            style="width:90%;max-height:38vh;object-fit:contain;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,0.5);cursor:pointer;">
+                            style="width:85%;max-height:32vh;object-fit:contain;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,0.5);cursor:pointer;">
                         <div class="dashboard-title" style="font-size:20px;font-weight:700;color:white;text-align:center;line-height:1.2;">${slide.title}</div>
                         <div class="dashboard-desc" style="font-size:13px;color:rgba(255,255,255,0.6);text-align:center;line-height:1.5;">${slide.description}</div>
                         <button class="mobile-slide-cta" data-key="${slide.key}"
@@ -1917,9 +1917,9 @@
                         <button class="carrusel-nav carrusel-prev"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" style="width:12px;height:12px;fill:white;"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"/></svg></button>
                         <button class="carrusel-nav carrusel-next"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" style="width:12px;height:12px;fill:white;"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg></button>
                         ${slidesHTML}
+                        <div class="carrusel-indicators" style="z-index:20;">${indicatorsHTML}</div>
                         <span style="position:absolute;top:12px;right:14px;font-size:11px;color:rgba(255,255,255,0.3);z-index:15;" id="mobileSlideCounter">1 / ${mobileCarruselData.length}</span>
                     </div>
-                    <div class="carrusel-indicators" style="position:relative;flex-shrink:0;margin-top:10px;">${indicatorsHTML}</div>
                 `;
                 
                 setupMobileCarruselEvents();
