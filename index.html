@@ -1933,13 +1933,10 @@
 
                 // Click en imagen
                 slideImages.forEach(img => {
-                    img.addEventListener('click', async function() {
+                    img.addEventListener('click', function() {
                         const dashboardKey = this.getAttribute('data-key');
                         if (dashboardKey && dashboardUrls[dashboardKey]) {
-                            await logger.log('dashboard_view', dashboardKey, currentUser, {
-                                source: 'mobile_carrusel_click',
-                                timestamp: new Date().toISOString()
-                            });
+                            try { logger.log('dashboard_view', dashboardKey, currentUser, { source: 'mobile_carrusel_click' }); } catch(e) { console.warn('Log error:', e); }
                             loadMobileDashboard(dashboardUrls[dashboardKey], dashboardKey);
                         }
                     });
@@ -1947,13 +1944,10 @@
 
                 // Click en botón CTA
                 document.querySelectorAll('.mobile-slide-cta').forEach(btn => {
-                    btn.addEventListener('click', async function() {
+                    btn.addEventListener('click', function() {
                         const dashboardKey = this.getAttribute('data-key');
                         if (dashboardKey && dashboardUrls[dashboardKey]) {
-                            await logger.log('dashboard_view', dashboardKey, currentUser, {
-                                source: 'mobile_cta_click',
-                                timestamp: new Date().toISOString()
-                            });
+                            try { logger.log('dashboard_view', dashboardKey, currentUser, { source: 'mobile_cta_click' }); } catch(e) { console.warn('Log error:', e); }
                             loadMobileDashboard(dashboardUrls[dashboardKey], dashboardKey);
                         }
                     });
@@ -2299,7 +2293,7 @@
             mobileOverlay.addEventListener('click', toggleMobileSidebar);
             
             mobileMenuItems.forEach(item => {
-                item.addEventListener('click', async function() {
+                item.addEventListener('click', function() {
                     const dashboardUrl = this.getAttribute('data-src');
                     
                     if (dashboardUrl) {
@@ -2314,12 +2308,9 @@
                         });
                         this.classList.add('active');
                         
-                        // Registrar acceso si no es el carrusel
+                        // Registrar acceso si no es el carrusel (fire-and-forget)
                         if (dashboardKey && dashboardKey !== 'principal') {
-                            await logger.log('dashboard_view', dashboardKey, currentUser, {
-                                source: 'mobile_menu_click',
-                                timestamp: new Date().toISOString()
-                            });
+                            try { logger.log('dashboard_view', dashboardKey, currentUser, { source: 'mobile_menu_click' }); } catch(e) { console.warn('Log error:', e); }
                         }
                         
                         // Cargar dashboard
