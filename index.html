@@ -2815,13 +2815,14 @@
                             position: absolute;
                             inset: 0;
                             opacity: 0;
+                            pointer-events: none;
                             transition: opacity 0.7s ease;
                             display: grid;
                             grid-template-columns: 55% 45%;
                             align-items: stretch;
                         }
 
-                        .carrusel-slide.active { opacity: 1; }
+                        .carrusel-slide.active { opacity: 1; pointer-events: auto; }
 
                         .slide-image-panel {
                             display: flex;
