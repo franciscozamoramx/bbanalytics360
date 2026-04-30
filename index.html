@@ -1533,6 +1533,7 @@
                         width: 100%;
                         height: 100%;
                         opacity: 0;
+                        pointer-events: none;
                         transition: opacity 0.8s ease-in-out;
                         display: flex;
                         flex-direction: column;
@@ -1545,6 +1546,7 @@
                     
                     .carrusel-slide.active {
                         opacity: 1;
+                        pointer-events: auto;
                     }
                     
                     .carrusel-slide img {
@@ -1874,10 +1876,19 @@
                     principal:'Inicio'
                 };
 
+                const areaIcons = {
+                    'Máquinas': 'fas fa-chart-line',
+                    'Auditoría': 'fas fa-search',
+                    'Comercial': 'fas fa-gem',
+                    'Finanzas': 'fas fa-credit-card',
+                    'TI': 'fas fa-desktop',
+                    'Inicio': 'fas fa-images'
+                };
+
                 const slidesHTML = mobileCarruselData.map((slide, index) => `
                     <div class="carrusel-slide ${index === 0 ? 'active' : ''}" data-index="${index}" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px 48px;gap:14px;">
                         <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,0.12);border:1px solid rgba(255,215,0,0.25);color:#FFD700;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:3px 10px;border-radius:20px;">
-                            <span style="width:6px;height:6px;border-radius:50%;background:#FFD700;flex-shrink:0;display:inline-block;"></span> ${areaLabels[slide.key] || 'Dashboard'}
+                            <i class="${areaIcons[areaLabels[slide.key]] || 'fas fa-chart-bar'}" style="font-size:10px;"></i> ${areaLabels[slide.key] || 'Dashboard'}
                         </span>
                         <img src="${slide.image}" alt="${slide.title}" data-key="${slide.key}"
                             style="width:90%;max-height:38vh;object-fit:contain;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,0.5);cursor:pointer;">
