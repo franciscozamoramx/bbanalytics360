@@ -1868,7 +1868,7 @@
                 const areaLabels = {
                     adt:'Máquinas', desempeno:'Máquinas', rtp:'Máquinas', aforo:'Máquinas',
                     auditoria:'Auditoría', seguimiento_auditores:'Auditoría', promociones:'Auditoría',
-                    bigplayers:'Comercial', bolipoits:'Comercial',
+                    bigplayers:'Comercial', bolipoits:'Comercial', clientes:'Comercial',
                     ingreso_tarjetas:'Finanzas',
                     inventario:'TI', proyectos:'TI', oficina_proyectos:'TI', logs_bi:'TI',
                     principal:'Inicio'
@@ -3196,10 +3196,20 @@
                             const areaLabels = {
                                 adt:'Máquinas', desempeno:'Máquinas', rtp:'Máquinas', aforo:'Máquinas',
                                 auditoria:'Auditoría', seguimiento_auditores:'Auditoría', promociones:'Auditoría',
-                                bigplayers:'Comercial', bolipoits:'Comercial',
+                                bigplayers:'Comercial', bolipoits:'Comercial', clientes:'Comercial',
                                 ingreso_tarjetas:'Finanzas',
                                 inventario:'TI', proyectos:'TI', oficina_proyectos:'TI', logs_bi:'TI',
                                 principal:'Inicio'
+                            };
+
+                            // Ícono por área (coincide con los del menú lateral)
+                            const areaIcons = {
+                                'Máquinas': 'fas fa-chart-line',
+                                'Auditoría': 'fas fa-search',
+                                'Comercial': 'fas fa-gem',
+                                'Finanzas': 'fas fa-credit-card',
+                                'TI': 'fas fa-desktop',
+                                'Inicio': 'fas fa-images'
                             };
 
                             // Generar HTML del carrusel - layout 2 columnas
@@ -3210,7 +3220,7 @@
                                     </div>
                                     <div class="slide-info-panel">
                                         <span class="slide-area-badge">
-                                            <i class="\${slide.icon}" style="font-size:10px;"></i>
+                                            <i class="\${areaIcons[areaLabels[slide.key]] || slide.icon}" style="font-size:10px;"></i>
                                             \${areaLabels[slide.key] || 'Dashboard'}
                                         </span>
                                         <div class="dashboard-title">\${slide.title}</div>
