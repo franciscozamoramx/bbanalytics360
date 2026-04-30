@@ -3296,13 +3296,10 @@
                             
                             // Click en imagen
                             slideImages.forEach(img => {
-                                img.addEventListener('click', async function() {
+                                img.addEventListener('click', function() {
                                     const dashboardKey = this.getAttribute('data-key');
                                     if (dashboardKey && dashboardUrls[dashboardKey]) {
-                                        await logger.log('dashboard_view', dashboardKey, currentUser, {
-                                            source: 'desktop_carrusel_click',
-                                            timestamp: new Date().toISOString()
-                                        });
+                                        try { logger.log('dashboard_view', dashboardKey, currentUser, { source: 'desktop_carrusel_click' }); } catch(e) { console.warn('Log error:', e); }
                                         loadDashboard(dashboardUrls[dashboardKey], dashboardKey);
                                     }
                                 });
@@ -3316,13 +3313,10 @@
 
                             // Click en botón CTA
                             document.querySelectorAll('.slide-cta').forEach(btn => {
-                                btn.addEventListener('click', async function() {
+                                btn.addEventListener('click', function() {
                                     const dashboardKey = this.getAttribute('data-key');
                                     if (dashboardKey && dashboardUrls[dashboardKey]) {
-                                        await logger.log('dashboard_view', dashboardKey, currentUser, {
-                                            source: 'desktop_cta_click',
-                                            timestamp: new Date().toISOString()
-                                        });
+                                        try { logger.log('dashboard_view', dashboardKey, currentUser, { source: 'desktop_cta_click' }); } catch(e) { console.warn('Log error:', e); }
                                         loadDashboard(dashboardUrls[dashboardKey], dashboardKey);
                                     }
                                 });
@@ -3627,7 +3621,7 @@
                             
                             // ✅ CORRECCIÓN: Event listeners para los botones del menú
                             menuItems.forEach(item => {
-                                item.addEventListener('click', async function() {
+                                item.addEventListener('click', function() {
                                     const dashboardUrl = this.getAttribute('data-src');
                                     const dashboardKey = Object.keys(dashboardUrls).find(key => 
                                         dashboardUrls[key] === dashboardUrl
@@ -3640,12 +3634,9 @@
                                         });
                                         this.classList.add('active');
                                         
-                                        // Registrar acceso si no es el carrusel
+                                        // Registrar acceso si no es el carrusel (fire-and-forget)
                                         if (dashboardKey && dashboardKey !== 'principal') {
-                                            await logger.log('dashboard_view', dashboardKey, currentUser, {
-                                                source: 'desktop_menu_click',
-                                                timestamp: new Date().toISOString()
-                                            });
+                                            try { logger.log('dashboard_view', dashboardKey, currentUser, { source: 'desktop_menu_click' }); } catch(e) { console.warn('Log error:', e); }
                                         }
                                         
                                         // Cargar el dashboard usando la función global loadDashboard
