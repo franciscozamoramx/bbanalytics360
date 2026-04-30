@@ -768,6 +768,7 @@
 
         // Instancia global del logger
         const logger = new AirtableLogger();
+        window.bbLogger = logger;
 
         // Permisos por defecto
         const defaultPermissions = {
@@ -3299,7 +3300,7 @@
                                 img.addEventListener('click', function() {
                                     const dashboardKey = this.getAttribute('data-key');
                                     if (dashboardKey && dashboardUrls[dashboardKey]) {
-                                        try { logger.log('dashboard_view', dashboardKey, currentUser, { source: 'desktop_carrusel_click' }); } catch(e) { console.warn('Log error:', e); }
+                                        try { window.bbLogger && window.bbLogger.log('dashboard_view', dashboardKey, currentUser, { source: 'desktop_carrusel_click' }); } catch(e) { console.warn('Log error:', e); }
                                         loadDashboard(dashboardUrls[dashboardKey], dashboardKey);
                                     }
                                 });
@@ -3316,7 +3317,7 @@
                                 btn.addEventListener('click', function() {
                                     const dashboardKey = this.getAttribute('data-key');
                                     if (dashboardKey && dashboardUrls[dashboardKey]) {
-                                        try { logger.log('dashboard_view', dashboardKey, currentUser, { source: 'desktop_cta_click' }); } catch(e) { console.warn('Log error:', e); }
+                                        try { window.bbLogger && window.bbLogger.log('dashboard_view', dashboardKey, currentUser, { source: 'desktop_cta_click' }); } catch(e) { console.warn('Log error:', e); }
                                         loadDashboard(dashboardUrls[dashboardKey], dashboardKey);
                                     }
                                 });
@@ -3636,7 +3637,7 @@
                                         
                                         // Registrar acceso si no es el carrusel (fire-and-forget)
                                         if (dashboardKey && dashboardKey !== 'principal') {
-                                            try { logger.log('dashboard_view', dashboardKey, currentUser, { source: 'desktop_menu_click' }); } catch(e) { console.warn('Log error:', e); }
+                                            try { window.bbLogger && window.bbLogger.log('dashboard_view', dashboardKey, currentUser, { source: 'desktop_menu_click' }); } catch(e) { console.warn('Log error:', e); }
                                         }
                                         
                                         // Cargar el dashboard usando la función global loadDashboard
