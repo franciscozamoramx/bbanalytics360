@@ -3106,6 +3106,30 @@
                         const currentUserPermissions = ${currentUserPermissionsJson};
                         const currentSessionId = "${currentSessionId}";
                         
+                        // Mini logger para la ventana de dashboard
+                        const AIRTABLE_BASE = 'appyLYRPaDHgHRMfg';
+                        const AIRTABLE_KEY = 'patotjwpztoSwMBKc.19277efd2f0944e48d327235c5ecd969e1ece9b46543924225445a24d0992e23';
+                        window.bbLogger = {
+                            log: function(action, dashboard, user, extra) {
+                                try {
+                                    fetch('https://api.airtable.com/v0/' + AIRTABLE_BASE + '/Logs', {
+                                        method: 'POST',
+                                        headers: { 'Authorization': 'Bearer ' + AIRTABLE_KEY, 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ fields: {
+                                            FechaHora: new Date().toISOString(),
+                                            Usuario: user || currentUser,
+                                            Accion: action,
+                                            Dashboard: dashboard || '',
+                                            DashboardNombre: (typeof dashboardNames !== 'undefined' && dashboardNames[dashboard]) || '',
+                                            Dispositivo: 'desktop',
+                                            IP: 'IP no disponible',
+                                            UserAgent: navigator.userAgent.substring(0, 300),
+                                            SesionID: currentSessionId
+                                        }})
+                                    }).catch(function(e) { console.warn('Log error:', e); });
+                                } catch(e) { console.warn('Log error:', e); }
+                            }
+                        };
                         // Variables para control del carrusel
                         let currentSlide = 0;
                         let autoPlayInterval;
