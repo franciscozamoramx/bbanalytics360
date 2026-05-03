@@ -259,7 +259,7 @@
                         }
                     </style></head>
 <body>
-    <!-- Canvas animado de fondo -->
+    <!-- Canvas animado de fondo - Analytics -->
     <canvas id="bgCharts" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
 
     <!-- Contenedor de login -->
@@ -289,130 +289,437 @@
     </div>
 
     <script>
-    // ========== ANIMACIÓN DE FONDO - GRÁFICAS ==========
+    // ========== ANIMACIÓN DE FONDO - ANALYTICS DATA VIZ ==========
     (function() {
         const canvas = document.getElementById('bgCharts');
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
-        let W, H, charts = [], particles = [];
-        const GOLD = 'rgba(255,215,0,';
-        const BLUE = 'rgba(100,149,237,';
-        const TEAL = 'rgba(0,206,209,';
-        const colors = [GOLD, BLUE, TEAL];
+        let W, H, panels = [], particles = [], gridLines = [];
+        let animId;
+
+        // Paleta BB Analytics
+        const NAVY = '#152c6e';
+        const GOLD = '#FFD700';
+        const BLUE_LIGHT = '#4a90d9';
+        const TEAL = '#00ced1';
+        const CORAL = '#ff6b6b';
+        const GREEN = '#3DD68C';
+
+        const chartColors = [GOLD, BLUE_LIGHT, TEAL, CORAL, GREEN];
 
         function resize() {
-            W = canvas.width = window.innerWidth;
-            H = canvas.height = window.innerHeight;
-            initCharts();
+            const dpr = window.devicePixelRatio || 1;
+            W = window.innerWidth;
+            H = window.innerHeight;
+            canvas.width = W * dpr;
+            canvas.height = H * dpr;
+            canvas.style.width = W + 'px';
+            canvas.style.height = H + 'px';
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            init();
         }
 
-        function initCharts() {
-            charts = [];
+        function init() {
+            panels = [];
             particles = [];
-            const count = Math.floor(W / 280);
-            for (let i = 0; i < count + 2; i++) {
-                charts.push(createChart());
+            gridLines = [];
+
+            // Cuántos paneles según tamaño de pantalla
+            const isMobile = W < 768;
+            const panelCount = isMobile ? 4 : 8;
+
+            for (let i = 0; i < panelCount; i++) {
+                panels.push(createPanel(true));
             }
-            for (let i = 0; i < 30; i++) {
-                particles.push({ x: Math.random()*W, y: Math.random()*H, r: Math.random()*2+0.5, speed: Math.random()*0.3+0.1, opacity: Math.random()*0.15+0.05 });
+
+            // Partículas de datos flotantes
+            const particleCount = isMobile ? 20 : 50;
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * W,
+                    y: Math.random() * H,
+                    r: Math.random() * 1.5 + 0.5,
+                    speedY: -(Math.random() * 0.4 + 0.1),
+                    speedX: (Math.random() - 0.5) * 0.3,
+                    opacity: Math.random() * 0.3 + 0.1,
+                    color: chartColors[Math.floor(Math.random() * chartColors.length)],
+                    pulse: Math.random() * Math.PI * 2
+                });
+            }
+
+            // Grid lines de fondo (estilo dashboard)
+            for (let i = 0; i < 12; i++) {
+                gridLines.push({
+                    y: Math.random() * H,
+                    opacity: Math.random() * 0.04 + 0.01,
+                    speed: Math.random() * 0.1 + 0.02
+                });
             }
         }
 
-        function createChart() {
-            const type = Math.random();
-            const x = Math.random() * W;
-            const y = Math.random() * H;
-            const w = Math.random() * 120 + 80;
-            const h = Math.random() * 80 + 50;
-            const color = colors[Math.floor(Math.random()*colors.length)];
-            const opacity = Math.random() * 0.08 + 0.03;
-            const speed = Math.random() * 0.3 + 0.1;
-            const bars = Math.floor(Math.random()*6)+4;
-            const barVals = Array.from({length: bars}, () => Math.random());
-            const linePoints = Array.from({length: Math.floor(Math.random()*8)+5}, () => Math.random());
-            const phase = Math.random() * Math.PI * 2;
-            const drift = (Math.random() - 0.5) * 0.2;
-            return { type, x, y, w, h, color, opacity, speed, bars, barVals, linePoints, phase, drift, age: 0, maxAge: Math.random()*600+300 };
+        function createPanel(stagger) {
+            const isMobile = W < 768;
+            const types = ['bar', 'line', 'area', 'donut', 'gauge', 'scatter', 'hbar', 'kpi'];
+            const type = types[Math.floor(Math.random() * types.length)];
+
+            const minW = isMobile ? 100 : 160;
+            const maxW = isMobile ? 180 : 300;
+            const minH = isMobile ? 70 : 100;
+            const maxH = isMobile ? 120 : 200;
+
+            const w = Math.random() * (maxW - minW) + minW;
+            const h = type === 'kpi' ? (Math.random() * 40 + 50) : (Math.random() * (maxH - minH) + minH);
+
+            return {
+                type,
+                x: Math.random() * (W - w),
+                y: Math.random() * (H - h),
+                w, h,
+                color: chartColors[Math.floor(Math.random() * chartColors.length)],
+                color2: chartColors[Math.floor(Math.random() * chartColors.length)],
+                opacity: 0,
+                targetOpacity: Math.random() * 0.12 + 0.06,
+                age: stagger ? -Math.floor(Math.random() * 200) : 0,
+                maxAge: Math.random() * 800 + 400,
+                phase: Math.random() * Math.PI * 2,
+                driftX: (Math.random() - 0.5) * 0.15,
+                driftY: (Math.random() - 0.5) * 0.08,
+                rotation: (Math.random() - 0.5) * 0.03,
+                bars: Math.floor(Math.random() * 7) + 4,
+                barVals: Array.from({length: 12}, () => Math.random() * 0.7 + 0.3),
+                lineData: Array.from({length: 10}, () => Math.random()),
+                scatterData: Array.from({length: 15}, () => ({x: Math.random(), y: Math.random(), r: Math.random() * 3 + 1})),
+                kpiValue: Math.floor(Math.random() * 9000 + 1000),
+                kpiLabel: ['Ingresos', 'Clientes', 'ADT', 'Salas', 'Visitas', 'Revenue'][Math.floor(Math.random() * 6)],
+                gaugeValue: Math.random() * 0.7 + 0.3,
+                cornerRadius: 8
+            };
         }
 
-        function drawBarChart(c, t) {
-            const barW = c.w / (c.bars * 1.5);
-            const gap = barW * 0.5;
-            ctx.globalAlpha = c.opacity;
-            // Axes
-            ctx.strokeStyle = c.color + '0.15)';
+        function drawPanel(p, t) {
+            if (p.age < 0) return;
+
+            const progress = Math.min(p.age / 80, 1);
+            const fadeIn = Math.min(p.age / 40, 1);
+            const fadeOut = p.age > p.maxAge ? Math.max(0, 1 - (p.age - p.maxAge) / 60) : 1;
+            const alpha = p.targetOpacity * fadeIn * fadeOut;
+            if (alpha <= 0) return;
+
+            ctx.save();
+            ctx.translate(p.x + p.w/2, p.y + p.h/2);
+            ctx.rotate(p.rotation * Math.sin(t * 0.002 + p.phase));
+            ctx.translate(-(p.x + p.w/2), -(p.y + p.h/2));
+
+            // Panel background con glassmorphism
+            ctx.globalAlpha = alpha * 0.5;
+            ctx.fillStyle = 'rgba(21,44,110,0.4)';
+            roundRect(ctx, p.x, p.y, p.w, p.h, p.cornerRadius);
+            ctx.fill();
+
+            // Panel border
+            ctx.globalAlpha = alpha * 0.6;
+            ctx.strokeStyle = 'rgba(255,255,255,0.08)';
             ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(c.x, c.y);
-            ctx.lineTo(c.x, c.y + c.h);
-            ctx.lineTo(c.x + c.w, c.y + c.h);
+            roundRect(ctx, p.x, p.y, p.w, p.h, p.cornerRadius);
             ctx.stroke();
-            // Bars growing
-            const progress = Math.min(c.age / 60, 1);
-            for (let i = 0; i < c.bars; i++) {
-                const bx = c.x + 8 + i * (barW + gap);
-                const wave = Math.sin(t * 0.015 + c.phase + i * 0.5) * 0.15 + 0.85;
-                const bh = c.barVals[i] * c.h * 0.85 * progress * wave;
-                ctx.fillStyle = c.color + (c.opacity + 0.04) + ')';
-                ctx.fillRect(bx, c.y + c.h - bh, barW, bh);
+
+            // Título fake
+            ctx.globalAlpha = alpha * 0.7;
+            ctx.fillStyle = 'rgba(255,255,255,0.15)';
+            roundRect(ctx, p.x + 10, p.y + 8, p.w * 0.4, 6, 3);
+            ctx.fill();
+
+            const chartX = p.x + 10;
+            const chartY = p.y + 22;
+            const chartW = p.w - 20;
+            const chartH = p.h - 32;
+
+            ctx.globalAlpha = alpha;
+
+            switch(p.type) {
+                case 'bar': drawBars(p, chartX, chartY, chartW, chartH, t, progress); break;
+                case 'line': drawLine(p, chartX, chartY, chartW, chartH, t, progress); break;
+                case 'area': drawArea(p, chartX, chartY, chartW, chartH, t, progress); break;
+                case 'donut': drawDonut(p, chartX, chartY, chartW, chartH, t, progress); break;
+                case 'gauge': drawGauge(p, chartX, chartY, chartW, chartH, t, progress); break;
+                case 'scatter': drawScatter(p, chartX, chartY, chartW, chartH, t, progress); break;
+                case 'hbar': drawHBars(p, chartX, chartY, chartW, chartH, t, progress); break;
+                case 'kpi': drawKPI(p, t, progress); break;
+            }
+
+            ctx.restore();
+        }
+
+        function drawBars(p, x, y, w, h, t, prog) {
+            const n = p.bars;
+            const barW = w / (n * 1.6);
+            const gap = barW * 0.6;
+            // Axis
+            ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+            ctx.lineWidth = 0.5;
+            ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y+h); ctx.lineTo(x+w, y+h); ctx.stroke();
+            // Grid
+            for (let g = 0; g < 3; g++) {
+                const gy = y + h * (g+1)/4;
+                ctx.globalAlpha *= 0.5;
+                ctx.beginPath(); ctx.moveTo(x, gy); ctx.lineTo(x+w, gy); ctx.stroke();
+                ctx.globalAlpha *= 2;
+            }
+            for (let i = 0; i < n; i++) {
+                const bx = x + 5 + i * (barW + gap);
+                const wave = Math.sin(t * 0.012 + p.phase + i * 0.6) * 0.12 + 0.88;
+                const bh = p.barVals[i] * h * 0.85 * prog * wave;
+                const grad = ctx.createLinearGradient(bx, y+h, bx, y+h-bh);
+                grad.addColorStop(0, p.color + '40');
+                grad.addColorStop(1, p.color + '10');
+                ctx.fillStyle = grad;
+                ctx.fillRect(bx, y+h-bh, barW, bh);
+                // Top highlight
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha *= 1.5;
+                ctx.fillRect(bx, y+h-bh, barW, 2);
+                ctx.globalAlpha /= 1.5;
             }
         }
 
-        function drawLineChart(c, t) {
-            ctx.globalAlpha = c.opacity;
-            // Axes
-            ctx.strokeStyle = c.color + '0.12)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(c.x, c.y);
-            ctx.lineTo(c.x, c.y + c.h);
-            ctx.lineTo(c.x + c.w, c.y + c.h);
-            ctx.stroke();
+        function drawLine(p, x, y, w, h, t, prog) {
+            const pts = p.lineData;
+            const step = w / (pts.length - 1);
+            const visible = Math.floor(pts.length * prog);
+            // Grid
+            ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+            ctx.lineWidth = 0.5;
+            for (let g = 0; g < 4; g++) {
+                const gy = y + h * g/4;
+                ctx.beginPath(); ctx.moveTo(x, gy); ctx.lineTo(x+w, gy); ctx.stroke();
+            }
             // Line
-            const progress = Math.min(c.age / 80, 1);
-            const pts = c.linePoints;
-            const step = c.w / (pts.length - 1);
-            ctx.strokeStyle = c.color + (c.opacity + 0.06) + ')';
-            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = p.color;
+            ctx.lineWidth = 1.8;
+            ctx.lineJoin = 'round';
             ctx.beginPath();
-            const visiblePts = Math.floor(pts.length * progress);
-            for (let i = 0; i <= visiblePts; i++) {
-                const px = c.x + i * step;
-                const wave = Math.sin(t * 0.01 + c.phase + i * 0.4) * 0.1;
-                const py = c.y + c.h - (pts[i] + wave) * c.h * 0.85;
-                if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            for (let i = 0; i <= visible; i++) {
+                const px = x + i * step;
+                const wave = Math.sin(t * 0.008 + p.phase + i * 0.3) * 0.08;
+                const py = y + h - (pts[i] + wave) * h * 0.8;
+                i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
             }
+            ctx.stroke();
+            // Glow
+            ctx.strokeStyle = p.color + '30';
+            ctx.lineWidth = 4;
             ctx.stroke();
             // Dots
-            for (let i = 0; i <= visiblePts; i++) {
-                const px = c.x + i * step;
-                const wave = Math.sin(t * 0.01 + c.phase + i * 0.4) * 0.1;
-                const py = c.y + c.h - (pts[i] + wave) * c.h * 0.85;
-                ctx.fillStyle = c.color + (c.opacity + 0.08) + ')';
-                ctx.beginPath();
-                ctx.arc(px, py, 2, 0, Math.PI * 2);
-                ctx.fill();
+            for (let i = 0; i <= visible; i++) {
+                const px = x + i * step;
+                const wave = Math.sin(t * 0.008 + p.phase + i * 0.3) * 0.08;
+                const py = y + h - (pts[i] + wave) * h * 0.8;
+                ctx.fillStyle = p.color;
+                ctx.beginPath(); ctx.arc(px, py, 2.5, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = NAVY;
+                ctx.beginPath(); ctx.arc(px, py, 1, 0, Math.PI*2); ctx.fill();
             }
         }
 
-        function drawDonut(c, t) {
-            const cx = c.x + c.w * 0.5;
-            const cy = c.y + c.h * 0.5;
-            const r = Math.min(c.w, c.h) * 0.4;
-            const progress = Math.min(c.age / 90, 1);
-            const segments = [0.35, 0.25, 0.2, 0.2];
-            let startAngle = -Math.PI / 2 + t * 0.005;
-            ctx.globalAlpha = c.opacity;
-            segments.forEach((seg, i) => {
-                const endAngle = startAngle + seg * Math.PI * 2 * progress;
-                const segColor = colors[(i + Math.floor(c.phase)) % colors.length];
-                ctx.strokeStyle = segColor + (c.opacity + 0.05) + ')';
-                ctx.lineWidth = r * 0.35;
-                ctx.beginPath();
-                ctx.arc(cx, cy, r, startAngle, endAngle);
-                ctx.stroke();
-                startAngle = endAngle + 0.04;
+        function drawArea(p, x, y, w, h, t, prog) {
+            const pts = p.lineData;
+            const step = w / (pts.length - 1);
+            const visible = Math.floor(pts.length * prog);
+            // Fill area
+            const grad = ctx.createLinearGradient(x, y, x, y+h);
+            grad.addColorStop(0, p.color + '25');
+            grad.addColorStop(1, p.color + '02');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.moveTo(x, y+h);
+            for (let i = 0; i <= visible; i++) {
+                const px = x + i * step;
+                const wave = Math.sin(t * 0.006 + p.phase + i * 0.4) * 0.06;
+                const py = y + h - (pts[i] + wave) * h * 0.8;
+                ctx.lineTo(px, py);
+            }
+            ctx.lineTo(x + visible * step, y+h);
+            ctx.closePath();
+            ctx.fill();
+            // Top stroke
+            ctx.strokeStyle = p.color;
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            for (let i = 0; i <= visible; i++) {
+                const px = x + i * step;
+                const wave = Math.sin(t * 0.006 + p.phase + i * 0.4) * 0.06;
+                const py = y + h - (pts[i] + wave) * h * 0.8;
+                i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+            }
+            ctx.stroke();
+        }
+
+        function drawDonut(p, x, y, w, h, t, prog) {
+            const cx = x + w/2;
+            const cy = y + h/2;
+            const r = Math.min(w, h) * 0.38;
+            const segs = [0.32, 0.24, 0.22, 0.12, 0.10];
+            let angle = -Math.PI/2 + t * 0.003;
+            segs.forEach((seg, i) => {
+                const end = angle + seg * Math.PI * 2 * prog;
+                const col = chartColors[(i + Math.floor(p.phase)) % chartColors.length];
+                ctx.strokeStyle = col;
+                ctx.lineWidth = r * 0.3;
+                ctx.lineCap = 'butt';
+                ctx.beginPath(); ctx.arc(cx, cy, r, angle, end); ctx.stroke();
+                // Glow
+                ctx.strokeStyle = col + '20';
+                ctx.lineWidth = r * 0.45;
+                ctx.beginPath(); ctx.arc(cx, cy, r, angle, end); ctx.stroke();
+                angle = end + 0.03;
             });
+            // Center
+            ctx.fillStyle = 'rgba(21,44,110,0.6)';
+            ctx.beginPath(); ctx.arc(cx, cy, r * 0.55, 0, Math.PI*2); ctx.fill();
+            // Center value
+            ctx.fillStyle = 'rgba(255,255,255,0.12)';
+            roundRect(ctx, cx-15, cy-4, 30, 8, 4); ctx.fill();
+        }
+
+        function drawGauge(p, x, y, w, h, t, prog) {
+            const cx = x + w/2;
+            const cy = y + h * 0.65;
+            const r = Math.min(w, h) * 0.4;
+            const startA = Math.PI * 0.8;
+            const endA = Math.PI * 2.2;
+            // Track
+            ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+            ctx.lineWidth = r * 0.2;
+            ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.arc(cx, cy, r, startA, endA); ctx.stroke();
+            // Value
+            const valAngle = startA + (endA - startA) * p.gaugeValue * prog;
+            const wave = Math.sin(t * 0.01 + p.phase) * 0.03;
+            const grad = ctx.createLinearGradient(cx-r, cy, cx+r, cy);
+            grad.addColorStop(0, GREEN);
+            grad.addColorStop(0.5, GOLD);
+            grad.addColorStop(1, CORAL);
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = r * 0.2;
+            ctx.beginPath(); ctx.arc(cx, cy, r, startA, valAngle + wave); ctx.stroke();
+            // Glow
+            ctx.strokeStyle = p.color + '15';
+            ctx.lineWidth = r * 0.35;
+            ctx.beginPath(); ctx.arc(cx, cy, r, startA, valAngle + wave); ctx.stroke();
+        }
+
+        function drawScatter(p, x, y, w, h, t, prog) {
+            // Axes
+            ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+            ctx.lineWidth = 0.5;
+            ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y+h); ctx.lineTo(x+w, y+h); ctx.stroke();
+            // Points
+            const visible = Math.floor(p.scatterData.length * prog);
+            for (let i = 0; i < visible; i++) {
+                const pt = p.scatterData[i];
+                const px = x + pt.x * w;
+                const py = y + h - pt.y * h * 0.9;
+                const wave = Math.sin(t * 0.015 + i) * 2;
+                const col = chartColors[i % chartColors.length];
+                // Glow
+                ctx.fillStyle = col + '15';
+                ctx.beginPath(); ctx.arc(px + wave, py, pt.r * 3, 0, Math.PI*2); ctx.fill();
+                // Dot
+                ctx.fillStyle = col;
+                ctx.beginPath(); ctx.arc(px + wave, py, pt.r, 0, Math.PI*2); ctx.fill();
+            }
+        }
+
+        function drawHBars(p, x, y, w, h, t, prog) {
+            const n = Math.min(p.bars, 5);
+            const barH = h / (n * 1.5);
+            const gap = barH * 0.5;
+            for (let i = 0; i < n; i++) {
+                const by = y + 5 + i * (barH + gap);
+                const wave = Math.sin(t * 0.01 + p.phase + i * 0.5) * 0.08 + 0.92;
+                const bw = p.barVals[i] * w * 0.9 * prog * wave;
+                const grad = ctx.createLinearGradient(x, by, x+bw, by);
+                grad.addColorStop(0, p.color + '08');
+                grad.addColorStop(1, p.color + '35');
+                ctx.fillStyle = grad;
+                roundRect(ctx, x, by, bw, barH, 3); ctx.fill();
+                // Right highlight
+                ctx.fillStyle = p.color;
+                roundRect(ctx, x+bw-2, by, 2, barH, 1); ctx.fill();
+                // Label bar
+                ctx.fillStyle = 'rgba(255,255,255,0.06)';
+                roundRect(ctx, x+bw+5, by+barH/2-2, 20, 4, 2); ctx.fill();
+            }
+        }
+
+        function drawKPI(p, t, prog) {
+            ctx.save();
+            ctx.globalAlpha = p.targetOpacity * Math.min(p.age/40,1) * (p.age > p.maxAge ? Math.max(0, 1-(p.age-p.maxAge)/60) : 1);
+            // Panel
+            ctx.fillStyle = 'rgba(21,44,110,0.5)';
+            roundRect(ctx, p.x, p.y, p.w, p.h, p.cornerRadius); ctx.fill();
+            ctx.strokeStyle = p.color + '30';
+            ctx.lineWidth = 1;
+            roundRect(ctx, p.x, p.y, p.w, p.h, p.cornerRadius); ctx.stroke();
+            // Value placeholder
+            const val = Math.floor(p.kpiValue * prog);
+            ctx.fillStyle = p.color + '50';
+            ctx.font = 'bold ' + (p.h * 0.35) + 'px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(val.toLocaleString(), p.x + p.w/2, p.y + p.h * 0.5);
+            // Label
+            ctx.fillStyle = 'rgba(255,255,255,0.1)';
+            ctx.font = (p.h * 0.16) + 'px Arial';
+            ctx.fillText(p.kpiLabel, p.x + p.w/2, p.y + p.h * 0.75);
+            // Mini sparkline
+            const sparkY = p.y + p.h * 0.82;
+            const sparkW = p.w * 0.5;
+            const sparkX = p.x + p.w * 0.25;
+            ctx.strokeStyle = p.color + '20';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for (let i = 0; i < 8; i++) {
+                const sx = sparkX + (i/7) * sparkW;
+                const sy = sparkY - Math.sin(t * 0.01 + p.phase + i * 0.5) * 4 - 2;
+                i === 0 ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy);
+            }
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function roundRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x+r, y);
+            ctx.lineTo(x+w-r, y); ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+            ctx.lineTo(x+w, y+h-r); ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+            ctx.lineTo(x+r, y+h); ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+            ctx.lineTo(x, y+r); ctx.quadraticCurveTo(x, y, x+r, y);
+            ctx.closePath();
+        }
+
+        // Conexiones entre paneles cercanos
+        function drawConnections(t) {
+            const alive = panels.filter(p => p.age > 0 && p.opacity > 0);
+            for (let i = 0; i < alive.length; i++) {
+                for (let j = i+1; j < alive.length; j++) {
+                    const a = alive[i], b = alive[j];
+                    const dx = (a.x+a.w/2) - (b.x+b.w/2);
+                    const dy = (a.y+a.h/2) - (b.y+b.h/2);
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < 250) {
+                        const alpha = (1 - dist/250) * 0.03;
+                        ctx.globalAlpha = alpha;
+                        ctx.strokeStyle = 'rgba(255,215,0,0.5)';
+                        ctx.lineWidth = 0.5;
+                        ctx.setLineDash([4, 8]);
+                        ctx.beginPath();
+                        ctx.moveTo(a.x+a.w/2, a.y+a.h/2);
+                        ctx.lineTo(b.x+b.w/2, b.y+b.h/2);
+                        ctx.stroke();
+                        ctx.setLineDash([]);
+                    }
+                }
+            }
         }
 
         let frame = 0;
@@ -420,47 +727,68 @@
             ctx.clearRect(0, 0, W, H);
             frame++;
 
-            // Floating particles
-            particles.forEach(p => {
-                p.y -= p.speed;
-                p.x += Math.sin(frame * 0.01 + p.r) * 0.2;
-                if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; }
-                ctx.globalAlpha = p.opacity;
-                ctx.fillStyle = '#FFD700';
+            // Grid de fondo
+            ctx.globalAlpha = 1;
+            gridLines.forEach(gl => {
+                gl.y += gl.speed;
+                if (gl.y > H) gl.y = 0;
+                ctx.globalAlpha = gl.opacity;
+                ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+                ctx.lineWidth = 0.5;
+                ctx.beginPath(); ctx.moveTo(0, gl.y); ctx.lineTo(W, gl.y); ctx.stroke();
+            });
+
+            // Conexiones
+            drawConnections(frame);
+
+            // Paneles de gráficas
+            panels.forEach((p, i) => {
+                p.age++;
+                p.x += p.driftX + Math.sin(frame * 0.002 + p.phase) * 0.1;
+                p.y += p.driftY + Math.cos(frame * 0.0015 + p.phase) * 0.05;
+
+                // Fade in/out
+                if (p.age > 0 && p.age < 40) p.opacity = p.targetOpacity * (p.age/40);
+                else if (p.age >= 40 && p.age <= p.maxAge) p.opacity = p.targetOpacity;
+                else if (p.age > p.maxAge) {
+                    p.opacity = p.targetOpacity * Math.max(0, 1 - (p.age - p.maxAge)/80);
+                    if (p.opacity <= 0) panels[i] = createPanel(false);
+                }
+
+                if (p.age > 0) drawPanel(p, frame);
+            });
+
+            // Partículas flotantes
+            particles.forEach(pt => {
+                pt.y += pt.speedY;
+                pt.x += pt.speedX + Math.sin(frame * 0.005 + pt.pulse) * 0.15;
+                pt.pulse += 0.02;
+
+                if (pt.y < -10) { pt.y = H + 10; pt.x = Math.random() * W; }
+                if (pt.x < -10) pt.x = W + 10;
+                if (pt.x > W + 10) pt.x = -10;
+
+                const flicker = Math.sin(frame * 0.03 + pt.pulse) * 0.1 + 0.9;
+                ctx.globalAlpha = pt.opacity * flicker;
+                ctx.fillStyle = pt.color;
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.arc(pt.x, pt.y, pt.r, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Glow
+                ctx.globalAlpha = pt.opacity * flicker * 0.3;
+                ctx.beginPath();
+                ctx.arc(pt.x, pt.y, pt.r * 3, 0, Math.PI * 2);
                 ctx.fill();
             });
 
-            // Charts
-            charts.forEach((c, i) => {
-                c.age++;
-                c.y += c.drift;
-                c.x += Math.sin(frame * 0.003 + c.phase) * 0.15;
-
-                if (c.type < 0.4) drawBarChart(c, frame);
-                else if (c.type < 0.75) drawLineChart(c, frame);
-                else drawDonut(c, frame);
-
-                // Fade out and regenerate
-                if (c.age > c.maxAge) {
-                    c.opacity -= 0.001;
-                    if (c.opacity <= 0) charts[i] = createChart();
-                }
-            });
-
             ctx.globalAlpha = 1;
-            requestAnimationFrame(animate);
+            animId = requestAnimationFrame(animate);
         }
 
         window.addEventListener('resize', resize);
         resize();
         animate();
-
-        // Stop animation when login completes
-        window.stopBgAnimation = function() {
-            canvas.style.display = 'none';
-        };
     })();
     </script>
 
