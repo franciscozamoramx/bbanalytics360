@@ -379,7 +379,9 @@
             const type = types[Math.floor(Math.random() * types.length)];
 
             const w = Math.random() * (maxW * 0.4) + maxW * 0.5;
-            const h = type === 'kpi' ? (Math.random() * 40 + 50) : (Math.random() * (maxH * 0.4) + maxH * 0.4);
+            let h = type === 'kpi' ? (Math.random() * 40 + 50) : (Math.random() * (maxH * 0.4) + maxH * 0.4);
+            // Heatmap: limitar altura para max 6 filas compactas
+            if (type === 'heatmap') h = Math.min(h, 120);
 
             // Centrar dentro de la celda
             const x = cellX + (maxW - w) / 2 + (Math.random() - 0.5) * 20;
