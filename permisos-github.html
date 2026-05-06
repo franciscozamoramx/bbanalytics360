@@ -565,6 +565,13 @@ function loadGithubConfig() {
     }
     // Garantizar que siempre haya token
     if (!githubConfig.token) githubConfig.token = GITHUB_SHARED_TOKEN;
+    // Si el token guardado es diferente al token compartido actual, actualizarlo automáticamente
+    if (githubConfig.token !== GITHUB_SHARED_TOKEN) {
+        githubConfig.token = GITHUB_SHARED_TOKEN;
+        const current = JSON.parse(localStorage.getItem('bbAnalyticsGithubConfig') || '{}');
+        current.token = GITHUB_SHARED_TOKEN;
+        localStorage.setItem('bbAnalyticsGithubConfig', JSON.stringify(current));
+    }
 
     document.getElementById('githubUser').value  = githubConfig.user;
     document.getElementById('githubRepo').value  = githubConfig.repo;
