@@ -1845,11 +1845,47 @@
                 function showContactButton() {
                     const msgs = dw.document.getElementById('tgMessages');
                     if (dw.document.getElementById('tgContactBtn')) return;
-                    const div = dw.document.createElement('div');
-                    div.style.cssText = 'text-align:center;margin-top:6px;';
-                    div.innerHTML = '<a id="tgContactBtn" href="https://t.me/' + ADMIN_TG + '" target="_blank" style="display:inline-block;padding:8px 16px;background:linear-gradient(135deg,#229ED9,#1a7fb5);color:white;font-size:12px;font-weight:600;border-radius:20px;text-decoration:none;">📲 Escribir al administrador</a>';
-                    msgs.appendChild(div);
+
+                    // Botón de Telegram directo
+                    const divBtn = dw.document.createElement('div');
+                    divBtn.style.cssText = 'text-align:center;margin-top:6px;';
+                    divBtn.innerHTML = '<a id="tgContactBtn" href="https://t.me/' + ADMIN_TG + '" target="_blank" style="display:inline-block;padding:8px 16px;background:linear-gradient(135deg,#229ED9,#1a7fb5);color:white;font-size:12px;font-weight:600;border-radius:20px;text-decoration:none;">📲 Escribir al administrador</a>';
+                    msgs.appendChild(divBtn);
+
+                    // Formulario de teléfono
+                    const divPhone = dw.document.createElement('div');
+                    divPhone.id = 'tgPhoneForm';
+                    divPhone.style.cssText = 'background:rgba(34,158,217,0.12);border:1px solid rgba(34,158,217,0.3);border-radius:10px;padding:10px 12px;margin-top:8px;';
+                    divPhone.innerHTML = `
+                        <p style="color:rgba(255,255,255,0.8);font-size:12px;margin:0 0 8px;">¿Prefieres que te llamemos? Déjanos tu número:</p>
+                        <div style="display:flex;gap:6px;">
+                            <input id="tgPhone" type="tel" placeholder="Ej. 4421234567" style="flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:6px;color:white;font-size:12px;padding:7px 10px;outline:none;font-family:inherit;">
+                            <button id="tgPhoneBtn" style="padding:7px 12px;background:#229ED9;color:white;font-size:12px;font-weight:600;border:none;border-radius:6px;cursor:pointer;">Enviar</button>
+                        </div>
+                        <div id="tgPhoneStatus" style="font-size:11px;margin-top:6px;min-height:14px;color:white;"></div>
+                    `;
+                    msgs.appendChild(divPhone);
                     msgs.scrollTop = msgs.scrollHeight;
+
+                    // Evento del botón de teléfono
+                    dw.document.getElementById('tgPhoneBtn').addEventListener('click', function() {
+                        const phone = dw.document.getElementById('tgPhone').value.trim();
+                        const phoneStatus = dw.document.getElementById('tgPhoneStatus');
+                        if (!phone) { phoneStatus.style.color='#fca5a5'; phoneStatus.textContent='Ingresa un número válido.'; return; }
+                        phoneStatus.style.color='#93c5fd'; phoneStatus.textContent='Enviando...';
+                        const text = '📞 Solicitud de llamada — BB Analytics 360\n👤 Usuario: ' + tgUser + '\n📱 Teléfono: ' + phone;
+                        const url = 'https://api.telegram.org/bot' + TG_BOT + '/sendMessage'
+                            + '?chat_id=' + encodeURIComponent(TG_CHAT)
+                            + '&text=' + encodeURIComponent(text);
+                        const img = new dw.Image();
+                        img.onload = img.onerror = function() {
+                            phoneStatus.style.color='#6ee7b7';
+                            phoneStatus.textContent='✓ Recibido. El administrador te contactará pronto.';
+                            dw.document.getElementById('tgPhone').disabled = true;
+                            dw.document.getElementById('tgPhoneBtn').disabled = true;
+                        };
+                        img.src = url;
+                    });
                 }
 
                 const SYSTEM_PROMPT = `Eres el asistente virtual de soporte de BB Analytics 360, el portal de Business Intelligence de Big Bola Casinos. Responde siempre en español, de forma concisa y amable.
