@@ -181,6 +181,7 @@
         
         .form-group {
             text-align: left;
+            position: relative;
         }
         
         .form-group label {
@@ -191,16 +192,52 @@
         
         .form-group input {
             width: 100%;
-            padding: 12px 15px;
+            padding: 12px 15px 12px 40px;
             border-radius: 8px;
             border: 1px solid rgba(255, 255, 255, 0.3);
             background: rgba(255, 255, 255, 0.1);
             color: white;
             font-size: 16px;
+            transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
+            outline: none;
         }
         
         .form-group input::placeholder {
             color: rgba(255, 255, 255, 0.7);
+        }
+
+        .form-group input:focus {
+            border-color: #FFD700;
+            background: rgba(255, 255, 255, 0.18);
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.18);
+        }
+
+        .form-group .field-icon {
+            position: absolute;
+            left: 13px;
+            bottom: 13px;
+            width: 18px;
+            height: 18px;
+            opacity: 0.4;
+            transition: opacity 0.3s, filter 0.3s;
+            pointer-events: none;
+        }
+
+        .form-group:focus-within .field-icon {
+            opacity: 1;
+            filter: drop-shadow(0 0 4px #FFD700);
+        }
+
+        .login-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,215,0,0.45), transparent);
+            transform: scaleX(0);
+            animation: divExpand 0.7s 0.3s cubic-bezier(0.22,1,0.36,1) forwards;
+            transform-origin: center;
+        }
+
+        @keyframes divExpand {
+            to { transform: scaleX(1); }
         }
         
         .user-info {
@@ -271,8 +308,10 @@
         <div class="login-form">
             <div class="form-group">
                 <label for="email">Correo electrónico:</label>
+                <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
                 <input type="email" id="email" placeholder="usuario@bigbola.com" required="">
             </div>
+            <div class="login-divider"></div>
             <button class="btn" id="loginBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:18px;height:18px;fill:currentColor;vertical-align:middle;margin-right:8px;flex-shrink:0"><path d="M352 96l0 64-96 0 0 192 96 0 0 64-96 0c-35.3 0-64-28.7-64-64l0-192c0-35.3 28.7-64 64-64l96 0zm57.4 105.4L505.4 297c9.4 9.4 9.4 24.6 0 33.9L409.4 426.6c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9L433.4 335 224 335c-13.3 0-24-10.7-24-24s10.7-24 24-24l209.4 0-57.9-57.9c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0z"></path></svg>Ingresar a Analytics 360
             </button>
