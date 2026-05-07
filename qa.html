@@ -1839,13 +1839,25 @@
                 const dw = dashboardWindow;
                 let chatHistory = [];
                 let repeatCount = {};
+                let interactionCount = 0;
+                const ADMIN_TG = 'Business_Intelligence_BB';
+
+                function showContactButton() {
+                    const msgs = dw.document.getElementById('tgMessages');
+                    if (dw.document.getElementById('tgContactBtn')) return;
+                    const div = dw.document.createElement('div');
+                    div.style.cssText = 'text-align:center;margin-top:6px;';
+                    div.innerHTML = '<a id="tgContactBtn" href="https://t.me/' + ADMIN_TG + '" target="_blank" style="display:inline-block;padding:8px 16px;background:linear-gradient(135deg,#229ED9,#1a7fb5);color:white;font-size:12px;font-weight:600;border-radius:20px;text-decoration:none;">📲 Escribir al administrador</a>';
+                    msgs.appendChild(div);
+                    msgs.scrollTop = msgs.scrollHeight;
+                }
 
                 const SYSTEM_PROMPT = `Eres el asistente virtual de soporte de BB Analytics 360, el portal de Business Intelligence de Big Bola Casinos. Responde siempre en español, de forma concisa y amable.
 
 INFORMACIÓN DEL SISTEMA:
 - Usuario actual: ${tgUser}
 - Los dashboards disponibles son: Inicio, ADT, Auditoría de Salas, Big Player's, Canje de Bolipoints, Clientes Big Bola, Desempeño de Máquinas, Diccionario KPI's, Ingreso por Tarjetas, Inventario TI, Promociones, Proyectos BI, Oficina Proyectos, RTP, Seguimiento de Auditores, Logs BB Analytics 360, Aforo en salas.
-- Los administradores que pueden dar accesos son: francisco.zamora y guillermo.luna
+- Los administradores que pueden dar accesos son: francisco.zamora
 
 REGLAS:
 1. Si el usuario dice que no puede entrar o no ve un dashboard, explícale que los accesos son por rol y debe solicitarlos a francisco.zamora o guillermo.luna.
@@ -1896,6 +1908,7 @@ REGLAS:
                     if (!text) return;
                     input.value = '';
                     addMessage(text, 'user');
+                    interactionCount++;
 
                     // Contar repeticiones por tema
                     const key = text.toLowerCase().substring(0, 30);
@@ -1925,6 +1938,12 @@ REGLAS:
                         hideTyping();
                         addMessage(reply, 'bot');
                         chatHistory.push({role: 'assistant', content: reply});
+
+                        // Mostrar botón de contacto directo tras 10 interacciones
+                        if (interactionCount === 10) {
+                            addMessage('Veo que llevamos un buen rato conversando. Si prefieres hablar directamente con el administrador, usa el botón de abajo.', 'bot');
+                            showContactButton();
+                        }
 
                         // Escalar si el usuario preguntó lo mismo 5 veces
                         if (repeatCount[key] >= 5) {
