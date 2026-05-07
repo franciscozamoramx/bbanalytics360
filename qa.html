@@ -1840,7 +1840,7 @@
                     const full = '📩 Mensaje desde BB Analytics 360\n👤 Usuario: ' + tgUser + '\n\n' + text;
                     status.style.color='#93c5fd'; status.textContent='Enviando...';
                     try {
-                        const res = await dw.fetch('https://api.telegram.org/bot' + TG_BOT + '/sendMessage', {
+                        const res = await fetch('https://api.telegram.org/bot' + TG_BOT + '/sendMessage', {
                             method: 'POST',
                             headers: {'Content-Type':'application/json'},
                             body: JSON.stringify({chat_id: TG_CHAT, text: full})
