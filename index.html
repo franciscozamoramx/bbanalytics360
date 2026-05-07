@@ -4288,8 +4288,9 @@
                                 if (existing) return;
                                 const widget = document.createElement('div');
                                 widget.id = 'tgWidget';
+                                widget.style.cssText = 'position:fixed;bottom:0;right:0;z-index:2147483647;pointer-events:none;';
                                 widget.innerHTML = \`
-                                    <div id="tgPanel" style="display:none;position:fixed;bottom:80px;right:20px;width:300px;background:#1e2d3d;border-radius:14px;border:1px solid rgba(34,158,217,0.4);overflow:hidden;z-index:99999;box-shadow:0 8px 32px rgba(0,0,0,0.5);">
+                                    <div id="tgPanel" style="display:none;position:fixed;bottom:80px;right:20px;width:300px;background:#1e2d3d;border-radius:14px;border:1px solid rgba(34,158,217,0.4);overflow:hidden;z-index:2147483647;box-shadow:0 8px 32px rgba(0,0,0,0.5);pointer-events:auto;">
                                         <div style="background:#229ED9;padding:12px 14px;display:flex;align-items:center;gap:10px;">
                                             <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:white;flex-shrink:0;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.68 7.94c-.12.57-.47.71-.95.44l-2.62-1.93-1.27 1.22c-.14.14-.26.26-.53.26l.19-2.67 4.85-4.38c.21-.19-.05-.29-.32-.1L7.56 14.2 5.02 13.4c-.56-.18-.57-.56.12-.83l8.96-3.46c.47-.17.88.11.54.69z"/></svg>
                                             <div style="flex:1;">
@@ -4307,7 +4308,7 @@
                                             </button>
                                         </div>
                                     </div>
-                                    <button id="tgFab" onclick="toggleTelegramWidget()" title="Soporte Telegram" style="position:fixed;bottom:20px;right:20px;width:52px;height:52px;border-radius:50%;background:#229ED9;border:none;cursor:pointer;z-index:99999;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(34,158,217,0.5);">
+                                    <button id="tgFab" onclick="toggleTelegramWidget()" title="Soporte Telegram" style="position:fixed;bottom:20px;right:20px;width:52px;height:52px;border-radius:50%;background:#229ED9;border:none;cursor:pointer;z-index:2147483647;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(34,158,217,0.5);pointer-events:auto;">
                                         <svg viewBox="0 0 24 24" style="width:26px;height:26px;fill:white;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
                                     </button>
                                 \`;
@@ -4332,7 +4333,7 @@
                                 const status = document.getElementById('tgStatus');
                                 const text   = msgEl.value.trim();
                                 if (!text) { status.style.color='#fca5a5'; status.textContent='Escribe un mensaje antes de enviar.'; return; }
-                                const user   = window._bbUser || 'Usuario desconocido';
+                                const user   = '${currentUser}';
                                 const full   = \`📩 Mensaje desde BB Analytics 360\n👤 Usuario: \${user}\n\n\${text}\`;
                                 status.style.color='#93c5fd'; status.textContent='Enviando...';
                                 try {
