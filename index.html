@@ -1698,6 +1698,11 @@
                 showStatus('Por favor ingresa tu correo electrónico', 'error');
                 return;
             }
+
+            if (!email.endsWith('@bigbola.com')) {
+                showStatus('Solo se permiten correos corporativos @bigbola.com. Si eres colaborador externo, contacta a tu administrador.', 'error');
+                return;
+            }
             
             if (!permissionsData) {
                 showStatus('Error: Los permisos no se han cargado correctamente. Intenta nuevamente.', 'error');
