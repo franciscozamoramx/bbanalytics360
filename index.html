@@ -1776,6 +1776,7 @@
             if (dashboardWindow) {
                 dashboardWindow.document.write(dashboardHTML);
                 dashboardWindow.document.close();
+                dashboardWindow._bbUser = currentUser;
                 dashboardWindow.focus();
                 
                 // Cerrar la ventana de login después de abrir el dashboard
@@ -4331,7 +4332,7 @@
                                 const status = document.getElementById('tgStatus');
                                 const text   = msgEl.value.trim();
                                 if (!text) { status.style.color='#fca5a5'; status.textContent='Escribe un mensaje antes de enviar.'; return; }
-                                const user   = '${currentUser}';
+                                const user   = window._bbUser || 'Usuario desconocido';
                                 const full   = \`📩 Mensaje desde BB Analytics 360\n👤 Usuario: \${user}\n\n\${text}\`;
                                 status.style.color='#93c5fd'; status.textContent='Enviando...';
                                 try {
