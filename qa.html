@@ -1777,6 +1777,87 @@
                 dashboardWindow.document.write(dashboardHTML);
                 dashboardWindow.document.close();
                 dashboardWindow.focus();
+
+                // ── WIDGET TELEGRAM ─────────────────────────────────────────
+                const TG_BOT  = ['8609316358',':AAF0vfdqudRQ','WGHc-ofdrbuB_HRCcPjLfqE'].join('');
+                const TG_CHAT = ['-100','3946550368'].join('');
+                const tgUser  = currentUser || 'Usuario';
+
+                // Estilos
+                const tgStyle = dashboardWindow.document.createElement('style');
+                tgStyle.textContent = `
+                    #tgFab{position:fixed;bottom:20px;right:20px;width:52px;height:52px;border-radius:50%;background:#229ED9;border:none;cursor:pointer;z-index:2147483647;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(34,158,217,0.5);}
+                    #tgPanel{display:none;position:fixed;bottom:82px;right:20px;width:300px;background:#1e2d3d;border-radius:14px;border:1px solid rgba(34,158,217,0.4);overflow:hidden;z-index:2147483647;box-shadow:0 8px 32px rgba(0,0,0,0.5);}
+                    #tgPanel .tg-head{background:#229ED9;padding:12px 14px;display:flex;align-items:center;gap:10px;}
+                    #tgPanel .tg-body{padding:14px;}
+                    #tgPanel textarea{width:100%;height:80px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:white;font-size:12px;padding:10px;resize:none;outline:none;box-sizing:border-box;font-family:inherit;}
+                    #tgPanel .tg-btn{width:100%;padding:10px;background:#229ED9;color:white;font-size:13px;font-weight:700;border:none;border-radius:8px;cursor:pointer;margin-top:8px;}
+                    #tgStatus{font-size:11px;margin:6px 0;min-height:16px;color:white;}
+                `;
+                dashboardWindow.document.head.appendChild(tgStyle);
+
+                // HTML del widget
+                const tgDiv = dashboardWindow.document.createElement('div');
+                tgDiv.id = 'tgWidget';
+                tgDiv.innerHTML = `
+                    <button id="tgFab" title="Ayuda">
+                        <svg viewBox="0 0 24 24" style="width:26px;height:26px;fill:white;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+                    </button>
+                    <div id="tgPanel">
+                        <div class="tg-head">
+                            <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:white;flex-shrink:0;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.68 7.94c-.12.57-.47.71-.95.44l-2.62-1.93-1.27 1.22c-.14.14-.26.26-.53.26l.19-2.67 4.85-4.38c.21-.19-.05-.29-.32-.1L7.56 14.2 5.02 13.4c-.56-.18-.57-.56.12-.83l8.96-3.46c.47-.17.88.11.54.69z"/></svg>
+                            <div style="flex:1;">
+                                <div style="color:white;font-size:13px;font-weight:700;">Soporte BB Analytics 360</div>
+                                <div style="color:rgba(255,255,255,0.75);font-size:11px;">Equipo de Business Intelligence</div>
+                            </div>
+                            <span id="tgClose" style="color:rgba(255,255,255,0.8);cursor:pointer;font-size:20px;line-height:1;padding:4px 8px;">&times;</span>
+                        </div>
+                        <div class="tg-body">
+                            <p style="color:rgba(255,255,255,0.7);font-size:12px;margin:0 0 10px;line-height:1.5;">Tienes dudas sobre los dashboards? Escribenos y te respondemos pronto.</p>
+                            <textarea id="tgMessage" placeholder="Escribe tu mensaje..."></textarea>
+                            <div id="tgStatus"></div>
+                            <button class="tg-btn" id="tgSend">Enviar mensaje</button>
+                        </div>
+                    </div>
+                `;
+                dashboardWindow.document.body.appendChild(tgDiv);
+
+                // Eventos
+                const dw = dashboardWindow;
+                dw.document.getElementById('tgFab').addEventListener('click', function() {
+                    const p = dw.document.getElementById('tgPanel');
+                    p.style.display = p.style.display === 'block' ? 'none' : 'block';
+                    if (p.style.display === 'block') dw.document.getElementById('tgMessage').focus();
+                });
+                dw.document.getElementById('tgClose').addEventListener('click', function() {
+                    dw.document.getElementById('tgPanel').style.display = 'none';
+                });
+                dw.document.getElementById('tgSend').addEventListener('click', async function() {
+                    const msgEl  = dw.document.getElementById('tgMessage');
+                    const status = dw.document.getElementById('tgStatus');
+                    const text   = msgEl.value.trim();
+                    if (!text) { status.style.color='#fca5a5'; status.textContent='Escribe un mensaje antes de enviar.'; return; }
+                    const full = '📩 Mensaje desde BB Analytics 360\n👤 Usuario: ' + tgUser + '\n\n' + text;
+                    status.style.color='#93c5fd'; status.textContent='Enviando...';
+                    try {
+                        const res = await dw.fetch('https://api.telegram.org/bot' + TG_BOT + '/sendMessage', {
+                            method: 'POST',
+                            headers: {'Content-Type':'application/json'},
+                            body: JSON.stringify({chat_id: TG_CHAT, text: full})
+                        });
+                        const data = await res.json();
+                        if (data.ok) {
+                            status.style.color='#6ee7b7'; status.textContent='✓ Mensaje enviado. Te responderemos pronto.';
+                            msgEl.value = '';
+                            setTimeout(() => { dw.document.getElementById('tgPanel').style.display='none'; status.textContent=''; }, 2500);
+                        } else {
+                            status.style.color='#fca5a5'; status.textContent='Error al enviar. Intenta de nuevo.';
+                        }
+                    } catch(e) {
+                        status.style.color='#fca5a5'; status.textContent='Error de conexion.';
+                    }
+                });
+                // ── FIN WIDGET TELEGRAM ──────────────────────────────────────
                 
                 // Cerrar la ventana de login después de abrir el dashboard
                 setTimeout(() => {
