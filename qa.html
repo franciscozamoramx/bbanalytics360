@@ -1839,30 +1839,20 @@
                     if (!text) { status.style.color='#fca5a5'; status.textContent='Escribe un mensaje antes de enviar.'; return; }
                     const full = '📩 Mensaje desde BB Analytics 360\n👤 Usuario: ' + tgUser + '\n\n' + text;
                     status.style.color='#93c5fd'; status.textContent='Enviando...';
-                    const xhr = new dw.XMLHttpRequest();
-                    xhr.open('POST', 'https://api.telegram.org/bot' + TG_BOT + '/sendMessage', true);
-                    xhr.setRequestHeader('Content-Type', 'application/json');
-                    xhr.onload = function() {
-                        try {
-                            const data = JSON.parse(xhr.responseText);
-                            if (data.ok) {
-                                status.style.color='#6ee7b7'; status.textContent='✓ Mensaje enviado. Te responderemos pronto.';
-                                msgEl.value = '';
-                                setTimeout(function() {
-                                    dw.document.getElementById('tgPanel').style.display='none';
-                                    status.textContent='';
-                                }, 2500);
-                            } else {
-                                status.style.color='#fca5a5'; status.textContent='Error al enviar. Intenta de nuevo.';
-                            }
-                        } catch(e) {
-                            status.style.color='#fca5a5'; status.textContent='Error al procesar respuesta.';
-                        }
+                    // Usamos Image beacon — funciona cross-origin sin problemas de CORS
+                    const url = 'https://api.telegram.org/bot' + TG_BOT + '/sendMessage'
+                        + '?chat_id=' + encodeURIComponent(TG_CHAT)
+                        + '&text=' + encodeURIComponent(full);
+                    const img = new dw.Image();
+                    img.onload = img.onerror = function() {
+                        status.style.color='#6ee7b7'; status.textContent='✓ Mensaje enviado. Te responderemos pronto.';
+                        msgEl.value = '';
+                        setTimeout(function() {
+                            dw.document.getElementById('tgPanel').style.display = 'none';
+                            status.textContent = '';
+                        }, 2500);
                     };
-                    xhr.onerror = function() {
-                        status.style.color='#fca5a5'; status.textContent='Error de conexion.';
-                    };
-                    xhr.send(JSON.stringify({chat_id: TG_CHAT, text: full}));
+                    img.src = url;
                 });
                 // ── FIN WIDGET TELEGRAM ──────────────────────────────────────
                 
