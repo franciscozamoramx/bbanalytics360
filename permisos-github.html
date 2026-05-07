@@ -11,8 +11,19 @@
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
         body { background:linear-gradient(135deg,#1a3a8f 0%,#152c6e 100%); min-height:100vh; padding:20px; color:white; }
         .container { max-width:1400px; margin:0 auto; }
-        #activationScreen { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:linear-gradient(135deg,#1a3a8f 0%,#152c6e 100%); align-items:center; justify-content:center; z-index:9999; }
-        #loginOverlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:linear-gradient(135deg,#1a3a8f 0%,#152c6e 100%); align-items:center; justify-content:center; z-index:9998; }
+        #activationScreen { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:linear-gradient(135deg,#1a3a8f 0%,#152c6e 100%); align-items:center; justify-content:center; z-index:9999; overflow:hidden; }
+        #loginOverlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:linear-gradient(135deg,#1a3a8f 0%,#152c6e 100%); align-items:center; justify-content:center; z-index:9998; overflow:hidden; }
+        #loginCanvas { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; }
+        .login-box { position:relative; z-index:1; }
+        /* Iconos dentro de campos */
+        .form-group { position:relative; }
+        .form-group .field-icon { position:absolute; left:13px; bottom:13px; width:18px; height:18px; opacity:0.4; transition:opacity 0.3s, filter 0.3s; pointer-events:none; }
+        .form-group input { padding-left:40px !important; transition:border-color 0.3s, background 0.3s, box-shadow 0.3s; }
+        .form-group:focus-within .field-icon { opacity:1; filter:drop-shadow(0 0 4px #FFD700); }
+        .form-group input:focus { box-shadow:0 0 0 3px rgba(255,215,0,0.18); }
+        /* Línea divisoria animada */
+        .login-divider { height:1px; background:linear-gradient(90deg,transparent,rgba(255,215,0,0.45),transparent); margin:20px 0 16px; transform:scaleX(0); animation:divExpand 0.7s 0.3s cubic-bezier(0.22,1,0.36,1) forwards; transform-origin:center; }
+        @keyframes divExpand { to { transform:scaleX(1); } }
         #portalRoot { display:none; }
         .login-box { background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.2); border-radius:15px; padding:40px; width:100%; max-width:400px; box-shadow:0 10px 40px rgba(0,0,0,0.4); text-align:center; }
         .login-box img { width:72px; height:72px; margin-bottom:12px; display:block; margin-left:auto; margin-right:auto; }
@@ -135,6 +146,7 @@
 <body>
 
 <div id="activationScreen">
+    <canvas id="loginCanvas"></canvas>
     <div class="login-box">
         <img src="./icon_crystal.png" alt="BB Analytics 360">
         <h2>BB <span>Analytics 360</span></h2>
@@ -142,17 +154,21 @@
         <div class="login-error" id="activationError"></div>
         <div class="form-group">
             <label>Nueva contraseña</label>
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             <input type="password" id="actPass1" placeholder="Mínimo 8 caracteres">
         </div>
         <div class="form-group">
             <label>Confirmar contraseña</label>
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             <input type="password" id="actPass2" placeholder="Repite la contraseña" onkeydown="if(event.key==='Enter') confirmActivation()">
         </div>
+        <div class="login-divider"></div>
         <button class="btn-login" id="actBtn" onclick="confirmActivation()">✓ Activar cuenta</button>
     </div>
 </div>
 
 <div id="loginOverlay">
+    <canvas id="loginCanvas2"></canvas>
     <div class="login-box">
         <img src="./icon_crystal.png" alt="BB Analytics 360">
         <h2>BB <span>Analytics 360</span></h2>
@@ -160,12 +176,15 @@
         <div class="login-error" id="loginError"></div>
         <div class="form-group">
             <label>Usuario</label>
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
             <input type="text" id="loginUser" placeholder="usuario@bigbola.com" autocomplete="username">
         </div>
         <div class="form-group">
             <label>Contraseña</label>
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter') doLogin()">
         </div>
+        <div class="login-divider"></div>
         <button class="btn-login" onclick="doLogin()">Ingresar</button>
     </div>
 </div>
@@ -1091,6 +1110,168 @@ function renderAdmins() {
 
 init();
 
+</script>
+
+<script>
+// ─── CANVAS ANIMADO LOGIN ────────────────────────────────────────────────────
+(function() {
+    function initCanvas(canvasId, overlayId) {
+        const overlay = document.getElementById(overlayId);
+        const canvas  = document.getElementById(canvasId);
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let W, H, particles, bars, lines, raf;
+
+        function resize() {
+            W = canvas.width  = overlay.offsetWidth  || window.innerWidth;
+            H = canvas.height = overlay.offsetHeight || window.innerHeight;
+        }
+
+        function randomBetween(a, b) { return a + Math.random() * (b - a); }
+
+        function initObjects() {
+            // Partículas flotantes
+            particles = Array.from({length: 38}, () => ({
+                x: randomBetween(0, W),
+                y: randomBetween(0, H),
+                r: randomBetween(1.2, 3.5),
+                vy: randomBetween(-0.35, -0.9),
+                vx: randomBetween(-0.2, 0.2),
+                alpha: randomBetween(0.15, 0.55),
+                gold: Math.random() > 0.55
+            }));
+
+            // Barras de gráfica de barras (esquina inferior izquierda)
+            bars = Array.from({length: 7}, (_, i) => ({
+                x: 30 + i * 22,
+                targetH: randomBetween(40, 110),
+                currentH: 0,
+                speed: randomBetween(0.8, 1.8),
+                w: 14,
+                gold: i % 2 === 0
+            }));
+
+            // Línea de gráfica (esquina superior derecha)
+            const pts = 8;
+            lines = Array.from({length: pts}, (_, i) => ({
+                x: W - 220 + i * (180 / (pts - 1)),
+                y: randomBetween(H * 0.06, H * 0.18),
+                progress: 0
+            }));
+        }
+
+        function draw(ts) {
+            ctx.clearRect(0, 0, W, H);
+
+            // --- Partículas ---
+            particles.forEach(p => {
+                p.x += p.vx; p.y += p.vy;
+                if (p.y < -10) { p.y = H + 5; p.x = randomBetween(0, W); }
+                if (p.x < -5)  p.x = W + 5;
+                if (p.x > W+5) p.x = -5;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = p.gold
+                    ? `rgba(255,215,0,${p.alpha})`
+                    : `rgba(255,255,255,${p.alpha * 0.6})`;
+                ctx.fill();
+            });
+
+            // --- Barras (bottom-left) ---
+            const barBaseY = H - 30;
+            bars.forEach(b => {
+                if (b.currentH < b.targetH) b.currentH = Math.min(b.currentH + b.speed, b.targetH);
+                const grad = ctx.createLinearGradient(0, barBaseY - b.currentH, 0, barBaseY);
+                if (b.gold) {
+                    grad.addColorStop(0, 'rgba(255,215,0,0.55)');
+                    grad.addColorStop(1, 'rgba(255,140,0,0.15)');
+                } else {
+                    grad.addColorStop(0, 'rgba(255,255,255,0.25)');
+                    grad.addColorStop(1, 'rgba(255,255,255,0.04)');
+                }
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.roundRect(b.x, barBaseY - b.currentH, b.w, b.currentH, 3);
+                ctx.fill();
+            });
+
+            // --- Línea de área (top-right) ---
+            const totalPts = lines.length;
+            const drawn = lines.filter(p => p.progress < 1);
+            lines.forEach(p => { if (p.progress < 1) p.progress = Math.min(p.progress + 0.025, 1); });
+
+            if (totalPts > 1) {
+                // Área rellena
+                ctx.beginPath();
+                ctx.moveTo(lines[0].x, lines[0].y);
+                for (let i = 1; i < totalPts; i++) ctx.lineTo(lines[i].x, lines[i].y);
+                ctx.lineTo(lines[totalPts-1].x, H * 0.28);
+                ctx.lineTo(lines[0].x, H * 0.28);
+                ctx.closePath();
+                const areaGrad = ctx.createLinearGradient(0, H * 0.05, 0, H * 0.28);
+                areaGrad.addColorStop(0, 'rgba(255,215,0,0.12)');
+                areaGrad.addColorStop(1, 'rgba(255,215,0,0.01)');
+                ctx.fillStyle = areaGrad;
+                ctx.fill();
+
+                // Línea
+                ctx.beginPath();
+                ctx.moveTo(lines[0].x, lines[0].y);
+                for (let i = 1; i < totalPts; i++) ctx.lineTo(lines[i].x, lines[i].y);
+                ctx.strokeStyle = 'rgba(255,215,0,0.4)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                // Puntos
+                lines.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255,215,0,0.7)';
+                    ctx.fill();
+                });
+            }
+
+            // Ondulación suave de la línea
+            if (Math.random() < 0.008) {
+                const idx = Math.floor(Math.random() * lines.length);
+                lines[idx].y = randomBetween(H * 0.06, H * 0.18);
+            }
+
+            raf = requestAnimationFrame(draw);
+        }
+
+        // Iniciar cuando el overlay sea visible
+        const obs = new MutationObserver(() => {
+            const visible = overlay.style.display !== 'none' && overlay.style.display !== '';
+            if (visible && !raf) {
+                resize();
+                initObjects();
+                raf = requestAnimationFrame(draw);
+            } else if (!visible && raf) {
+                cancelAnimationFrame(raf);
+                raf = null;
+            }
+        });
+        obs.observe(overlay, { attributes: true, attributeFilter: ['style'] });
+        window.addEventListener('resize', () => { resize(); initObjects(); });
+
+        // Si ya es visible al cargar
+        if (overlay.style.display && overlay.style.display !== 'none') {
+            resize(); initObjects(); raf = requestAnimationFrame(draw);
+        }
+    }
+
+    // Esperar a que el DOM esté listo
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            initCanvas('loginCanvas',  'activationScreen');
+            initCanvas('loginCanvas2', 'loginOverlay');
+        });
+    } else {
+        initCanvas('loginCanvas',  'activationScreen');
+        initCanvas('loginCanvas2', 'loginOverlay');
+    }
+})();
 </script>
 </body>
 </html>
