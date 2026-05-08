@@ -1869,6 +1869,12 @@ REGLAS:
                     cta_label: 'Ver portal'
                 };
                 function doSend() { emailjs.send('service_5703ddf', 'template_x3alsku', params); }
+                // Si se llama desde beforeunload, usar sendBeacon para garantizar entrega
+                if (window._tgSummaryBeforeUnload) {
+                    const body = JSON.stringify({service_id:'service_5703ddf', template_id:'template_x3alsku', user_id:'O9qBbBnJTakfwM5iSk', template_params: params});
+                    navigator.sendBeacon('https://api.emailjs.com/api/v1.0/email/send', new Blob([body], {type:'application/json'}));
+                    return;
+                }
                 if (typeof emailjs !== 'undefined') {
                     doSend();
                 } else {
@@ -1882,6 +1888,11 @@ REGLAS:
             document.getElementById('tgFabMain').addEventListener('click', function() { const p = document.getElementById('tgPanelMain'); p.style.display = p.style.display === 'block' ? 'none' : 'block'; });
             document.getElementById('tgCloseMain').addEventListener('click', function() {
                 document.getElementById('tgPanelMain').style.display = 'none';
+                sendChatSummary();
+            });
+            // Enviar resumen también al cerrar ventana o sesión
+            window.addEventListener('beforeunload', function() {
+                window._tgSummaryBeforeUnload = true;
                 sendChatSummary();
             });
             document.getElementById('tgSendBtnMain').addEventListener('click', sendMessage);
