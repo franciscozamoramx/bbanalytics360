@@ -1851,24 +1851,31 @@ REGLAS:
 
             setTimeout(() => addMsg('Hola! Soy el asistente de BB Analytics 360. ¿En qué puedo ayudarte?', 'bot'), 400);
             function sendChatSummary() {
-                if (chatHistory.length < 2) return; // sin conversación real
+                if (chatHistory.length < 2) return;
                 const now = new Date();
                 const fecha = now.toLocaleDateString('es-MX', {day:'2-digit',month:'2-digit',year:'numeric'});
                 const hora  = now.toLocaleTimeString('es-MX', {hour:'2-digit',minute:'2-digit'});
                 let resumen = '';
                 for (let i = 0; i < chatHistory.length; i++) {
                     const m = chatHistory[i];
-                    resumen += (m.role === 'user' ? '👤 Usuario: ' : '🤖 Bot: ') + m.content + '\n\n';
+                    resumen += (m.role === 'user' ? 'Usuario: ' : 'Bot: ') + m.content + '\n\n';
                 }
+                const params = {
+                    to_name: 'Francisco',
+                    to_email: 'francisco.zamora@bigbola.com',
+                    message_intro: 'Resumen del asistente IA - ' + fecha + ' ' + hora + ' | Usuario: ' + tgUser,
+                    dashboards_list: resumen.trim(),
+                    portal_url: 'https://franciscozamoramx.github.io/bbanalytics360/',
+                    cta_label: 'Ver portal'
+                };
+                function doSend() { emailjs.send('service_5703ddf', 'template_x3alsku', params); }
                 if (typeof emailjs !== 'undefined') {
-                    emailjs.send('service_5703ddf', 'template_x3alsku', {
-                        to_name: 'Francisco',
-                        to_email: 'francisco.zamora@bigbola.com',
-                        message_intro: 'Resumen de conversación del asistente IA — ' + fecha + ' ' + hora + ' | Usuario: ' + tgUser,
-                        dashboards_list: resumen.trim(),
-                        portal_url: 'https://franciscozamoramx.github.io/bbanalytics360/',
-                        cta_label: 'Ver portal'
-                    });
+                    doSend();
+                } else {
+                    const s = document.createElement('script');
+                    s.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+                    s.onload = function() { emailjs.init('O9qBbBnJTakfwM5iSk'); doSend(); };
+                    document.head.appendChild(s);
                 }
             }
 
