@@ -364,11 +364,20 @@
             gridLines = [];
 
             const isMobile = W < 768;
-            const panelCount = isMobile ? 4 : 8;
+            // Detectar gama del dispositivo por CPU y RAM
+            const cpuCores = navigator.hardwareConcurrency || 4;
+            const ramGB    = navigator.deviceMemory || 4;
+            const isLowEnd = isMobile && (cpuCores <= 4 || ramGB <= 2);
+            const isMidEnd = isMobile && !isLowEnd && (cpuCores <= 6 || ramGB <= 4);
+
+            // Configuración según gama
+            const panelCount    = isLowEnd ? 0  : isMidEnd ? 2  : isMobile ? 4  : 8;
+            const particleCount = isLowEnd ? 6  : isMidEnd ? 12 : isMobile ? 20 : 50;
+            const gridCount     = isLowEnd ? 0  : isMidEnd ? 4  : 12;
 
             // Crear grilla para evitar sobreposición
             const cols = isMobile ? 2 : 4;
-            const rows = Math.ceil(panelCount / cols);
+            const rows = Math.ceil(Math.max(panelCount,1) / cols);
             const cellW = W / cols;
             const cellH = H / rows;
             const margin = 15;
@@ -380,13 +389,11 @@
                 const cellY = row * cellH + margin;
                 const maxPW = cellW - margin * 2;
                 const maxPH = cellH - margin * 2;
-                // Dirección de drift: mitad va a la derecha, mitad a la izquierda
                 const goRight = i % 2 === 0;
                 panels.push(createPanel(true, cellX, cellY, maxPW, maxPH, goRight));
             }
 
             // Partículas distribuidas simétricamente izquierda/derecha
-            const particleCount = isMobile ? 20 : 50;
             const halfParticles = Math.floor(particleCount / 2);
             for (let i = 0; i < particleCount; i++) {
                 const isLeft = i < halfParticles;
@@ -395,7 +402,7 @@
                     y: Math.random() * H,
                     r: Math.random() * 1.5 + 0.5,
                     speedY: -(Math.random() * 0.4 + 0.1),
-                    speedX: 0, // Sin drift lateral para mantener equilibrio
+                    speedX: 0,
                     opacity: Math.random() * 0.3 + 0.1,
                     color: chartColors[Math.floor(Math.random() * chartColors.length)],
                     pulse: Math.random() * Math.PI * 2,
@@ -403,7 +410,7 @@
                 });
             }
 
-            for (let i = 0; i < 12; i++) {
+            for (let i = 0; i < gridCount; i++) {
                 gridLines.push({
                     y: Math.random() * H,
                     opacity: Math.random() * 0.04 + 0.01,
