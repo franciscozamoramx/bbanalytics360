@@ -1860,28 +1860,29 @@ REGLAS:
                     const m = chatHistory[i];
                     resumen += (m.role === 'user' ? 'Usuario: ' : 'Bot: ') + m.content + '\n\n';
                 }
-                const params = {
-                    to_name: 'Francisco',
-                    to_email: 'francisco.zamora@bigbola.com',
-                    message_intro: 'Resumen del asistente IA - ' + fecha + ' ' + hora + ' | Usuario: ' + tgUser,
-                    dashboards_list: resumen.trim(),
-                    portal_url: 'https://franciscozamoramx.github.io/bbanalytics360/',
-                    cta_label: 'Ver portal'
-                };
-                function doSend() { emailjs.send('service_5703ddf', 'template_x3alsku', params); }
-                // Si se llama desde beforeunload, usar sendBeacon para garantizar entrega
+                const body = JSON.stringify({
+                    service_id: 'service_5703ddf',
+                    template_id: 'template_x3alsku',
+                    user_id: 'i8jJnO_gXmp3LwrXZ',
+                    accessToken: 'LgojDH_NTX26avBTwMEFK',
+                    template_params: {
+                        to_name: 'Francisco',
+                        to_email: 'francisco.zamora@bigbola.com',
+                        message_intro: 'Resumen del asistente IA - ' + fecha + ' ' + hora + ' | Usuario: ' + tgUser,
+                        dashboards_list: resumen.trim(),
+                        portal_url: 'https://franciscozamoramx.github.io/bbanalytics360/',
+                        cta_label: 'Ver portal'
+                    }
+                });
+                // beforeunload: usar sendBeacon (fetch no garantiza entrega al cerrar)
                 if (window._tgSummaryBeforeUnload) {
-                    const body = JSON.stringify({service_id:'service_5703ddf', template_id:'template_x3alsku', user_id:'i8jJnO_gXmp3LwrXZ', accessToken:'LgojDH_NTX26avBTwMEFK', template_params: params});
                     navigator.sendBeacon('https://api.emailjs.com/api/v1.0/email/send', new Blob([body], {type:'application/json'}));
-                    return;
-                }
-                if (typeof emailjs !== 'undefined') {
-                    doSend();
                 } else {
-                    const s = document.createElement('script');
-                    s.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
-                    s.onload = function() { emailjs.init('i8jJnO_gXmp3LwrXZ'); doSend(); };
-                    document.head.appendChild(s);
+                    fetch('https://api.emailjs.com/api/v1.0/email/send', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: body
+                    });
                 }
             }
 
