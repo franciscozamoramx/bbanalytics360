@@ -1890,7 +1890,6 @@ REGLAS:
                 // ✅ CAMBIO 4: Delay reducido de 1000ms a 200ms (solo para leer el mensaje)
                 setTimeout(() => {
                     openDashboard();
-                    buildMainTelegramWidget(currentUser);
                 }, 200);
                 
             } else {
@@ -2190,6 +2189,7 @@ REGLAS:
             const mobileHTML = generateMobileDashboardHTML();
             document.body.innerHTML = mobileHTML;
             initMobileDashboardFunctionality();
+            buildMainTelegramWidget(currentUser);
 
             // Ocultar barra de direcciones automáticamente
             var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
