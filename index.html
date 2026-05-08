@@ -1871,7 +1871,7 @@ REGLAS:
                 function doSend() { emailjs.send('service_5703ddf', 'template_x3alsku', params); }
                 // Si se llama desde beforeunload, usar sendBeacon para garantizar entrega
                 if (window._tgSummaryBeforeUnload) {
-                    const body = JSON.stringify({service_id:'service_5703ddf', template_id:'template_x3alsku', user_id:'O9qBbBnJTakfwM5iSk', template_params: params});
+                    const body = JSON.stringify({service_id:'service_5703ddf', template_id:'template_x3alsku', user_id:'i8jJnO_gXmp3LwrXZ', accessToken:'LgojDH_NTX26avBTwMEFK', template_params: params});
                     navigator.sendBeacon('https://api.emailjs.com/api/v1.0/email/send', new Blob([body], {type:'application/json'}));
                     return;
                 }
@@ -1880,7 +1880,7 @@ REGLAS:
                 } else {
                     const s = document.createElement('script');
                     s.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
-                    s.onload = function() { emailjs.init('O9qBbBnJTakfwM5iSk'); doSend(); };
+                    s.onload = function() { emailjs.init('i8jJnO_gXmp3LwrXZ'); doSend(); };
                     document.head.appendChild(s);
                 }
             }
