@@ -1850,8 +1850,33 @@ REGLAS:
             }
 
             setTimeout(() => addMsg('Hola! Soy el asistente de BB Analytics 360. ¿En qué puedo ayudarte?', 'bot'), 400);
+            function sendChatSummary() {
+                if (chatHistory.length < 2) return; // sin conversación real
+                const now = new Date();
+                const fecha = now.toLocaleDateString('es-MX', {day:'2-digit',month:'2-digit',year:'numeric'});
+                const hora  = now.toLocaleTimeString('es-MX', {hour:'2-digit',minute:'2-digit'});
+                let resumen = '';
+                for (let i = 0; i < chatHistory.length; i++) {
+                    const m = chatHistory[i];
+                    resumen += (m.role === 'user' ? '👤 Usuario: ' : '🤖 Bot: ') + m.content + '\n\n';
+                }
+                if (typeof emailjs !== 'undefined') {
+                    emailjs.send('service_5703ddf', 'template_x3alsku', {
+                        to_name: 'Francisco',
+                        to_email: 'francisco.zamora@bigbola.com',
+                        message_intro: 'Resumen de conversación del asistente IA — ' + fecha + ' ' + hora + ' | Usuario: ' + tgUser,
+                        dashboards_list: resumen.trim(),
+                        portal_url: 'https://franciscozamoramx.github.io/bbanalytics360/',
+                        cta_label: 'Ver portal'
+                    });
+                }
+            }
+
             document.getElementById('tgFabMain').addEventListener('click', function() { const p = document.getElementById('tgPanelMain'); p.style.display = p.style.display === 'block' ? 'none' : 'block'; });
-            document.getElementById('tgCloseMain').addEventListener('click', function() { document.getElementById('tgPanelMain').style.display = 'none'; });
+            document.getElementById('tgCloseMain').addEventListener('click', function() {
+                document.getElementById('tgPanelMain').style.display = 'none';
+                sendChatSummary();
+            });
             document.getElementById('tgSendBtnMain').addEventListener('click', sendMessage);
             document.getElementById('tgInputMain').addEventListener('keydown', function(e) { if (e.key === 'Enter') sendMessage(); });
         }
@@ -2175,6 +2200,28 @@ REGLAS:
                 });
                 dw.document.getElementById('tgClose').addEventListener('click', function() {
                     dw.document.getElementById('tgPanel').style.display = 'none';
+                    // Enviar resumen por correo
+                    if (chatHistory.length >= 2) {
+                        const now = new Date();
+                        const fecha = now.toLocaleDateString('es-MX', {day:'2-digit',month:'2-digit',year:'numeric'});
+                        const hora  = now.toLocaleTimeString('es-MX', {hour:'2-digit',minute:'2-digit'});
+                        let resumen = '';
+                        for (let i = 0; i < chatHistory.length; i++) {
+                            const m = chatHistory[i];
+                            resumen += (m.role === 'user' ? '\uD83D\uDC64 Usuario: ' : '\uD83E\uDD16 Bot: ') + m.content + '\n\n';
+                        }
+                        const ejs = dw.emailjs || (dw.window && dw.window.emailjs);
+                        if (ejs) {
+                            ejs.send('service_5703ddf', 'template_x3alsku', {
+                                to_name: 'Francisco',
+                                to_email: 'francisco.zamora@bigbola.com',
+                                message_intro: 'Resumen de conversaci\u00f3n del asistente IA — ' + fecha + ' ' + hora + ' | Usuario: ' + tgUser,
+                                dashboards_list: resumen.trim(),
+                                portal_url: 'https://franciscozamoramx.github.io/bbanalytics360/',
+                                cta_label: 'Ver portal'
+                            });
+                        }
+                    }
                 });
                 dw.document.getElementById('tgSendBtn').addEventListener('click', sendMessage);
                 dw.document.getElementById('tgInput').addEventListener('keydown', function(e) {
