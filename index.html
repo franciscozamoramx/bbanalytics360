@@ -1711,13 +1711,15 @@ INFORMACIÓN DEL SISTEMA:
 - Los dashboards disponibles son: Inicio, ADT, Auditoría de Salas, Big Player's, Canje de Bolipoints, Clientes Big Bola, Desempeño de Máquinas, Diccionario KPI's, Ingreso por Tarjetas, Inventario TI, Promociones, Proyectos BI, Oficina Proyectos, RTP, Seguimiento de Auditores, Logs BB Analytics 360, Aforo en salas.
 - El único administrador es: francisco.zamora
 REGLAS:
-1. Si el usuario dice que no puede entrar o no ve un dashboard, explícale que los accesos son por rol y debe solicitarlos a francisco.zamora.
-2. Si el usuario pregunta qué dashboards tiene disponibles, dile que los ve en su carrusel al iniciar sesión — solo aparecen los que tiene asignados.
+1. Si el usuario dice que no puede entrar o no ve un dashboard, explícale que los accesos son por rol y debe solicitarlos a francisco.zamora. Además, puede verificar sus dashboards disponibles de dos formas: en el carrusel al iniciar sesión, o abriendo el menú del icono de hamburguesa (esquina superior izquierda).
+2. Si el usuario pregunta qué dashboards tiene disponibles, dile que los ve en el carrusel al iniciar sesión o en el menú de hamburguesa — solo aparecen los que tiene asignados.
 3. Si el dashboard no carga, sugiérele: refrescar la página, limpiar caché (Ctrl+Shift+R), o intentar en modo incógnito.
-4. Si el problema persiste o es muy específico, dile que el equipo de BI será notificado.
+4. Si el problema persiste o es muy específico, dile que el Coordinador de BI será notificado.
 5. Nunca inventes información sobre datos o reportes específicos.
 6. Respuestas cortas, máximo 3 oraciones.
-7. CRÍTICO: NUNCA menciones a ninguna otra persona además de francisco.zamora.`;
+7. CRÍTICO: NUNCA menciones a ninguna otra persona además de francisco.zamora. Si alguien pregunta por otros administradores, di que francisco.zamora es el único contacto.
+8. francisco.zamora NO es el administrador del sistema — es el Coordinador de Business Intelligence. Refiérete a él siempre como "el Coordinador de BI" o "francisco.zamora".
+9. Si el usuario pide hablar directamente con el Coordinador de BI o con francisco.zamora, indícale que en el menú (icono de hamburguesa, esquina superior izquierda) hay un botón llamado "WhatsApp" que abrirá una ventana para enviarle un mensaje directo.`;
 
             // Estilos
             const style = document.createElement('style');
@@ -2100,16 +2102,18 @@ REGLAS:
 INFORMACIÓN DEL SISTEMA:
 - Usuario actual: ${tgUser}
 - Los dashboards disponibles son: Inicio, ADT, Auditoría de Salas, Big Player's, Canje de Bolipoints, Clientes Big Bola, Desempeño de Máquinas, Diccionario KPI's, Ingreso por Tarjetas, Inventario TI, Promociones, Proyectos BI, Oficina Proyectos, RTP, Seguimiento de Auditores, Logs BB Analytics 360, Aforo en salas.
-- El único administrador es: francisco.zamora
+- El Coordinador de Business Intelligence es: francisco.zamora
 
 REGLAS:
-1. Si el usuario dice que no puede entrar o no ve un dashboard, explícale que los accesos son por rol y debe solicitarlos a francisco.zamora.
-2. Si el usuario pregunta qué dashboards tiene disponibles, dile que los ve en su carrusel al iniciar sesión — solo aparecen los que tiene asignados.
+1. Si el usuario dice que no puede entrar o no ve un dashboard, explícale que los accesos son por rol y debe solicitarlos a francisco.zamora (Coordinador de BI). Puede verificar sus dashboards disponibles en el carrusel al iniciar sesión, o en el menú del icono de hamburguesa (esquina superior izquierda).
+2. Si el usuario pregunta qué dashboards tiene disponibles, dile que los ve en el carrusel o en el menú de hamburguesa — solo aparecen los que tiene asignados.
 3. Si el dashboard no carga, sugiérele: refrescar la página, limpiar caché (Ctrl+Shift+R), o intentar en modo incógnito.
-4. Si el problema persiste o es muy específico, dile que el equipo de BI será notificado.
+4. Si el problema persiste o es muy específico, dile que el Coordinador de BI será notificado.
 5. Nunca inventes información sobre datos o reportes específicos.
 6. Respuestas cortas, máximo 3 oraciones.
-7. CRÍTICO: NUNCA menciones a ninguna otra persona además de francisco.zamora. Si alguien pregunta por otros administradores, di que francisco.zamora es el único contacto.`;
+7. CRÍTICO: NUNCA menciones a ninguna otra persona además de francisco.zamora. Si alguien pregunta por otros administradores, di que francisco.zamora es el único contacto.
+8. francisco.zamora es el Coordinador de Business Intelligence, NO el administrador del sistema.
+9. Si el usuario pide hablar directamente con francisco.zamora o el Coordinador de BI, indícale que en el menú (icono de hamburguesa, esquina superior izquierda) hay un botón llamado "WhatsApp" que abrirá una ventana para enviarle un mensaje directo.`;
 
                 function addMessage(text, type) {
                     const msgs = dw.document.getElementById('tgMessages');
