@@ -1843,58 +1843,18 @@ REGLAS:
                     hideTyping();
                     addMsg(reply, 'bot');
                     chatHistory.push({role:'assistant', content:reply});
-
+                    // Log a Telegram
+                    const logImg = new Image();
+                    logImg.src = 'https://api.telegram.org/bot' + TG_BOT + '/sendMessage?chat_id=' + encodeURIComponent(TG_CHAT) + '&text=' + encodeURIComponent('\uD83D\uDCAC ' + tgUser + ':\n' + text + '\n\n\uD83E\uDD16 Bot:\n' + reply);
                     if (interactionCount === 10) { addMsg('Veo que llevamos un buen rato conversando. Si prefieres hablar directamente con el administrador, usa las opciones de abajo.', 'bot'); showContactOptions(); }
                     if (repeatCount[key] >= 5) { notifyTelegram(text, reply); repeatCount[key] = 0; }
                 } catch(e) { hideTyping(); addMsg('Ocurrió un error. Por favor intenta de nuevo.', 'bot'); }
             }
 
             setTimeout(() => addMsg('Hola! Soy el asistente de BB Analytics 360. ¿En qué puedo ayudarte?', 'bot'), 400);
-            function sendChatSummary() {
-                if (chatHistory.length < 2) return;
-                const now = new Date();
-                const fecha = now.toLocaleDateString('es-MX', {day:'2-digit',month:'2-digit',year:'numeric'});
-                const hora  = now.toLocaleTimeString('es-MX', {hour:'2-digit',minute:'2-digit'});
-                let resumen = '';
-                for (let i = 0; i < chatHistory.length; i++) {
-                    const m = chatHistory[i];
-                    resumen += (m.role === 'user' ? 'Usuario: ' : 'Bot: ') + m.content + '\n\n';
-                }
-                const body = JSON.stringify({
-                    service_id: 'service_5703ddf',
-                    template_id: 'template_x3alsku',
-                    user_id: 'i8jJnO_gXmp3LwrXZ',
-                    accessToken: 'LgojDH_NTX26avBTwMEFK',
-                    template_params: {
-                        to_name: 'Francisco',
-                        to_email: 'francisco.zamora@bigbola.com',
-                        message_intro: 'Resumen del asistente IA - ' + fecha + ' ' + hora + ' | Usuario: ' + tgUser,
-                        dashboards_list: resumen.trim(),
-                        portal_url: 'https://franciscozamoramx.github.io/bbanalytics360/',
-                        cta_label: 'Ver portal'
-                    }
-                });
-                // beforeunload: usar sendBeacon (fetch no garantiza entrega al cerrar)
-                if (window._tgSummaryBeforeUnload) {
-                    navigator.sendBeacon('https://api.emailjs.com/api/v1.0/email/send', new Blob([body], {type:'application/json'}));
-                } else {
-                    fetch('https://api.emailjs.com/api/v1.0/email/send', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: body
-                    });
-                }
-            }
-
             document.getElementById('tgFabMain').addEventListener('click', function() { const p = document.getElementById('tgPanelMain'); p.style.display = p.style.display === 'block' ? 'none' : 'block'; });
             document.getElementById('tgCloseMain').addEventListener('click', function() {
                 document.getElementById('tgPanelMain').style.display = 'none';
-                sendChatSummary();
-            });
-            // Enviar resumen también al cerrar ventana o sesión
-            window.addEventListener('beforeunload', function() {
-                window._tgSummaryBeforeUnload = true;
-                sendChatSummary();
             });
             document.getElementById('tgSendBtnMain').addEventListener('click', sendMessage);
             document.getElementById('tgInputMain').addEventListener('keydown', function(e) { if (e.key === 'Enter') sendMessage(); });
@@ -2187,7 +2147,9 @@ REGLAS:
                         hideTyping();
                         addMessage(reply, 'bot');
                         chatHistory.push({role: 'assistant', content: reply});
-
+                        // Log a Telegram
+                        const logImg3 = new dw.Image();
+                        logImg3.src = 'https://api.telegram.org/bot' + TG_BOT + '/sendMessage?chat_id=' + encodeURIComponent(TG_CHAT) + '&text=' + encodeURIComponent('\uD83D\uDCAC ' + tgUser + ':\n' + text + '\n\n\uD83E\uDD16 Bot:\n' + reply);
 
                         // Mostrar botón de contacto directo tras 10 interacciones
                         if (interactionCount === 10) {
@@ -2218,28 +2180,6 @@ REGLAS:
                 });
                 dw.document.getElementById('tgClose').addEventListener('click', function() {
                     dw.document.getElementById('tgPanel').style.display = 'none';
-                    // Enviar resumen por correo
-                    if (chatHistory.length >= 2) {
-                        const now = new Date();
-                        const fecha = now.toLocaleDateString('es-MX', {day:'2-digit',month:'2-digit',year:'numeric'});
-                        const hora  = now.toLocaleTimeString('es-MX', {hour:'2-digit',minute:'2-digit'});
-                        let resumen = '';
-                        for (let i = 0; i < chatHistory.length; i++) {
-                            const m = chatHistory[i];
-                            resumen += (m.role === 'user' ? '\uD83D\uDC64 Usuario: ' : '\uD83E\uDD16 Bot: ') + m.content + '\n\n';
-                        }
-                        const ejs = dw.emailjs || (dw.window && dw.window.emailjs);
-                        if (ejs) {
-                            ejs.send('service_5703ddf', 'template_x3alsku', {
-                                to_name: 'Francisco',
-                                to_email: 'francisco.zamora@bigbola.com',
-                                message_intro: 'Resumen de conversaci\u00f3n del asistente IA — ' + fecha + ' ' + hora + ' | Usuario: ' + tgUser,
-                                dashboards_list: resumen.trim(),
-                                portal_url: 'https://franciscozamoramx.github.io/bbanalytics360/',
-                                cta_label: 'Ver portal'
-                            });
-                        }
-                    }
                 });
                 dw.document.getElementById('tgSendBtn').addEventListener('click', sendMessage);
                 dw.document.getElementById('tgInput').addEventListener('keydown', function(e) {
