@@ -1841,9 +1841,7 @@ REGLAS:
                     hideTyping();
                     addMsg(reply, 'bot');
                     chatHistory.push({role:'assistant', content:reply});
-                    // Log completo a Telegram
-                    const logImg = new Image();
-                    logImg.src = 'https://api.telegram.org/bot' + TG_BOT + '/sendMessage?chat_id=' + encodeURIComponent(TG_CHAT) + '&text=' + encodeURIComponent('\uD83D\uDCAC ' + tgUser + ':\n' + text + '\n\n\uD83E\uDD16 Bot:\n' + reply);
+
                     if (interactionCount === 10) { addMsg('Veo que llevamos un buen rato conversando. Si prefieres hablar directamente con el administrador, usa las opciones de abajo.', 'bot'); showContactOptions(); }
                     if (repeatCount[key] >= 5) { notifyTelegram(text, reply); repeatCount[key] = 0; }
                 } catch(e) { hideTyping(); addMsg('Ocurrió un error. Por favor intenta de nuevo.', 'bot'); }
@@ -2162,7 +2160,6 @@ REGLAS:
 
                     chatHistory.push({role: 'user', content: text});
                     showTyping();
-                    // (log de pregunta+respuesta se envía al recibir reply)
 
                     try {
                         const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -2185,9 +2182,7 @@ REGLAS:
                         hideTyping();
                         addMessage(reply, 'bot');
                         chatHistory.push({role: 'assistant', content: reply});
-                        // Log completo a Telegram
-                        const logImg3 = new dw.Image();
-                        logImg3.src = 'https://api.telegram.org/bot' + TG_BOT + '/sendMessage?chat_id=' + encodeURIComponent(TG_CHAT) + '&text=' + encodeURIComponent('\uD83D\uDCAC ' + tgUser + ':\n' + text + '\n\n\uD83E\uDD16 Bot:\n' + reply);
+
 
                         // Mostrar botón de contacto directo tras 10 interacciones
                         if (interactionCount === 10) {
