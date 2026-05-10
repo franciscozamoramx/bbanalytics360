@@ -364,49 +364,46 @@
             gridLines = [];
 
             const isMobile = W < 768;
-            // Detectar gama del dispositivo por CPU y RAM
             const cpuCores = navigator.hardwareConcurrency || 4;
             const ramGB    = navigator.deviceMemory || 4;
             const isLowEnd = isMobile && (cpuCores <= 4 || ramGB <= 2);
             const isMidEnd = isMobile && !isLowEnd && (cpuCores <= 6 || ramGB <= 4);
 
-            // Configuración según gama
             const panelCount    = isLowEnd ? 0  : isMidEnd ? 2  : isMobile ? 4  : 8;
             const particleCount = isLowEnd ? 6  : isMidEnd ? 12 : isMobile ? 20 : 50;
             const gridCount     = isLowEnd ? 0  : isMidEnd ? 4  : 12;
 
-            // Crear grilla para evitar sobreposición
-            const cols = isMobile ? 2 : 4;
-            const rows = Math.ceil(Math.max(panelCount,1) / cols);
-            const cellW = W / cols;
-            const cellH = H / rows;
-            const margin = 15;
-
+            // Paneles en posición y dirección completamente libres
             for (let i = 0; i < panelCount; i++) {
-                const col = i % cols;
-                const row = Math.floor(i / cols);
-                const cellX = col * cellW + margin;
-                const cellY = row * cellH + margin;
-                const maxPW = cellW - margin * 2;
-                const maxPH = cellH - margin * 2;
-                const goRight = i % 2 === 0;
-                panels.push(createPanel(true, cellX, cellY, maxPW, maxPH, goRight));
+                const w = Math.random() * (W * 0.22) + W * 0.12;
+                const h = Math.random() * (H * 0.22) + H * 0.12;
+                const x = Math.random() * (W - w);
+                const y = Math.random() * (H - h);
+                // Dirección libre: cualquier ángulo
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 0.3 + 0.08;
+                panels.push({
+                    ...createPanel(true, x, y, w, h, true),
+                    x, y, w, h,
+                    driftX: Math.cos(angle) * speed,
+                    driftY: Math.sin(angle) * speed,
+                    age: -Math.floor(Math.random() * 200),
+                    maxAge: Math.random() * 700 + 400,
+                });
             }
 
-            // Partículas distribuidas simétricamente izquierda/derecha
-            const halfParticles = Math.floor(particleCount / 2);
+            // Partículas de distintos tamaños flotando hacia arriba
             for (let i = 0; i < particleCount; i++) {
-                const isLeft = i < halfParticles;
                 particles.push({
-                    x: isLeft ? Math.random() * W * 0.5 : W * 0.5 + Math.random() * W * 0.5,
+                    x: Math.random() * W,
                     y: Math.random() * H,
-                    r: Math.random() * 1.5 + 0.5,
-                    speedY: -(Math.random() * 0.4 + 0.1),
-                    speedX: 0,
-                    opacity: Math.random() * 0.3 + 0.1,
+                    r: Math.random() * 3 + 0.5,
+                    speedY: -(Math.random() * 0.5 + 0.1),
+                    speedX: (Math.random() - 0.5) * 0.15,
+                    opacity: Math.random() * 0.35 + 0.08,
                     color: chartColors[Math.floor(Math.random() * chartColors.length)],
                     pulse: Math.random() * Math.PI * 2,
-                    homeX: isLeft ? Math.random() * W * 0.5 : W * 0.5 + Math.random() * W * 0.5
+                    homeX: Math.random() * W
                 });
             }
 
@@ -907,9 +904,18 @@
                 else if (p.age > p.maxAge) {
                     p.opacity = p.targetOpacity * Math.max(0, 1 - (p.age - p.maxAge)/80);
                     if (p.opacity <= 0) {
-                        // Regenerar en su misma celda con dirección opuesta
-                        const newGoRight = !p.goRight;
-                        panels[i] = createPanel(false, p.cellX, p.cellY, p.cellW, p.cellH, newGoRight);
+                        // Regenerar en posición y dirección completamente libre
+                        const w = Math.random() * (W * 0.22) + W * 0.12;
+                        const h = Math.random() * (H * 0.22) + H * 0.12;
+                        const x = Math.random() * (W - w);
+                        const y = Math.random() * (H - h);
+                        const angle = Math.random() * Math.PI * 2;
+                        const speed = Math.random() * 0.3 + 0.08;
+                        const np = createPanel(false, x, y, w, h, true);
+                        np.x = x; np.y = y; np.w = w; np.h = h;
+                        np.driftX = Math.cos(angle) * speed;
+                        np.driftY = Math.sin(angle) * speed;
+                        panels[i] = np;
                     }
                 }
 
