@@ -1739,7 +1739,7 @@ REGLAS:
             // Estilos
             const style = document.createElement('style');
             style.textContent = `
-                #tgFabMain{position:fixed;bottom:20px;right:20px;width:52px;height:52px;border-radius:50%;background:#229ED9;border:none;cursor:pointer;z-index:2147483647;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(34,158,217,0.5);transition:transform 0.2s;}
+                #tgFabMain{position:fixed;bottom:10px;right:12px;width:72px;height:72px;background:none;border:none;cursor:pointer;z-index:2147483647;display:flex;align-items:center;justify-content:center;transition:transform 0.2s;}
                 #tgFabMain:hover{transform:scale(1.08);}
                 #tgPanelMain{display:none;position:fixed;bottom:82px;right:20px;width:320px;background:#1e2d3d;border-radius:14px;border:1px solid rgba(34,158,217,0.35);overflow:hidden;z-index:2147483647;box-shadow:0 8px 32px rgba(0,0,0,0.5);font-family:inherit;}
                 #tgPanelMain .tg-head{background:#229ED9;padding:12px 14px;display:flex;align-items:center;gap:10px;}
@@ -1763,8 +1763,34 @@ REGLAS:
             const div = document.createElement('div');
             div.id = 'tgWidgetMain';
             div.innerHTML = `
-                <button id="tgFabMain" title="Ayuda">
-                    <svg viewBox="0 0 24 24" style="width:26px;height:26px;fill:white;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+                <button id="tgFabMain" title="Ayuda" style="background:none;border:none;padding:0;cursor:pointer;filter:drop-shadow(0 4px 12px rgba(34,158,217,0.6));">
+                    <svg viewBox="0 0 80 80" width="72" height="72" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Globo Hola -->
+                        <rect x="38" y="2" width="36" height="18" rx="9" fill="white"/>
+                        <polygon points="42,20 50,20 44,28" fill="white"/>
+                        <text x="56" y="15" font-size="9" font-weight="bold" fill="#229ED9" text-anchor="middle" font-family="Arial">Hola!</text>
+                        <!-- Antena -->
+                        <rect x="37" y="26" width="4" height="7" rx="2" fill="#b0d4f1"/>
+                        <circle cx="39" cy="24" r="3.5" fill="#229ED9"/>
+                        <!-- Cabeza -->
+                        <rect x="20" y="32" width="38" height="28" rx="10" fill="white"/>
+                        <rect x="21" y="33" width="36" height="26" rx="9" fill="#1a2a4a"/>
+                        <!-- Ojos brillantes -->
+                        <circle cx="32" cy="44" r="5" fill="#00e5ff"/>
+                        <circle cx="32" cy="44" r="3" fill="#00bcd4"/>
+                        <circle cx="30.5" cy="42.5" r="1.2" fill="white" opacity="0.8"/>
+                        <circle cx="46" cy="44" r="5" fill="#00e5ff"/>
+                        <circle cx="46" cy="44" r="3" fill="#00bcd4"/>
+                        <circle cx="44.5" cy="42.5" r="1.2" fill="white" opacity="0.8"/>
+                        <!-- Sonrisa -->
+                        <path d="M32 52 Q39 57 46 52" stroke="#00e5ff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                        <!-- Auriculares -->
+                        <rect x="13" y="38" width="8" height="14" rx="4" fill="#229ED9"/>
+                        <rect x="57" y="38" width="8" height="14" rx="4" fill="#229ED9"/>
+                        <path d="M17 38 Q39 26 61 38" stroke="#5b8fd4" stroke-width="3" fill="none"/>
+                        <!-- Cuerpo pequeño -->
+                        <rect x="28" y="60" width="22" height="10" rx="5" fill="#229ED9" opacity="0.7"/>
+                    </svg>
                 </button>
                 <div id="tgPanelMain">
                     <div class="tg-head">
@@ -1971,7 +1997,8 @@ REGLAS:
                 // Estilos
                 const tgStyle = dashboardWindow.document.createElement('style');
                 tgStyle.textContent = `
-                    #tgFab{position:fixed;bottom:20px;right:20px;width:52px;height:52px;border-radius:50%;background:#229ED9;border:none;cursor:pointer;z-index:2147483647;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(34,158,217,0.5);transition:transform 0.2s;}
+                    #tgFab{position:fixed;bottom:10px;right:12px;width:72px;height:72px;background:none;border:none;cursor:pointer;z-index:2147483647;display:flex;align-items:center;justify-content:center;transition:transform 0.2s;}
+                    #tgFab:hover{transform:scale(1.08);}
                     #tgFab:hover{transform:scale(1.08);}
                     #tgPanel{display:none;position:fixed;bottom:82px;right:20px;width:320px;background:#1e2d3d;border-radius:14px;border:1px solid rgba(34,158,217,0.35);overflow:hidden;z-index:2147483647;box-shadow:0 8px 32px rgba(0,0,0,0.5);font-family:inherit;}
                     #tgPanel .tg-head{background:#229ED9;padding:12px 14px;display:flex;align-items:center;gap:10px;}
@@ -1997,8 +2024,27 @@ REGLAS:
                 const tgDiv = dashboardWindow.document.createElement('div');
                 tgDiv.id = 'tgWidget';
                 tgDiv.innerHTML = `
-                    <button id="tgFab" title="Ayuda">
-                        <svg viewBox="0 0 24 24" style="width:26px;height:26px;fill:white;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+                    <button id="tgFab" title="Ayuda" style="background:none;border:none;padding:0;cursor:pointer;filter:drop-shadow(0 4px 12px rgba(34,158,217,0.6));">
+                        <svg viewBox="0 0 80 80" width="72" height="72" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="38" y="2" width="36" height="18" rx="9" fill="white"/>
+                            <polygon points="42,20 50,20 44,28" fill="white"/>
+                            <text x="56" y="15" font-size="9" font-weight="bold" fill="#229ED9" text-anchor="middle" font-family="Arial">Hola!</text>
+                            <rect x="37" y="26" width="4" height="7" rx="2" fill="#b0d4f1"/>
+                            <circle cx="39" cy="24" r="3.5" fill="#229ED9"/>
+                            <rect x="20" y="32" width="38" height="28" rx="10" fill="white"/>
+                            <rect x="21" y="33" width="36" height="26" rx="9" fill="#1a2a4a"/>
+                            <circle cx="32" cy="44" r="5" fill="#00e5ff"/>
+                            <circle cx="32" cy="44" r="3" fill="#00bcd4"/>
+                            <circle cx="30.5" cy="42.5" r="1.2" fill="white" opacity="0.8"/>
+                            <circle cx="46" cy="44" r="5" fill="#00e5ff"/>
+                            <circle cx="46" cy="44" r="3" fill="#00bcd4"/>
+                            <circle cx="44.5" cy="42.5" r="1.2" fill="white" opacity="0.8"/>
+                            <path d="M32 52 Q39 57 46 52" stroke="#00e5ff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                            <rect x="13" y="38" width="8" height="14" rx="4" fill="#229ED9"/>
+                            <rect x="57" y="38" width="8" height="14" rx="4" fill="#229ED9"/>
+                            <path d="M17 38 Q39 26 61 38" stroke="#5b8fd4" stroke-width="3" fill="none"/>
+                            <rect x="28" y="60" width="22" height="10" rx="5" fill="#229ED9" opacity="0.7"/>
+                        </svg>
                     </button>
                     <div id="tgPanel">
                         <div class="tg-head">
