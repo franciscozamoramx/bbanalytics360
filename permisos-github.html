@@ -865,15 +865,24 @@ function togglePermission(email,id) {
 }
 function editUserPermissions(email) {
     const cur=permissionsData.users[email]||[];
+    const userData = permissionsData.usersData && permissionsData.usersData[email] || {};
+    const hasKB = userData.base_conocimiento || false;
     const cbs=DASHBOARDS_CONFIG.map(d=>'<label class="checkbox-label"><input type="checkbox" value="'+d.id+'" '+(cur.includes(d.id)?'checked':'')+' class="edit-cb"><span>'+d.name+'</span></label>').join('');
+    const kbCheck='<label class="checkbox-label" style="border:1px solid rgba(255,215,0,0.3);border-radius:8px;padding:8px 12px;background:rgba(255,215,0,0.07);"><input type="checkbox" value="base_conocimiento" '+(hasKB?'checked':'')+' id="edit-kb-cb"><span style="color:#FFD700;font-weight:600;">⚙️ Base de Conocimiento</span></label>';
     const m=document.createElement('div'); m.className='modal-overlay';
-    m.innerHTML='<div class="modal-box"><h2>Editar: '+email+'</h2><div class="checkbox-group">'+cbs+'</div><div style="margin-top:20px;display:flex;gap:10px;"><button class="btn btn-success" onclick="saveEditedPerms(\''+email+'\',this)">✓ Guardar</button><button class="btn btn-secondary" onclick="this.closest(\'.modal-overlay\').remove()">Cancelar</button></div></div>';
+    m.innerHTML='<div class="modal-box"><h2>Editar: '+email+'</h2><div style="margin-bottom:14px;"><p style="color:rgba(255,255,255,0.5);font-size:0.8em;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">Permisos especiales</p>'+kbCheck+'</div><div class="checkbox-group">'+cbs+'</div><div style="margin-top:20px;display:flex;gap:10px;"><button class="btn btn-success" onclick="saveEditedPerms(\''+email+'\',this)">✓ Guardar</button><button class="btn btn-secondary" onclick="this.closest(\'.modal-overlay\').remove()">Cancelar</button></div></div>';
     document.body.appendChild(m);
 }
 async function saveEditedPerms(email,btn) {
     const m=btn.closest('.modal-overlay');
     const prevPerms = (permissionsData.users[email] || []).slice();
     const newPerms  = Array.from(m.querySelectorAll('.edit-cb:checked')).map(cb=>cb.value);
+    const hasKB     = m.querySelector('#edit-kb-cb') && m.querySelector('#edit-kb-cb').checked;
+
+    // Guardar permiso base_conocimiento en usersData
+    if (!permissionsData.usersData) permissionsData.usersData = {};
+    if (!permissionsData.usersData[email]) permissionsData.usersData[email] = {};
+    permissionsData.usersData[email].base_conocimiento = hasKB;
 
     // Detectar dashboards recién agregados (que no estaban antes)
     const added = newPerms.filter(id => !prevPerms.includes(id));
