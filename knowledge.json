@@ -72,6 +72,18 @@
       "solucion": "Asegúrate de usar tu correo corporativo @bigbola.com. Si el problema persiste, es posible que tu usuario no esté registrado — contacta a Francisco Zamora para que lo agregue al sistema.",
       "area": "Accesos",
       "resuelto": true
+    },
+    {
+      "id": 1778532528184,
+      "problema": "Selecciono el dashboard, pero me pide mi contraseña de Microsoft",
+      "solucion": "La seguridad de los dashboard's depende del macro ambiente de Microsoft,  en caso que no recuerdes tu contraseña contacta a Rubén Vargas, coméntale que tienes problemas con tu contraseña de Microsoft.",
+      "keywords": [
+        "contraseña",
+        "no ingreso",
+        "ingreso"
+      ],
+      "area": "Accesos",
+      "resuelto": true
     }
   ]
 }
