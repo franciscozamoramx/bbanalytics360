@@ -15,7 +15,8 @@
                 "oficina_proyectos",
                 "logs_bi",
                 "aforo"
-            ]
+            ],
+            "base_conocimiento": true
         },
         "guillermo.luna@bigbola.com": {
             "dashboards": [
