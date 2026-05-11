@@ -744,42 +744,18 @@
             const alpha = p.targetOpacity * Math.min(p.age/40,1) * (p.age > p.maxAge ? Math.max(0, 1-(p.age-p.maxAge)/60) : 1);
             ctx.save();
             ctx.globalAlpha = alpha;
-            // Fondo de la tarjeta
-            ctx.fillStyle = 'rgba(14,28,70,0.55)';
+            // Fondo semitransparente
+            ctx.fillStyle = 'rgba(14,28,70,0.5)';
             roundRect(ctx, p.x, p.y, p.w, p.h, 10); ctx.fill();
-            // Borde con color del área
-            ctx.strokeStyle = p.dashInfo.areaColor + '55';
-            ctx.lineWidth = 1.2;
-            roundRect(ctx, p.x, p.y, p.w, p.h, 10); ctx.stroke();
-            // Franja superior con color del área
-            ctx.fillStyle = p.dashInfo.areaColor + '22';
-            roundRect(ctx, p.x, p.y, p.w, p.h * 0.32, 10); ctx.fill();
-            // Etiqueta del área
-            ctx.fillStyle = p.dashInfo.areaColor;
-            ctx.font = 'bold ' + Math.max(8, p.h * 0.14) + 'px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText(p.dashInfo.area.toUpperCase(), p.x + p.w/2, p.y + p.h * 0.22);
-            // Nombre del dashboard
-            ctx.fillStyle = 'rgba(255,255,255,0.88)';
-            ctx.font = 'bold ' + Math.max(10, p.h * 0.2) + 'px Arial';
-            ctx.fillText(p.dashInfo.name, p.x + p.w/2, p.y + p.h * 0.58);
-            // Línea separadora
-            ctx.strokeStyle = p.dashInfo.areaColor + '30';
-            ctx.lineWidth = 0.8;
-            ctx.beginPath();
-            ctx.moveTo(p.x + p.w * 0.15, p.y + p.h * 0.38);
-            ctx.lineTo(p.x + p.w * 0.85, p.y + p.h * 0.38);
-            ctx.stroke();
-            // Mini línea decorativa abajo
-            ctx.strokeStyle = p.dashInfo.areaColor + '40';
+            // Borde dorado sutil
+            ctx.strokeStyle = 'rgba(255,215,0,0.3)';
             ctx.lineWidth = 1;
-            ctx.beginPath();
-            for (let i = 0; i < 6; i++) {
-                const sx = p.x + p.w*0.15 + i*(p.w*0.7/5);
-                const sy = p.y + p.h*0.8 - Math.sin(t*0.01 + p.phase + i*0.7)*3;
-                i===0 ? ctx.moveTo(sx,sy) : ctx.lineTo(sx,sy);
-            }
-            ctx.stroke();
+            roundRect(ctx, p.x, p.y, p.w, p.h, 10); ctx.stroke();
+            // Nombre del dashboard en dorado
+            ctx.fillStyle = '#FFD700';
+            ctx.font = 'bold ' + Math.max(11, p.h * 0.22) + 'px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(p.dashInfo.name, p.x + p.w/2, p.y + p.h * 0.58);
             ctx.restore();
         }
 
