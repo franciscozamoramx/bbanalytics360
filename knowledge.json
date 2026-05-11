@@ -27,7 +27,7 @@
         "pantalla blanca",
         "lento"
       ],
-      "solucion": "Prueba: 1) Refresca con Ctrl+Shift+R, 2) Limpia el caché del navegador, 3) Abre en modo incógnito. Si persiste, el reporte de Power BI puede estar en mantenimiento.",
+      "solucion": "Prueba: 1) Abre nuevamente a menú, 2) Selecciona el dashboard que quieres ingresar. Si persiste, el reporte de Power BI puede estar en mantenimiento.",
       "area": "Técnico",
       "resuelto": true
     },
