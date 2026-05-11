@@ -654,11 +654,17 @@ async function testGithubConnection() {
 function parseUsersFromJSON(data) {
     const r = {};
     if (!data.users) return r;
+    if (!permissionsData.usersData) permissionsData.usersData = {};
     Object.keys(data.users).forEach(email => {
         const v = data.users[email];
         if (Array.isArray(v))                      r[email] = v;
         else if (v && Array.isArray(v.dashboards)) r[email] = v.dashboards;
         else                                        r[email] = [];
+        // Preservar base_conocimiento
+        if (v && v.base_conocimiento) {
+            if (!permissionsData.usersData[email]) permissionsData.usersData[email] = {};
+            permissionsData.usersData[email].base_conocimiento = true;
+        }
     });
     return r;
 }
@@ -701,7 +707,13 @@ async function saveToGithub() {
     updateGithubStatus(false,'Guardando...');
     try {
         const out = { users:{} };
-        Object.keys(permissionsData.users).forEach(e => { out.users[e]={ dashboards: permissionsData.users[e] }; });
+        Object.keys(permissionsData.users).forEach(e => {
+            out.users[e] = { dashboards: permissionsData.users[e] };
+            // Preservar base_conocimiento si existe
+            if (permissionsData.usersData && permissionsData.usersData[e] && permissionsData.usersData[e].base_conocimiento) {
+                out.users[e].base_conocimiento = true;
+            }
+        });
         const r = await fetch(`https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.file}`, {
             method:'PUT',
             headers:{ 'Authorization':'token '+githubConfig.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json' },
