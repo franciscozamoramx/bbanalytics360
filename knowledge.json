@@ -1,0 +1,77 @@
+{
+  "version": "1.0",
+  "updated": "2026-05-11",
+  "casos": [
+    {
+      "id": 1,
+      "problema": "No puedo entrar al dashboard, me dice que no tengo permiso",
+      "keywords": [
+        "permiso",
+        "acceso",
+        "no puedo entrar",
+        "no tengo acceso",
+        "denegado"
+      ],
+      "solucion": "Los accesos son por rol. Solicita a Francisco Zamora (Coordinador de BI) que te asigne el dashboard. Puedes contactarlo desde el menú → botón WhatsApp.",
+      "area": "Accesos",
+      "resuelto": true
+    },
+    {
+      "id": 2,
+      "problema": "El dashboard no carga, se queda en blanco o con pantalla de carga",
+      "keywords": [
+        "no carga",
+        "blanco",
+        "carga",
+        "loading",
+        "pantalla blanca",
+        "lento"
+      ],
+      "solucion": "Prueba: 1) Refresca con Ctrl+Shift+R, 2) Limpia el caché del navegador, 3) Abre en modo incógnito. Si persiste, el reporte de Power BI puede estar en mantenimiento.",
+      "area": "Técnico",
+      "resuelto": true
+    },
+    {
+      "id": 3,
+      "problema": "No veo el dashboard en mi carrusel aunque me dijeron que ya tengo acceso",
+      "keywords": [
+        "no aparece",
+        "carrusel",
+        "no lo veo",
+        "no está",
+        "no se ve"
+      ],
+      "solucion": "Cierra sesión y vuelve a entrar para refrescar los permisos. Si sigue sin aparecer, verifica con Francisco Zamora que el acceso fue guardado correctamente en el sistema.",
+      "area": "Accesos",
+      "resuelto": true
+    },
+    {
+      "id": 4,
+      "problema": "Los datos del dashboard no están actualizados o muestran información antigua",
+      "keywords": [
+        "datos viejos",
+        "no actualiza",
+        "información antigua",
+        "desactualizado",
+        "fecha vieja"
+      ],
+      "solucion": "Los dashboards se actualizan automáticamente según el calendario de Power BI. Si los datos tienen más de 24 horas de retraso, notifica a Francisco Zamora para revisar el proceso de carga.",
+      "area": "Datos",
+      "resuelto": true
+    },
+    {
+      "id": 5,
+      "problema": "No puedo iniciar sesión, el sistema no reconoce mi correo",
+      "keywords": [
+        "no puedo iniciar",
+        "correo no reconocido",
+        "usuario incorrecto",
+        "no me deja entrar",
+        "login"
+      ],
+      "solucion": "Asegúrate de usar tu correo corporativo @bigbola.com. Si el problema persiste, es posible que tu usuario no esté registrado — contacta a Francisco Zamora para que lo agregue al sistema.",
+      "area": "Accesos",
+      "resuelto": true
+    }
+  ]
+}
