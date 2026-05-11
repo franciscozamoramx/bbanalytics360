@@ -423,7 +423,7 @@
 
         function createPanel(stagger, cellX, cellY, maxW, maxH, goRight) {
             const isMobile = W < 768;
-            const types = ['bar', 'line', 'area', 'donut', 'gauge', 'scatter', 'hbar', 'kpi', 'heatmap', 'pie'];
+            const types = ['bar', 'line', 'area', 'donut', 'gauge', 'scatter', 'hbar', 'dashcard', 'heatmap', 'pie'];
             const type = types[Math.floor(Math.random() * types.length)];
 
             const w = Math.random() * (maxW * 0.4) + maxW * 0.5;
@@ -455,8 +455,23 @@
                 barVals: Array.from({length: 12}, () => Math.random() * 0.7 + 0.3),
                 lineData: Array.from({length: 10}, () => Math.random()),
                 scatterData: Array.from({length: 15}, () => ({x: Math.random(), y: Math.random(), r: Math.random() * 3 + 1})),
-                kpiValue: Math.floor(Math.random() * 9000 + 1000),
-                kpiLabel: ['Ingresos', 'Clientes', 'ADT', 'Salas', 'Visitas', 'Revenue'][Math.floor(Math.random() * 6)],
+                dashInfo: [
+                    {name:"Inicio",         area:"General",    areaColor:"#FFD700", icon:"⊞"},
+                    {name:"ADT",            area:"Máquinas",   areaColor:"#3DD68C", icon:"📈"},
+                    {name:"Auditoría",      area:"Auditoría",  areaColor:"#FFB84A", icon:"🔍"},
+                    {name:"Big Player's",   area:"Comercial",  areaColor:"#4A9EFF", icon:"💎"},
+                    {name:"Bolipoints",     area:"Comercial",  areaColor:"#4A9EFF", icon:"🎫"},
+                    {name:"Clientes",       area:"Comercial",  areaColor:"#4A9EFF", icon:"👥"},
+                    {name:"Máquinas",       area:"Máquinas",   areaColor:"#3DD68C", icon:"⚡"},
+                    {name:"KPI's",          area:"General",    areaColor:"#FFD700", icon:"📖"},
+                    {name:"Tarjetas",       area:"Finanzas",   areaColor:"#B47FFF", icon:"💳"},
+                    {name:"Inventario TI",  area:"TI",         areaColor:"#FF7A6E", icon:"🖥"},
+                    {name:"Promociones",    area:"Auditoría",  areaColor:"#FFB84A", icon:"🎁"},
+                    {name:"Proyectos BI",   area:"TI",         areaColor:"#FF7A6E", icon:"🔗"},
+                    {name:"RTP",            area:"Máquinas",   areaColor:"#3DD68C", icon:"🪙"},
+                    {name:"Auditores",      area:"Auditoría",  areaColor:"#FFB84A", icon:"✅"},
+                    {name:"Aforo",          area:"Máquinas",   areaColor:"#3DD68C", icon:"👤"},
+                ][Math.floor(Math.random() * 15)],
                 gaugeValue: Math.random() * 0.7 + 0.3,
                 heatmapData: Array.from({length: 42}, () => Math.random()),
                 heatmapCols: 7,
@@ -514,7 +529,7 @@
                 case 'gauge': drawGauge(p, chartX, chartY, chartW, chartH, t, progress); break;
                 case 'scatter': drawScatter(p, chartX, chartY, chartW, chartH, t, progress); break;
                 case 'hbar': drawHBars(p, chartX, chartY, chartW, chartH, t, progress); break;
-                case 'kpi': drawKPI(p, t, progress); break;
+                case 'dashcard': drawDashCard(p, t, progress); break;
                 case 'heatmap': drawHeatmap(p, chartX, chartY, chartW, chartH, t, progress); break;
                 case 'pie': drawPie(p, chartX, chartY, chartW, chartH, t, progress); break;
             }
@@ -724,36 +739,45 @@
             }
         }
 
-        function drawKPI(p, t, prog) {
+        function drawDashCard(p, t, prog) {
+            if (!p.dashInfo) return;
+            const alpha = p.targetOpacity * Math.min(p.age/40,1) * (p.age > p.maxAge ? Math.max(0, 1-(p.age-p.maxAge)/60) : 1);
             ctx.save();
-            ctx.globalAlpha = p.targetOpacity * Math.min(p.age/40,1) * (p.age > p.maxAge ? Math.max(0, 1-(p.age-p.maxAge)/60) : 1);
-            // Panel
-            ctx.fillStyle = 'rgba(21,44,110,0.5)';
-            roundRect(ctx, p.x, p.y, p.w, p.h, p.cornerRadius); ctx.fill();
-            ctx.strokeStyle = p.color + '30';
-            ctx.lineWidth = 1;
-            roundRect(ctx, p.x, p.y, p.w, p.h, p.cornerRadius); ctx.stroke();
-            // Value placeholder
-            const val = Math.floor(p.kpiValue * prog);
-            ctx.fillStyle = p.color + '50';
-            ctx.font = 'bold ' + (p.h * 0.35) + 'px Arial';
+            ctx.globalAlpha = alpha;
+            // Fondo de la tarjeta
+            ctx.fillStyle = 'rgba(14,28,70,0.55)';
+            roundRect(ctx, p.x, p.y, p.w, p.h, 10); ctx.fill();
+            // Borde con color del área
+            ctx.strokeStyle = p.dashInfo.areaColor + '55';
+            ctx.lineWidth = 1.2;
+            roundRect(ctx, p.x, p.y, p.w, p.h, 10); ctx.stroke();
+            // Franja superior con color del área
+            ctx.fillStyle = p.dashInfo.areaColor + '22';
+            roundRect(ctx, p.x, p.y, p.w, p.h * 0.32, 10); ctx.fill();
+            // Etiqueta del área
+            ctx.fillStyle = p.dashInfo.areaColor;
+            ctx.font = 'bold ' + Math.max(8, p.h * 0.14) + 'px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText(val.toLocaleString(), p.x + p.w/2, p.y + p.h * 0.5);
-            // Label
-            ctx.fillStyle = 'rgba(255,255,255,0.1)';
-            ctx.font = (p.h * 0.16) + 'px Arial';
-            ctx.fillText(p.kpiLabel, p.x + p.w/2, p.y + p.h * 0.75);
-            // Mini sparkline
-            const sparkY = p.y + p.h * 0.82;
-            const sparkW = p.w * 0.5;
-            const sparkX = p.x + p.w * 0.25;
-            ctx.strokeStyle = p.color + '20';
+            ctx.fillText(p.dashInfo.area.toUpperCase(), p.x + p.w/2, p.y + p.h * 0.22);
+            // Nombre del dashboard
+            ctx.fillStyle = 'rgba(255,255,255,0.88)';
+            ctx.font = 'bold ' + Math.max(10, p.h * 0.2) + 'px Arial';
+            ctx.fillText(p.dashInfo.name, p.x + p.w/2, p.y + p.h * 0.58);
+            // Línea separadora
+            ctx.strokeStyle = p.dashInfo.areaColor + '30';
+            ctx.lineWidth = 0.8;
+            ctx.beginPath();
+            ctx.moveTo(p.x + p.w * 0.15, p.y + p.h * 0.38);
+            ctx.lineTo(p.x + p.w * 0.85, p.y + p.h * 0.38);
+            ctx.stroke();
+            // Mini línea decorativa abajo
+            ctx.strokeStyle = p.dashInfo.areaColor + '40';
             ctx.lineWidth = 1;
             ctx.beginPath();
-            for (let i = 0; i < 8; i++) {
-                const sx = sparkX + (i/7) * sparkW;
-                const sy = sparkY - Math.sin(t * 0.01 + p.phase + i * 0.5) * 4 - 2;
-                i === 0 ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy);
+            for (let i = 0; i < 6; i++) {
+                const sx = p.x + p.w*0.15 + i*(p.w*0.7/5);
+                const sy = p.y + p.h*0.8 - Math.sin(t*0.01 + p.phase + i*0.7)*3;
+                i===0 ? ctx.moveTo(sx,sy) : ctx.lineTo(sx,sy);
             }
             ctx.stroke();
             ctx.restore();
