@@ -121,6 +121,15 @@
   .case-footer { display: flex; justify-content: flex-end; margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06); }
   .btn-delete { background: rgba(255,100,100,0.1); border: 1px solid rgba(255,100,100,0.2); color: #fca5a5; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 0.78em; font-family: inherit; transition: all 0.2s; }
   .btn-delete:hover { background: rgba(255,100,100,0.2); }
+  .btn-edit { background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.2); color: var(--gold); padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 0.78em; font-family: inherit; transition: all 0.2s; margin-right: 8px; }
+  .btn-edit:hover { background: rgba(255,215,0,0.2); }
+
+  /* Modal edición */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .modal-box { background: #1a2d6e; border: 1px solid var(--glass-border); border-radius: 16px; padding: 28px; width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; }
+  .modal-box h3 { color: var(--gold); font-size: 1em; margin-bottom: 20px; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 18px; }
+  .btn-cancel { padding: 10px 20px; background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-muted); cursor: pointer; font-family: inherit; font-size: 0.88em; }
   .empty-state { text-align: center; padding: 48px; color: var(--text-muted); font-size: 0.9em; }
 
   @media(max-width:600px) {
@@ -197,7 +206,7 @@
           <label>Área</label>
           <select id="kbArea">
             <option value="Accesos">Accesos</option>
-            <option value="Tecnico">Técnico</option>
+            <option value="Técnico">Técnico</option>
             <option value="Datos">Datos</option>
             <option value="General">General</option>
           </select>
@@ -213,7 +222,7 @@
     <div class="filters">
       <button class="filter-btn active" onclick="filterCases('all',this)">Todos</button>
       <button class="filter-btn" onclick="filterCases('Accesos',this)">Accesos</button>
-      <button class="filter-btn" onclick="filterCases('Tecnico',this)">Técnico</button>
+      <button class="filter-btn" onclick="filterCases('Técnico',this)">Técnico</button>
       <button class="filter-btn" onclick="filterCases('Datos',this)">Datos</button>
       <button class="filter-btn" onclick="filterCases('General',this)">General</button>
     </div>
@@ -302,7 +311,7 @@ function renderStats() {
     const casos = kbData.casos || [];
     document.getElementById('statTotal').textContent   = casos.length;
     document.getElementById('statAccesos').textContent = casos.filter(c => c.area === 'Accesos').length;
-    document.getElementById('statTecnico').textContent = casos.filter(c => c.area === 'Tecnico').length;
+    document.getElementById('statTecnico').textContent = casos.filter(c => c.area === 'Técnico').length;
     document.getElementById('statDatos').textContent   = casos.filter(c => c.area === 'Datos').length;
 }
 
@@ -319,6 +328,7 @@ function renderCases() {
             <div class="case-solucion">${caso.solucion}</div>
             <div class="case-keywords">${caso.keywords.map(k => `<span class="kw-tag">${k}</span>`).join('')}</div>
             <div class="case-footer">
+                <button class="btn-edit" onclick="editCase(${caso.id})">✏️ Editar</button>
                 <button class="btn-delete" onclick="deleteCase(${caso.id})">✕ Eliminar</button>
             </div>
         </div>
@@ -370,6 +380,66 @@ async function deleteCase(id) {
     kbData.casos = kbData.casos.filter(c => c.id !== id);
     try { await saveKB('fix: eliminar caso de knowledge base'); renderStats(); renderCases(); }
     catch(e) { alert('Error al eliminar.'); }
+}
+
+function editCase(id) {
+    const caso = kbData.casos.find(c => c.id === id);
+    if (!caso) return;
+    const m = document.createElement('div');
+    m.className = 'modal-overlay';
+    m.innerHTML = `
+        <div class="modal-box">
+            <h3>✏️ Editar caso</h3>
+            <div class="form-grid">
+                <div class="field full">
+                    <label>Problema</label>
+                    <input id="edit-problema" type="text" value="${caso.problema.replace(/"/g,'&quot;')}">
+                </div>
+                <div class="field full">
+                    <label>Solución</label>
+                    <textarea id="edit-solucion">${caso.solucion}</textarea>
+                </div>
+                <div class="field">
+                    <label>Palabras clave (separadas por coma)</label>
+                    <input id="edit-keywords" type="text" value="${caso.keywords.join(', ')}">
+                </div>
+                <div class="field">
+                    <label>Área</label>
+                    <select id="edit-area">
+                        <option value="Accesos" ${caso.area==='Accesos'?'selected':''}>Accesos</option>
+                        <option value="Técnico" ${caso.area==='Técnico'?'selected':''}>Técnico</option>
+                        <option value="Datos" ${caso.area==='Datos'?'selected':''}>Datos</option>
+                        <option value="General" ${caso.area==='General'?'selected':''}>General</option>
+                    </select>
+                </div>
+            </div>
+            <div id="edit-status" style="font-size:0.82em;min-height:16px;margin-top:10px;"></div>
+            <div class="modal-actions">
+                <button class="btn-save" onclick="saveEditCase(${id}, this)">Guardar cambios</button>
+                <button class="btn-cancel" onclick="this.closest('.modal-overlay').remove()">Cancelar</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(m);
+}
+
+async function saveEditCase(id, btn) {
+    const m       = btn.closest('.modal-overlay');
+    const status  = m.querySelector('#edit-status');
+    const problema = m.querySelector('#edit-problema').value.trim();
+    const solucion = m.querySelector('#edit-solucion').value.trim();
+    const keywords = m.querySelector('#edit-keywords').value.trim();
+    const area     = m.querySelector('#edit-area').value;
+    if (!problema || !solucion || !keywords) { status.style.color='#fca5a5'; status.textContent='Completa todos los campos.'; return; }
+    status.style.color='#93c5fd'; status.textContent='Guardando...';
+    const idx = kbData.casos.findIndex(c => c.id === id);
+    if (idx === -1) return;
+    kbData.casos[idx] = { ...kbData.casos[idx], problema, solucion, keywords: keywords.split(',').map(k=>k.trim()).filter(Boolean), area };
+    try {
+        await saveKB('fix: editar caso — ' + problema.substring(0,50));
+        m.remove();
+        renderStats(); renderCases();
+    } catch(e) { status.style.color='#fca5a5'; status.textContent='Error al guardar.'; }
 }
 
 // ── CANVAS LOGIN ANIMATION ───────────────────────────────────────────────────
