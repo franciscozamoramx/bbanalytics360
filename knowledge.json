@@ -55,7 +55,7 @@
         "desactualizado",
         "fecha vieja"
       ],
-      "solucion": "Los dashboards se actualizan automáticamente según el calendario de Power BI. Si los datos tienen más de 24 horas de retraso, notifica a Francisco Zamora para revisar el proceso de carga.",
+      "solucion": "Los dashboards se actualizan automáticamente según el calendario de Power BI.  En cada dashboard en la parte superior indica la fecha y hora de la última actualización.  Si los datos tienen más de 26 horas de retraso, notifica a Francisco Zamora para revisar el proceso de carga.",
       "area": "Datos",
       "resuelto": true
     },
