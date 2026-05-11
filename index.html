@@ -1772,6 +1772,23 @@ REGLAS:
             document.body.appendChild(div);
 
             let chatHistory = [], repeatCount = {}, interactionCount = 0;
+            let knowledgeBase = [];
+
+            // Cargar base de conocimiento desde GitHub
+            fetch('https://raw.githubusercontent.com/franciscozamoramx/bbanalytics360/main/knowledge.json?t=' + Date.now())
+                .then(r => r.json()).then(d => { knowledgeBase = d.casos || []; }).catch(() => {});
+
+            function searchKnowledge(query) {
+                if (!knowledgeBase.length) return null;
+                const q = query.toLowerCase();
+                let best = null, bestScore = 0;
+                knowledgeBase.forEach(caso => {
+                    let score = 0;
+                    caso.keywords.forEach(kw => { if (q.includes(kw.toLowerCase())) score++; });
+                    if (score > bestScore) { bestScore = score; best = caso; }
+                });
+                return bestScore > 0 ? best : null;
+            }
 
             function addMsg(text, type) {
                 const msgs = document.getElementById('tgMessagesMain');
@@ -1838,10 +1855,14 @@ REGLAS:
                 chatHistory.push({role: 'user', content: text});
                 showTyping();
                 try {
+                    const kbMatch = searchKnowledge(text);
+                    const systemWithKB = kbMatch
+                        ? SYSTEM_PROMPT + '\n\nCASOCONOCIDO: ' + kbMatch.problema + '\nSOLUCION PROBADA: ' + kbMatch.solucion
+                        : SYSTEM_PROMPT;
                     const res = await fetch('https://api.anthropic.com/v1/messages', {
                         method: 'POST',
                         headers: {'Content-Type':'application/json','x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-                        body: JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,system:SYSTEM_PROMPT,messages:chatHistory.slice(-6)})
+                        body: JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,system:systemWithKB,messages:chatHistory.slice(-6)})
                     });
                     const data = await res.json();
                     const reply = data.content && data.content[0] ? data.content[0].text : 'Lo siento, no pude procesar tu pregunta. Intenta de nuevo.';
@@ -2152,6 +2173,22 @@ REGLAS:
                     showTyping();
 
                     try {
+                        // Buscar en knowledge base
+                        let kbSystem = SYSTEM_PROMPT;
+                        try {
+                            const kbResp = await fetch('https://raw.githubusercontent.com/franciscozamoramx/bbanalytics360/main/knowledge.json?t=' + Date.now());
+                            const kbData = await kbResp.json();
+                            const casos = kbData.casos || [];
+                            const q = text.toLowerCase();
+                            let best = null, bestScore = 0;
+                            casos.forEach(caso => {
+                                let score = 0;
+                                caso.keywords.forEach(kw => { if (q.includes(kw.toLowerCase())) score++; });
+                                if (score > bestScore) { bestScore = score; best = caso; }
+                            });
+                            if (best) kbSystem += '\n\nCASOCONOCIDO: ' + best.problema + '\nSOLUCION PROBADA: ' + best.solucion;
+                        } catch(e) {}
+
                         const res = await fetch('https://api.anthropic.com/v1/messages', {
                             method: 'POST',
                             headers: {
@@ -2163,7 +2200,7 @@ REGLAS:
                             body: JSON.stringify({
                                 model: 'claude-haiku-4-5-20251001',
                                 max_tokens: 300,
-                                system: SYSTEM_PROMPT,
+                                system: kbSystem,
                                 messages: chatHistory.slice(-6)
                             })
                         });
