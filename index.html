@@ -423,7 +423,7 @@
 
         function createPanel(stagger, cellX, cellY, maxW, maxH, goRight) {
             const isMobile = W < 768;
-            const types = ['bar', 'line', 'area', 'donut', 'gauge', 'scatter', 'hbar', 'dashcard', 'heatmap', 'pie'];
+            const types = ['bar', 'line', 'area', 'donut', 'gauge', 'scatter', 'hbar', 'heatmap', 'pie'];
             const type = types[Math.floor(Math.random() * types.length)];
 
             const w = Math.random() * (maxW * 0.4) + maxW * 0.5;
@@ -455,23 +455,7 @@
                 barVals: Array.from({length: 12}, () => Math.random() * 0.7 + 0.3),
                 lineData: Array.from({length: 10}, () => Math.random()),
                 scatterData: Array.from({length: 15}, () => ({x: Math.random(), y: Math.random(), r: Math.random() * 3 + 1})),
-                dashInfo: [
-                    {name:"Inicio",         area:"General",    areaColor:"#FFD700", icon:"⊞"},
-                    {name:"ADT",            area:"Máquinas",   areaColor:"#3DD68C", icon:"📈"},
-                    {name:"Auditoría",      area:"Auditoría",  areaColor:"#FFB84A", icon:"🔍"},
-                    {name:"Big Player's",   area:"Comercial",  areaColor:"#4A9EFF", icon:"💎"},
-                    {name:"Bolipoints",     area:"Comercial",  areaColor:"#4A9EFF", icon:"🎫"},
-                    {name:"Clientes",       area:"Comercial",  areaColor:"#4A9EFF", icon:"👥"},
-                    {name:"Máquinas",       area:"Máquinas",   areaColor:"#3DD68C", icon:"⚡"},
-                    {name:"Diccionario KPI's", area:"General",    areaColor:"#FFD700", icon:"📖"},
-                    {name:"Tarjetas",       area:"Finanzas",   areaColor:"#B47FFF", icon:"💳"},
-                    {name:"Inventario TI",  area:"TI",         areaColor:"#FF7A6E", icon:"🖥"},
-                    {name:"Promociones",    area:"Auditoría",  areaColor:"#FFB84A", icon:"🎁"},
-                    {name:"Proyectos BI",   area:"TI",         areaColor:"#FF7A6E", icon:"🔗"},
-                    {name:"RTP",            area:"Máquinas",   areaColor:"#3DD68C", icon:"🪙"},
-                    {name:"Auditores",      area:"Auditoría",  areaColor:"#FFB84A", icon:"✅"},
-                    {name:"Aforo",          area:"Máquinas",   areaColor:"#3DD68C", icon:"👤"},
-                ][Math.floor(Math.random() * 15)],
+
                 gaugeValue: Math.random() * 0.7 + 0.3,
                 heatmapData: Array.from({length: 42}, () => Math.random()),
                 heatmapCols: 7,
@@ -529,7 +513,6 @@
                 case 'gauge': drawGauge(p, chartX, chartY, chartW, chartH, t, progress); break;
                 case 'scatter': drawScatter(p, chartX, chartY, chartW, chartH, t, progress); break;
                 case 'hbar': drawHBars(p, chartX, chartY, chartW, chartH, t, progress); break;
-                case 'dashcard': drawDashCard(p, t, progress); break;
                 case 'heatmap': drawHeatmap(p, chartX, chartY, chartW, chartH, t, progress); break;
                 case 'pie': drawPie(p, chartX, chartY, chartW, chartH, t, progress); break;
             }
@@ -739,25 +722,6 @@
             }
         }
 
-        function drawDashCard(p, t, prog) {
-            if (!p.dashInfo) return;
-            const alpha = p.targetOpacity * Math.min(p.age/40,1) * (p.age > p.maxAge ? Math.max(0, 1-(p.age-p.maxAge)/60) : 1);
-            ctx.save();
-            ctx.globalAlpha = alpha;
-            // Fondo semitransparente
-            ctx.fillStyle = 'rgba(14,28,70,0.5)';
-            roundRect(ctx, p.x, p.y, p.w, p.h, 10); ctx.fill();
-            // Borde dorado sutil
-            ctx.strokeStyle = 'rgba(255,215,0,0.3)';
-            ctx.lineWidth = 1;
-            roundRect(ctx, p.x, p.y, p.w, p.h, 10); ctx.stroke();
-            // Nombre del dashboard en dorado
-            ctx.fillStyle = '#FFD700';
-            ctx.font = 'bold ' + Math.max(11, p.h * 0.22) + 'px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText(p.dashInfo.name, p.x + p.w/2, p.y + p.h * 0.58);
-            ctx.restore();
-        }
 
         // ===== HEATMAP =====
         function drawHeatmap(p, x, y, w, h, t, prog) {
