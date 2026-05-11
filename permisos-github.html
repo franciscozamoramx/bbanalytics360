@@ -221,7 +221,6 @@
         <button class="tab-btn active" onclick="switchTab('usuarios',this)">Usuarios</button>
         <button class="tab-btn" onclick="switchTab('admins',this)">Administradores</button>
         <button class="tab-btn" onclick="switchTab('dashboards',this)">Dashboards</button>
-        <button class="tab-btn" onclick="switchTab('conocimiento',this)">Base de Conocimiento</button>
         <button class="tab-btn" onclick="switchTab('config',this)">Configuracion</button>
     </div>
     <div id="tab-usuarios" class="tab-content active">
@@ -260,46 +259,6 @@
         <div class="alert alert-info">15 dashboards configurados — haz clic en cualquiera para ver sus usuarios con acceso.</div>
         <div class="dashboard-list" id="dashboardsList"></div>
     </div>
-    <div id="tab-conocimiento" class="tab-content">
-        <h2 style="color:#FFD700;margin:0 0 20px;">Base de Conocimiento del Asistente IA</h2>
-        <p style="color:rgba(255,255,255,0.7);margin-bottom:20px;font-size:0.9em;">Agrega problemas y soluciones que el asistente consultará antes de responder a los usuarios.</p>
-
-        <!-- Formulario nuevo caso -->
-        <div style="background:rgba(255,255,255,0.06);border-radius:12px;padding:24px;margin-bottom:24px;">
-            <h3 style="color:white;margin:0 0 16px;font-size:1em;">➕ Agregar nuevo caso</h3>
-            <div style="display:grid;gap:12px;">
-                <div>
-                    <label style="color:rgba(255,255,255,0.7);font-size:0.85em;display:block;margin-bottom:5px;">Problema (descripción del issue)</label>
-                    <input id="kb-problema" type="text" placeholder="Ej: No puedo ver el dashboard de ADT..." style="width:100%;padding:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:white;font-size:0.9em;box-sizing:border-box;">
-                </div>
-                <div>
-                    <label style="color:rgba(255,255,255,0.7);font-size:0.85em;display:block;margin-bottom:5px;">Palabras clave (separadas por coma)</label>
-                    <input id="kb-keywords" type="text" placeholder="Ej: no veo, acceso, ADT, permiso" style="width:100%;padding:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:white;font-size:0.9em;box-sizing:border-box;">
-                </div>
-                <div>
-                    <label style="color:rgba(255,255,255,0.7);font-size:0.85em;display:block;margin-bottom:5px;">Solución</label>
-                    <textarea id="kb-solucion" placeholder="Describe cómo se resolvió el problema..." style="width:100%;padding:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:white;font-size:0.9em;box-sizing:border-box;height:80px;resize:vertical;font-family:inherit;"></textarea>
-                </div>
-                <div>
-                    <label style="color:rgba(255,255,255,0.7);font-size:0.85em;display:block;margin-bottom:5px;">Área</label>
-                    <select id="kb-area" style="padding:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:white;font-size:0.9em;">
-                        <option value="Accesos" style="background:#152c6e;">Accesos</option>
-                        <option value="Técnico" style="background:#152c6e;">Técnico</option>
-                        <option value="Datos" style="background:#152c6e;">Datos</option>
-                        <option value="General" style="background:#152c6e;">General</option>
-                    </select>
-                </div>
-                <button onclick="addKBCase()" style="padding:11px;background:linear-gradient(to bottom,#FFD700,#FF8C00);color:#152c6e;font-weight:700;border:none;border-radius:8px;cursor:pointer;font-size:0.95em;">Guardar caso</button>
-                <div id="kb-status" style="font-size:0.85em;min-height:18px;color:#6ee7b7;"></div>
-            </div>
-        </div>
-
-        <!-- Lista de casos existentes -->
-        <div id="kb-list" style="display:flex;flex-direction:column;gap:10px;">
-            <p style="color:rgba(255,255,255,0.4);font-size:0.85em;">Cargando casos...</p>
-        </div>
-    </div>
-
     <div id="tab-config" class="tab-content">
         <h2 class="section-title">Configuracion de GitHub</h2>
         <div id="alertContainerConfig"></div>
@@ -1025,11 +984,6 @@ function applyRolePermissions() {
 
     // Tab "Administradores" y tab "Configuración": solo admin maestro
     document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const tabName = (btn.getAttribute('onclick')||'').match(/'([^']+)'/)?.[1];
-            if (tabName === 'conocimiento' && !kbData) loadKnowledgeBase();
-        });
-    });
         const oc = btn.getAttribute('onclick') || '';
         if (oc.includes("'admins'") || oc.includes("'config'")) {
             toggle(btn, isMaster);
@@ -1153,83 +1107,6 @@ function renderAdmins() {
         return '<div class="admin-card"><h3>'+a.name+' '+badge+'</h3><div class="meta">'+a.email+' · Creado: '+created+'</div><div class="action-buttons">'+actions+'<button class="btn btn-danger" onclick="deleteAdmin(\''+a.email+'\')">Eliminar</button></div></div>';
     }).join('');
 }
-
-// ── BASE DE CONOCIMIENTO ─────────────────────────────────────────────────────
-let kbData = null;
-
-async function loadKnowledgeBase() {
-    try {
-        const res = await fetch('https://raw.githubusercontent.com/' + GITHUB_USER + '/' + GITHUB_REPO + '/main/knowledge.json?t=' + Date.now());
-        kbData = await res.json();
-        renderKBList();
-    } catch(e) {
-        document.getElementById('kb-list').innerHTML = '<p style="color:#fca5a5;">Error al cargar la base de conocimiento.</p>';
-    }
-}
-
-function renderKBList() {
-    const list = document.getElementById('kb-list');
-    if (!kbData || !kbData.casos || kbData.casos.length === 0) {
-        list.innerHTML = '<p style="color:rgba(255,255,255,0.4);font-size:0.85em;">No hay casos registrados aun.</p>';
-        return;
-    }
-    list.innerHTML = kbData.casos.map(caso => `
-        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:16px;">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
-                <div style="flex:1;">
-                    <span style="background:rgba(255,215,0,0.15);color:#FFD700;font-size:0.75em;font-weight:600;padding:2px 8px;border-radius:20px;">${caso.area}</span>
-                    <p style="color:white;font-weight:600;margin:8px 0 4px;font-size:0.9em;">${caso.problema}</p>
-                    <p style="color:rgba(255,255,255,0.6);font-size:0.82em;margin:0 0 8px;line-height:1.5;">${caso.solucion}</p>
-                    <p style="color:rgba(255,255,255,0.3);font-size:0.75em;margin:0;">Palabras clave: ${caso.keywords.join(', ')}</p>
-                </div>
-                <button onclick="deleteKBCase(${caso.id})" style="background:rgba(255,100,100,0.2);border:1px solid rgba(255,100,100,0.3);color:#fca5a5;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:0.8em;flex-shrink:0;">Eliminar</button>
-            </div>
-        </div>
-    `).join('');
-}
-
-async function saveKBToGitHub() {
-    const shaRes = await fetch('https://api.github.com/repos/' + GITHUB_USER + '/' + GITHUB_REPO + '/contents/knowledge.json', {
-        headers: { 'Authorization': 'token ' + githubConfig.token }
-    });
-    const shaData = await shaRes.json();
-    kbData.updated = new Date().toISOString().split('T')[0];
-    await fetch('https://api.github.com/repos/' + GITHUB_USER + '/' + GITHUB_REPO + '/contents/knowledge.json', {
-        method: 'PUT',
-        headers: { 'Authorization': 'token ' + githubConfig.token, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            message: 'feat: actualizar knowledge base',
-            content: btoa(unescape(encodeURIComponent(JSON.stringify(kbData, null, 2)))),
-            sha: shaData.sha
-        })
-    });
-}
-
-async function addKBCase() {
-    const problema = document.getElementById('kb-problema').value.trim();
-    const keywords = document.getElementById('kb-keywords').value.trim();
-    const solucion = document.getElementById('kb-solucion').value.trim();
-    const area     = document.getElementById('kb-area').value;
-    const status   = document.getElementById('kb-status');
-    if (!problema || !keywords || !solucion) { status.style.color='#fca5a5'; status.textContent='Completa todos los campos.'; return; }
-    status.style.color='#93c5fd'; status.textContent='Guardando...';
-    kbData.casos.push({ id: Date.now(), problema, keywords: keywords.split(',').map(k=>k.trim()).filter(Boolean), solucion, area, resuelto: true });
-    try {
-        await saveKBToGitHub();
-        status.style.color='#6ee7b7'; status.textContent='Caso guardado correctamente.';
-        document.getElementById('kb-problema').value='';
-        document.getElementById('kb-keywords').value='';
-        document.getElementById('kb-solucion').value='';
-        renderKBList();
-    } catch(e) { status.style.color='#fca5a5'; status.textContent='Error al guardar.'; kbData.casos.pop(); }
-}
-
-async function deleteKBCase(id) {
-    if (!confirm('Eliminar este caso?')) return;
-    kbData.casos = kbData.casos.filter(c => c.id !== id);
-    try { await saveKBToGitHub(); renderKBList(); } catch(e) { alert('Error al eliminar.'); }
-}
-// ── FIN BASE DE CONOCIMIENTO ─────────────────────────────────────────────────
 
 init();
 
