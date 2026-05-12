@@ -1134,265 +1134,70 @@ init();
 </script>
 
 <script>
-// ─── CANVAS ANIMADO LOGIN (motor idéntico al index.html) ─────────────────────
+// ─── CANVAS PARTÍCULAS LOGIN ─────────────────────────────────────────────────
 (function() {
-    const NAVY = '#152c6e';
-    const GOLD = '#FFD700';
-    const BLUE_LIGHT = '#4a90d9';
-    const TEAL = '#00ced1';
-    const CORAL = '#ff6b6b';
-    const GREEN = '#3DD68C';
-    const chartColors = [GOLD, BLUE_LIGHT, TEAL, CORAL, GREEN];
-
-    function roundRect(ctx, x, y, w, h, r) {
-        ctx.beginPath();
-        ctx.moveTo(x+r, y);
-        ctx.lineTo(x+w-r, y); ctx.quadraticCurveTo(x+w, y, x+w, y+r);
-        ctx.lineTo(x+w, y+h-r); ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
-        ctx.lineTo(x+r, y+h); ctx.quadraticCurveTo(x, y+h, x, y+h-r);
-        ctx.lineTo(x, y+r); ctx.quadraticCurveTo(x, y, x+r, y);
-        ctx.closePath();
-    }
+    const colors = ['#FFD700','#229ED9','#00ced1','#ff6b6b','#3DD68C'];
 
     function initCanvas(canvasId, overlayId) {
         const overlay = document.getElementById(overlayId);
         const canvas  = document.getElementById(canvasId);
         if (!canvas || !overlay) return;
         const ctx = canvas.getContext('2d');
-        let W, H, panels = [], particles = [], gridLines = [];
-        let animId, frame = 0;
+        let W, H, particles = [], raf;
 
         function resize() {
-            const dpr = window.devicePixelRatio || 1;
-            W = overlay.offsetWidth  || window.innerWidth;
-            H = overlay.offsetHeight || window.innerHeight;
-            canvas.width  = W * dpr;
-            canvas.height = H * dpr;
-            canvas.style.width  = W + 'px';
-            canvas.style.height = H + 'px';
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            init();
+            W = canvas.width  = overlay.offsetWidth  || window.innerWidth;
+            H = canvas.height = overlay.offsetHeight || window.innerHeight;
+            initParticles();
         }
 
-        function createPanel(stagger, cellX, cellY, maxW, maxH, goRight) {
-            const types = ['bar','line','area','donut','gauge','scatter','hbar','kpi','heatmap','pie'];
-            const type = types[Math.floor(Math.random() * types.length)];
-            const w = Math.random() * (maxW * 0.4) + maxW * 0.5;
-            let h = type === 'kpi' ? (Math.random() * 40 + 50) : (Math.random() * (maxH * 0.4) + maxH * 0.4);
-            if (type === 'heatmap') h = Math.min(h, 120);
-            const x = cellX + (maxW - w) / 2 + (Math.random() - 0.5) * 20;
-            const y = cellY + (maxH - h) / 2 + (Math.random() - 0.5) * 20;
-            return {
-                type, x, y, w, h,
-                cellX: cellX||0, cellY: cellY||0, cellW: maxW||w, cellH: maxH||h,
-                color: chartColors[Math.floor(Math.random()*chartColors.length)],
-                color2: chartColors[Math.floor(Math.random()*chartColors.length)],
-                opacity: 0,
-                targetOpacity: Math.random() * 0.12 + 0.06,
-                age: stagger ? -Math.floor(Math.random() * 200) : 0,
-                maxAge: Math.random() * 800 + 400,
-                phase: Math.random() * Math.PI * 2,
-                driftX: goRight ? (Math.random()*0.1+0.03) : -(Math.random()*0.1+0.03),
-                driftY: (Math.random()-0.5)*0.04,
-                goRight,
-                rotation: (Math.random()-0.5)*0.03,
-                bars: Math.floor(Math.random()*7)+4,
-                barVals: Array.from({length:12},()=>Math.random()*0.7+0.3),
-                lineData: Array.from({length:10},()=>Math.random()),
-                scatterData: Array.from({length:15},()=>({x:Math.random(),y:Math.random(),r:Math.random()*3+1})),
-                kpiValue: Math.floor(Math.random()*9000+1000),
-                kpiLabel: ['Ingresos','Clientes','ADT','Salas','Visitas','Revenue'][Math.floor(Math.random()*6)],
-                gaugeValue: Math.random()*0.7+0.3,
-                heatmapData: Array.from({length:42},()=>Math.random()),
-                heatmapCols: 7, heatmapRows: 6,
-                pieSlices: Array.from({length:Math.floor(Math.random()*3)+3},()=>Math.random()).map((v,i,a)=>{const s=a.reduce((x,y)=>x+y,0);return v/s;}),
-                cornerRadius: 8
-            };
-        }
-
-        function init() {
-            panels=[]; particles=[]; gridLines=[];
+        function initParticles() {
             const isMobile = W < 768;
-            const panelCount = isMobile ? 4 : 8;
-            const cols = isMobile ? 2 : 4;
-            const rows = Math.ceil(panelCount/cols);
-            const cellW = W/cols, cellH = H/rows;
-            const margin = 15;
-            for (let i=0; i<panelCount; i++) {
-                const col=i%cols, row=Math.floor(i/cols);
-                panels.push(createPanel(true, col*cellW+margin, row*cellH+margin, cellW-margin*2, cellH-margin*2, i%2===0));
-            }
-            const particleCount = isMobile?20:50;
-            for (let i=0; i<particleCount; i++) {
-                const isLeft = i < Math.floor(particleCount/2);
-                const hx = isLeft ? Math.random()*W*0.5 : W*0.5+Math.random()*W*0.5;
-                particles.push({ x:hx, y:Math.random()*H, r:Math.random()*1.5+0.5,
-                    speedY:-(Math.random()*0.4+0.1), speedX:0,
-                    opacity:Math.random()*0.3+0.1,
-                    color:chartColors[Math.floor(Math.random()*chartColors.length)],
-                    pulse:Math.random()*Math.PI*2, homeX:hx });
-            }
-            for (let i=0; i<12; i++) {
-                gridLines.push({y:Math.random()*H, opacity:Math.random()*0.04+0.01, speed:Math.random()*0.1+0.02});
-            }
-        }
-
-        function drawPanel(p, t) {
-            if (p.age < 0) return;
-            const progress = Math.min(p.age/80,1);
-            const fadeIn = Math.min(p.age/40,1);
-            const fadeOut = p.age>p.maxAge ? Math.max(0,1-(p.age-p.maxAge)/60) : 1;
-            const alpha = p.targetOpacity*fadeIn*fadeOut;
-            if (alpha<=0) return;
-            ctx.save();
-            ctx.translate(p.x+p.w/2,p.y+p.h/2);
-            ctx.rotate(p.rotation*Math.sin(t*0.002+p.phase));
-            ctx.translate(-(p.x+p.w/2),-(p.y+p.h/2));
-            ctx.globalAlpha=alpha*0.5; ctx.fillStyle='rgba(21,44,110,0.4)';
-            roundRect(ctx,p.x,p.y,p.w,p.h,p.cornerRadius); ctx.fill();
-            ctx.globalAlpha=alpha*0.6; ctx.strokeStyle='rgba(255,255,255,0.08)'; ctx.lineWidth=1;
-            roundRect(ctx,p.x,p.y,p.w,p.h,p.cornerRadius); ctx.stroke();
-            ctx.globalAlpha=alpha*0.7; ctx.fillStyle='rgba(255,255,255,0.15)';
-            roundRect(ctx,p.x+10,p.y+8,p.w*0.4,6,3); ctx.fill();
-            const cX=p.x+10, cY=p.y+22, cW=p.w-20, cH=p.h-32;
-            ctx.globalAlpha=alpha;
-            switch(p.type){
-                case 'bar':     drawBars(p,cX,cY,cW,cH,t,progress); break;
-                case 'line':    drawLine(p,cX,cY,cW,cH,t,progress); break;
-                case 'area':    drawArea(p,cX,cY,cW,cH,t,progress); break;
-                case 'donut':   drawDonut(p,cX,cY,cW,cH,t,progress); break;
-                case 'gauge':   drawGauge(p,cX,cY,cW,cH,t,progress); break;
-                case 'scatter': drawScatter(p,cX,cY,cW,cH,t,progress); break;
-                case 'hbar':    drawHBars(p,cX,cY,cW,cH,t,progress); break;
-                case 'kpi':     drawKPI(p,t,progress); break;
-                case 'heatmap': drawHeatmap(p,cX,cY,cW,cH,t,progress); break;
-                case 'pie':     drawPie(p,cX,cY,cW,cH,t,progress); break;
-            }
-            ctx.restore();
-        }
-
-        function drawBars(p,x,y,w,h,t,prog){
-            const n=p.bars, barW=w/(n*1.6), gap=barW*0.6;
-            ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=0.5;
-            ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,y+h); ctx.lineTo(x+w,y+h); ctx.stroke();
-            for(let g=0;g<3;g++){const gy=y+h*(g+1)/4;ctx.globalAlpha*=0.5;ctx.beginPath();ctx.moveTo(x,gy);ctx.lineTo(x+w,gy);ctx.stroke();ctx.globalAlpha*=2;}
-            for(let i=0;i<n;i++){
-                const bx=x+5+i*(barW+gap);
-                const wave=Math.sin(t*0.012+p.phase+i*0.6)*0.12+0.88;
-                const bh=p.barVals[i]*h*0.85*prog*wave;
-                const grad=ctx.createLinearGradient(bx,y+h,bx,y+h-bh);
-                grad.addColorStop(0,p.color+'40'); grad.addColorStop(1,p.color+'10');
-                ctx.fillStyle=grad; ctx.fillRect(bx,y+h-bh,barW,bh);
-                ctx.fillStyle=p.color; ctx.globalAlpha*=1.5; ctx.fillRect(bx,y+h-bh,barW,2); ctx.globalAlpha/=1.5;
-            }
-        }
-        function drawLine(p,x,y,w,h,t,prog){
-            const pts=p.lineData, step=w/(pts.length-1), visible=Math.floor(pts.length*prog);
-            ctx.strokeStyle='rgba(255,255,255,0.04)'; ctx.lineWidth=0.5;
-            for(let g=0;g<4;g++){const gy=y+h*g/4;ctx.beginPath();ctx.moveTo(x,gy);ctx.lineTo(x+w,gy);ctx.stroke();}
-            ctx.strokeStyle=p.color; ctx.lineWidth=1.8; ctx.lineJoin='round';
-            ctx.beginPath();
-            for(let i=0;i<=visible;i++){const px=x+i*step,wave=Math.sin(t*0.008+p.phase+i*0.3)*0.08,py=y+h-(pts[i]+wave)*h*0.8;i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);}
-            ctx.stroke();
-            ctx.strokeStyle=p.color+'30'; ctx.lineWidth=4; ctx.stroke();
-            for(let i=0;i<=visible;i++){const px=x+i*step,wave=Math.sin(t*0.008+p.phase+i*0.3)*0.08,py=y+h-(pts[i]+wave)*h*0.8;ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(px,py,2.5,0,Math.PI*2);ctx.fill();ctx.fillStyle=NAVY;ctx.beginPath();ctx.arc(px,py,1,0,Math.PI*2);ctx.fill();}
-        }
-        function drawArea(p,x,y,w,h,t,prog){
-            const pts=p.lineData,step=w/(pts.length-1),visible=Math.floor(pts.length*prog);
-            const grad=ctx.createLinearGradient(x,y,x,y+h);grad.addColorStop(0,p.color+'25');grad.addColorStop(1,p.color+'02');
-            ctx.fillStyle=grad;ctx.beginPath();ctx.moveTo(x,y+h);
-            for(let i=0;i<=visible;i++){const px=x+i*step,wave=Math.sin(t*0.006+p.phase+i*0.4)*0.06,py=y+h-(pts[i]+wave)*h*0.8;ctx.lineTo(px,py);}
-            ctx.lineTo(x+visible*step,y+h);ctx.closePath();ctx.fill();
-            ctx.strokeStyle=p.color;ctx.lineWidth=1.5;ctx.beginPath();
-            for(let i=0;i<=visible;i++){const px=x+i*step,wave=Math.sin(t*0.006+p.phase+i*0.4)*0.06,py=y+h-(pts[i]+wave)*h*0.8;i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);}
-            ctx.stroke();
-        }
-        function drawDonut(p,x,y,w,h,t,prog){
-            const cx=x+w/2,cy=y+h/2,r=Math.min(w,h)*0.38,segs=[0.32,0.24,0.22,0.12,0.10];
-            let angle=-Math.PI/2+t*0.003;
-            segs.forEach((seg,i)=>{const end=angle+seg*Math.PI*2*prog,col=chartColors[(i+Math.floor(p.phase))%chartColors.length];ctx.strokeStyle=col;ctx.lineWidth=r*0.3;ctx.lineCap='butt';ctx.beginPath();ctx.arc(cx,cy,r,angle,end);ctx.stroke();ctx.strokeStyle=col+'20';ctx.lineWidth=r*0.45;ctx.beginPath();ctx.arc(cx,cy,r,angle,end);ctx.stroke();angle=end+0.03;});
-            ctx.fillStyle='rgba(21,44,110,0.6)';ctx.beginPath();ctx.arc(cx,cy,r*0.55,0,Math.PI*2);ctx.fill();
-            ctx.fillStyle='rgba(255,255,255,0.12)';roundRect(ctx,cx-15,cy-4,30,8,4);ctx.fill();
-        }
-        function drawGauge(p,x,y,w,h,t,prog){
-            const cx=x+w/2,cy=y+h*0.65,r=Math.min(w,h)*0.4,startA=Math.PI*0.8,endA=Math.PI*2.2;
-            ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=r*0.2;ctx.lineCap='round';ctx.beginPath();ctx.arc(cx,cy,r,startA,endA);ctx.stroke();
-            const valAngle=startA+(endA-startA)*p.gaugeValue*prog,wave=Math.sin(t*0.01+p.phase)*0.03;
-            const grad=ctx.createLinearGradient(cx-r,cy,cx+r,cy);grad.addColorStop(0,GREEN);grad.addColorStop(0.5,GOLD);grad.addColorStop(1,CORAL);
-            ctx.strokeStyle=grad;ctx.lineWidth=r*0.2;ctx.beginPath();ctx.arc(cx,cy,r,startA,valAngle+wave);ctx.stroke();
-            ctx.strokeStyle=p.color+'15';ctx.lineWidth=r*0.35;ctx.beginPath();ctx.arc(cx,cy,r,startA,valAngle+wave);ctx.stroke();
-        }
-        function drawScatter(p,x,y,w,h,t,prog){
-            ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+h);ctx.lineTo(x+w,y+h);ctx.stroke();
-            const visible=Math.floor(p.scatterData.length*prog);
-            for(let i=0;i<visible;i++){const pt=p.scatterData[i],px=x+pt.x*w,py=y+h-pt.y*h*0.9,wave=Math.sin(t*0.015+i)*2,col=chartColors[i%chartColors.length];ctx.fillStyle=col+'15';ctx.beginPath();ctx.arc(px+wave,py,pt.r*3,0,Math.PI*2);ctx.fill();ctx.fillStyle=col;ctx.beginPath();ctx.arc(px+wave,py,pt.r,0,Math.PI*2);ctx.fill();}
-        }
-        function drawHBars(p,x,y,w,h,t,prog){
-            const n=Math.min(p.bars,5),barH=h/(n*1.5),gap=barH*0.5;
-            for(let i=0;i<n;i++){const by=y+5+i*(barH+gap),wave=Math.sin(t*0.01+p.phase+i*0.5)*0.08+0.92,bw=p.barVals[i]*w*0.9*prog*wave;const grad=ctx.createLinearGradient(x,by,x+bw,by);grad.addColorStop(0,p.color+'08');grad.addColorStop(1,p.color+'35');ctx.fillStyle=grad;roundRect(ctx,x,by,bw,barH,3);ctx.fill();ctx.fillStyle=p.color;roundRect(ctx,x+bw-2,by,2,barH,1);ctx.fill();ctx.fillStyle='rgba(255,255,255,0.06)';roundRect(ctx,x+bw+5,by+barH/2-2,20,4,2);ctx.fill();}
-        }
-        function drawKPI(p,t,prog){
-            ctx.save();ctx.globalAlpha=p.targetOpacity*Math.min(p.age/40,1)*(p.age>p.maxAge?Math.max(0,1-(p.age-p.maxAge)/60):1);
-            ctx.fillStyle='rgba(21,44,110,0.5)';roundRect(ctx,p.x,p.y,p.w,p.h,p.cornerRadius);ctx.fill();
-            ctx.strokeStyle=p.color+'30';ctx.lineWidth=1;roundRect(ctx,p.x,p.y,p.w,p.h,p.cornerRadius);ctx.stroke();
-            ctx.fillStyle=p.color+'50';ctx.font='bold '+(p.h*0.35)+'px Arial';ctx.textAlign='center';ctx.fillText(Math.floor(p.kpiValue*prog).toLocaleString(),p.x+p.w/2,p.y+p.h*0.5);
-            ctx.fillStyle='rgba(255,255,255,0.1)';ctx.font=(p.h*0.16)+'px Arial';ctx.fillText(p.kpiLabel,p.x+p.w/2,p.y+p.h*0.75);
-            const sparkY=p.y+p.h*0.82,sparkW=p.w*0.5,sparkX=p.x+p.w*0.25;ctx.strokeStyle=p.color+'20';ctx.lineWidth=1;ctx.beginPath();
-            for(let i=0;i<8;i++){const sx=sparkX+(i/7)*sparkW,sy=sparkY-Math.sin(t*0.01+p.phase+i*0.5)*4-2;i===0?ctx.moveTo(sx,sy):ctx.lineTo(sx,sy);}
-            ctx.stroke();ctx.restore();
-        }
-        function drawHeatmap(p,x,y,w,h,t,prog){
-            const cols=p.heatmapCols,rows=p.heatmapRows,cellW=(w-4)/cols,cellH=(h-4)/rows,visible=Math.floor(p.heatmapData.length*prog);
-            for(let i=0;i<visible;i++){const col=i%cols,row=Math.floor(i/cols),cx2=x+2+col*cellW,cy2=y+2+row*cellH,val=p.heatmapData[i],wave=Math.sin(t*0.008+p.phase+i*0.3)*0.12,intensity=Math.min(1,Math.max(0,val+wave));let r2,g,b;if(intensity<0.5){const t2=intensity*2;r2=Math.floor(74+t2*(255-74));g=Math.floor(144+t2*(215-144));b=Math.floor(217+t2*(0-217));}else{const t2=(intensity-0.5)*2;r2=255;g=Math.floor(215-t2*108);b=Math.floor(t2*107);}ctx.fillStyle='rgba('+r2+','+g+','+b+',0.5)';roundRect(ctx,cx2+1,cy2+1,cellW-2,cellH-2,2);ctx.fill();}
-        }
-        function drawPie(p,x,y,w,h,t,prog){
-            const cx=x+w/2,cy=y+h/2,r=Math.min(w,h)*0.42;let angle=-Math.PI/2+t*0.002;
-            p.pieSlices.forEach((slice,i)=>{const sliceAngle=slice*Math.PI*2*prog,endAngle=angle+sliceAngle,col=chartColors[i%chartColors.length];ctx.fillStyle=col+'45';ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,angle,endAngle);ctx.closePath();ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,angle,endAngle);ctx.closePath();ctx.stroke();if(prog>0.8){const midAngle=angle+sliceAngle/2,lx1=cx+Math.cos(midAngle)*r*0.7,ly1=cy+Math.sin(midAngle)*r*0.7,lx2=cx+Math.cos(midAngle)*r*1.15,ly2=cy+Math.sin(midAngle)*r*1.15;ctx.strokeStyle=col+'40';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(lx1,ly1);ctx.lineTo(lx2,ly2);ctx.stroke();ctx.fillStyle=col;ctx.beginPath();ctx.arc(lx2,ly2,1.5,0,Math.PI*2);ctx.fill();}angle=endAngle;});
-            const grd=ctx.createRadialGradient(cx,cy,0,cx,cy,r*0.3);grd.addColorStop(0,'rgba(21,44,110,0.3)');grd.addColorStop(1,'rgba(21,44,110,0)');ctx.fillStyle=grd;ctx.beginPath();ctx.arc(cx,cy,r*0.3,0,Math.PI*2);ctx.fill();
-        }
-
-        function drawConnections(t) {
-            const alive=panels.filter(p=>p.age>0&&p.opacity>0);
-            for(let i=0;i<alive.length;i++){for(let j=i+1;j<alive.length;j++){const a=alive[i],b=alive[j],dx=(a.x+a.w/2)-(b.x+b.w/2),dy=(a.y+a.h/2)-(b.y+b.h/2),dist=Math.sqrt(dx*dx+dy*dy);if(dist<250){ctx.globalAlpha=(1-dist/250)*0.03;ctx.strokeStyle='rgba(255,215,0,0.5)';ctx.lineWidth=0.5;ctx.setLineDash([4,8]);ctx.beginPath();ctx.moveTo(a.x+a.w/2,a.y+a.h/2);ctx.lineTo(b.x+b.w/2,b.y+b.h/2);ctx.stroke();ctx.setLineDash([]);}}}
+            const count = isMobile ? 25 : 55;
+            particles = Array.from({length: count}, () => ({
+                x: Math.random() * W,
+                y: Math.random() * H,
+                r: Math.random() * 3 + 0.5,
+                vy: -(Math.random() * 0.5 + 0.1),
+                vx: (Math.random() - 0.5) * 0.15,
+                opacity: Math.random() * 0.35 + 0.08,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                pulse: Math.random() * Math.PI * 2
+            }));
         }
 
         function animate() {
-            ctx.clearRect(0,0,W,H); frame++;
-            ctx.globalAlpha=1;
-            gridLines.forEach(gl=>{gl.y+=gl.speed;if(gl.y>H)gl.y=0;ctx.globalAlpha=gl.opacity;ctx.strokeStyle='rgba(255,255,255,0.5)';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(0,gl.y);ctx.lineTo(W,gl.y);ctx.stroke();});
-            drawConnections(frame);
-            panels.forEach((p,i)=>{
-                p.age++; p.x+=p.driftX+Math.sin(frame*0.002+p.phase)*0.05; p.y+=p.driftY+Math.cos(frame*0.0015+p.phase)*0.03;
-                if(p.age>0&&p.age<40) p.opacity=p.targetOpacity*(p.age/40);
-                else if(p.age>=40&&p.age<=p.maxAge) p.opacity=p.targetOpacity;
-                else if(p.age>p.maxAge){p.opacity=p.targetOpacity*Math.max(0,1-(p.age-p.maxAge)/80);if(p.opacity<=0)panels[i]=createPanel(false,p.cellX,p.cellY,p.cellW,p.cellH,!p.goRight);}
-                if(p.age>0) drawPanel(p,frame);
+            ctx.clearRect(0, 0, W, H);
+            particles.forEach(p => {
+                p.y  += p.vy;
+                p.x  += p.vx;
+                p.pulse += 0.02;
+                if (p.y < -10) { p.y = H + 5; p.x = Math.random() * W; }
+                if (p.x < -5)  p.x = W + 5;
+                if (p.x > W+5) p.x = -5;
+                const flicker = Math.sin(p.pulse) * 0.1 + 0.9;
+                ctx.globalAlpha = p.opacity * flicker;
+                ctx.fillStyle = p.color;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+                ctx.globalAlpha = p.opacity * flicker * 0.25;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2); ctx.fill();
             });
-            particles.forEach(pt=>{
-                pt.y+=pt.speedY; pt.x+=Math.sin(frame*0.005+pt.pulse)*0.12; pt.pulse+=0.02;
-                if(pt.y<-10){pt.y=H+10;pt.x=pt.homeX+(Math.random()-0.5)*W*0.15;}
-                const flicker=Math.sin(frame*0.03+pt.pulse)*0.1+0.9;
-                ctx.globalAlpha=pt.opacity*flicker; ctx.fillStyle=pt.color;
-                ctx.beginPath(); ctx.arc(pt.x,pt.y,pt.r,0,Math.PI*2); ctx.fill();
-                ctx.globalAlpha=pt.opacity*flicker*0.3; ctx.beginPath(); ctx.arc(pt.x,pt.y,pt.r*3,0,Math.PI*2); ctx.fill();
-            });
-            ctx.globalAlpha=1;
-            animId=requestAnimationFrame(animate);
+            ctx.globalAlpha = 1;
+            raf = requestAnimationFrame(animate);
         }
 
-        // Observar cuando el overlay se hace visible
         const obs = new MutationObserver(() => {
             const visible = overlay.style.display !== 'none' && overlay.style.display !== '';
-            if (visible && !animId) { resize(); animId=requestAnimationFrame(animate); }
-            else if (!visible && animId) { cancelAnimationFrame(animId); animId=null; frame=0; }
+            if (visible && !raf) { resize(); raf = requestAnimationFrame(animate); }
+            else if (!visible && raf) { cancelAnimationFrame(raf); raf = null; }
         });
-        obs.observe(overlay, {attributes:true, attributeFilter:['style']});
-        window.addEventListener('resize', ()=>{ resize(); });
-        if (overlay.style.display && overlay.style.display !== 'none') { resize(); animId=requestAnimationFrame(animate); }
+        obs.observe(overlay, { attributes: true, attributeFilter: ['style'] });
+        window.addEventListener('resize', resize);
+        if (overlay.style.display && overlay.style.display !== 'none') { resize(); raf = requestAnimationFrame(animate); }
     }
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', ()=>{
+        document.addEventListener('DOMContentLoaded', () => {
             initCanvas('loginCanvas',  'activationScreen');
             initCanvas('loginCanvas2', 'loginOverlay');
         });
