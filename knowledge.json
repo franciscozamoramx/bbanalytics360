@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "updated": "2026-05-11",
+  "updated": "2026-05-12",
   "casos": [
     {
       "id": 1,
@@ -41,7 +41,7 @@
         "no está",
         "no se ve"
       ],
-      "solucion": "Cierra sesión y vuelve a entrar para refrescar los permisos. Si sigue sin aparecer, verifica con Francisco Zamora que el acceso fue guardado correctamente en el sistema.",
+      "solucion": "Cierra sesión y vuelve a entrar para refrescar los permisos. Si sigue sin aparecer, verifica con Francisco Zamora que el acceso fue guardado correctamente en el sistema, puedes contactarlo desde el menú → botón WhatsApp.",
       "area": "Accesos",
       "resuelto": true
     },
