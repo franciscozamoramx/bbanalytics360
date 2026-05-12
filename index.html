@@ -172,6 +172,20 @@
             opacity: 0.7;
             cursor: not-allowed;
         }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+            transform: skewX(-20deg);
+            animation: shimmer 3s 1s infinite;
+        }
+        @keyframes shimmer {
+            0%        { left: -100%; }
+            40%, 100% { left: 150%; }
+        }
         
         .login-form {
             display: flex;
