@@ -308,6 +308,22 @@ const EMAILJS_TEMPLATE_USUARIO      = 'template_x3alsku';    // Plantilla unific
 const EMAILJS_TEMPLATE_NUEVO_ACCESO = EMAILJS_TEMPLATE_USUARIO;
 emailjs.init(EMAILJS_PUBLIC_KEY);
 
+async function sendEmail(templateId, params) {
+    const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            service_id:  EMAILJS_SERVICE_ID,
+            template_id: templateId,
+            user_id:     EMAILJS_PUBLIC_KEY,
+            accessToken: 'LgojDH_NTX26avBTwMEFK',
+            template_params: params
+        })
+    });
+    if (!res.ok) throw new Error('EmailJS error: ' + res.status);
+    return res;
+}
+
 // ─── GITHUB SHARED CONFIG ─────────────────────────────────────────────────────
 // Token compartido — todos los admins pueden leer y escribir
 const GITHUB_SHARED_TOKEN = ['ghp_Ph3F','QlX17h7tgeHxxZKjX','IRA0RtvlX4DLfIG'].join('');
@@ -852,7 +868,7 @@ async function addUser() {
 
     // Enviar correo de bienvenida
     try {
-        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_USUARIO, {
+        await sendEmail(EMAILJS_TEMPLATE_USUARIO, {
             to_name:         namePart,
             to_email:        email,
             dashboards_list: dashNames,
@@ -915,7 +931,7 @@ async function saveEditedPerms(email,btn) {
 
         showAlert('✓ Permisos actualizados. Enviando notificación a '+email+'...','success');
         try {
-            await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_NUEVO_ACCESO, {
+            await sendEmail(EMAILJS_TEMPLATE_NUEVO_ACCESO, {
                 to_name:         namePart,
                 to_email:        email,
                 dashboards_list: dashNames,
@@ -1045,7 +1061,7 @@ async function createAdmin() {
     saveAdminsToGithub(admins);
     btn.disabled=true; btn.textContent='Enviando correo...';
     try {
-        await emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{to_name:name,to_email:email,activation_link:link});
+        await sendEmail(EMAILJS_TEMPLATE_ID,{to_name:name,to_email:email,activation_link:link});
         showAlert('Administrador creado y correo enviado a '+email,'success','alertContainerAdmins');
         document.getElementById('newAdminName').value='';
         document.getElementById('newAdminEmail').value='';
@@ -1062,7 +1078,7 @@ async function resendAdminEmail(email) {
     if(!admin){showAlert('No encontrado','error','alertContainerAdmins');return;}
     const tok=(await sha256(email+SECRET)).substring(0,40);
     const link=window.location.origin+window.location.pathname+'?token='+tok+'&em='+btoa(encodeURIComponent(email))+'&nm='+btoa(encodeURIComponent(admin.name));
-    try { await emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{to_name:admin.name,to_email:email,activation_link:link}); showAlert('Correo reenviado a '+email,'success','alertContainerAdmins'); }
+    try { await sendEmail(EMAILJS_TEMPLATE_ID,{to_name:admin.name,to_email:email,activation_link:link}); showAlert('Correo reenviado a '+email,'success','alertContainerAdmins'); }
     catch(err){ showAlert('Error al reenviar. Link: '+link,'warning','alertContainerAdmins'); }
 }
 
@@ -1080,7 +1096,7 @@ async function resetAdminPassword(email) {
     saveAdmins(admins); saveAdminsToGithub(admins);
     const tok=(await sha256(email+SECRET)).substring(0,40);
     const link=window.location.origin+window.location.pathname+'?token='+tok+'&em='+btoa(encodeURIComponent(email))+'&nm='+btoa(encodeURIComponent(admins[idx].name));
-    try { await emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{to_name:admins[idx].name,to_email:email,activation_link:link}); showAlert('Correo enviado a '+email,'success','alertContainerAdmins'); }
+    try { await sendEmail(EMAILJS_TEMPLATE_ID,{to_name:admins[idx].name,to_email:email,activation_link:link}); showAlert('Correo enviado a '+email,'success','alertContainerAdmins'); }
     catch(err){ showAlert('Error. Link: '+link,'warning','alertContainerAdmins'); }
     renderAdmins();
 }
