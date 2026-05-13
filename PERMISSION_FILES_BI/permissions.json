@@ -14,7 +14,8 @@
                 "proyectos",
                 "oficina_proyectos",
                 "logs_bi",
-                "aforo"
+                "aforo",
+                "incidencias_cat"
             ],
             "base_conocimiento": true
         },
