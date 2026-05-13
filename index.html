@@ -964,6 +964,7 @@
             "rtp": "https://app.powerbi.com/reportEmbed?reportId=01ac285e-618f-43de-be89-d62b1a46374c&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
             "seguimiento_auditores": "https://app.powerbi.com/reportEmbed?reportId=f298656f-f4fb-4110-9580-321f04c0cfd6&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
             "logs_bi": "https://app.powerbi.com/reportEmbed?reportId=36b35095-427f-4ded-82d4-27ce644ddeac&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
+            "incidencias_cat": "https://app.powerbi.com/reportEmbed?reportId=813562ad-c52b-41ff-8586-f210dcb8a584&groupId=656ca7ba-1f79-47d9-be99-0f52953b2dd7&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
 			"aforo": "https://app.powerbi.com/reportEmbed?reportId=416f739b-51f2-4696-a698-c45636691de6&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX"
         };
 
@@ -980,6 +981,7 @@
             "proyectos":            "https://app.powerbi.com/groups/me/reports/c2e5834e-4e3d-418c-a9dc-43e33d79a62e",
             "oficina_proyectos":         "https://app.powerbi.com/groups/bd6bb8c1-8457-4c0e-9cf2-eedd91672d1b/reports/fc5a0646-55ba-4b61-b478-0f015af3fd81",
             "logs_bi":              "https://app.powerbi.com/groups/me/reports/36b35095-427f-4ded-82d4-27ce644ddeac",
+            "incidencias_cat":       "https://app.powerbi.com/groups/656ca7ba-1f79-47d9-be99-0f52953b2dd7/reports/813562ad-c52b-41ff-8586-f210dcb8a584",
             "adt":                  "https://app.powerbi.com/groups/bd6bb8c1-8457-4c0e-9cf2-eedd91672d1b/reports/1149b379-aad5-4876-bfe6-c325dc89308f",
             "desempeno":            "https://app.powerbi.com/groups/bd6bb8c1-8457-4c0e-9cf2-eedd91672d1b/reports/28c07103-a77e-42f4-a9ca-7d9345b48131",
             "rtp":                  "https://app.powerbi.com/groups/bd6bb8c1-8457-4c0e-9cf2-eedd91672d1b/reports/01ac285e-618f-43de-be89-d62b1a46374c",
@@ -1005,6 +1007,7 @@
             "rtp": "RTP",
             "seguimiento_auditores": "Seguimiento de Auditores",
             "logs_bi": "Logs BB Analytics 360",
+			"incidencias_cat": "Incidencias CAT",
 			"aforo": "Aforo en salas"
         };
 
@@ -1026,6 +1029,7 @@
             "rtp": "fas fa-coins",
             "seguimiento_auditores": "fas fa-user-check",
             "logs_bi": "fas fa-clipboard-list",
+			"incidencias_cat": "fas fa-headset",
 			"aforo": "fas fa-users"
         };
 
@@ -1047,6 +1051,7 @@
             "diccionario": "https://i.postimg.cc/fy05qV9V/Diccionario.png",
             "seguimiento_auditores": "https://i.postimg.cc/W1cYKw8K/Seguimiento.png",
             "logs_bi": "https://i.postimg.cc/wM3nqxRV/Logs.png",
+			"incidencias_cat": "https://i.postimg.cc/cCPp95p6/Captura-de-pantalla-2026-05-13-165514.png",
 			"aforo": "https://i.postimg.cc/gkPbSG0Q/aforo.png"
         };
 
@@ -1068,6 +1073,7 @@
             "seguimiento_auditores": "Control de actividades de auditoría",
 			"diccionario": "Definiciones y métricas clave",
             "logs_bi": "Registro de accesos y actividad de BB Analytics 360",
+			"incidencias_cat": "Incidencias gestionadas por el Call Center",
 			"aforo": "Aforo electrónico en salas"
         };
 
@@ -2319,7 +2325,7 @@ REGLAS:
                 { key: 'comercial',  label: 'Comercial',  color: '#4A9EFF', dashboards: ['bigplayers', 'bolipoits', 'clientes'] },
                 { key: 'finanzas',   label: 'Finanzas',   color: '#B47FFF', dashboards: ['ingreso_tarjetas'] },
                 { key: 'productos',  label: 'Máquinas',  color: '#3DD68C', dashboards: ['adt', 'desempeno', 'rtp', 'aforo'] },
-                { key: 'ti',         label: 'TI',          color: '#FF7A6E', dashboards: ['inventario', 'proyectos', 'oficina_proyectos', 'logs_bi'] }
+                { key: 'ti',         label: 'TI',          color: '#FF7A6E', dashboards: ['inventario', 'proyectos', 'oficina_proyectos', 'logs_bi', 'incidencias_cat'] }
             ];
 
             const permSet = new Set(currentUserPermissions);
@@ -3585,7 +3591,7 @@ REGLAS:
                 { key: 'comercial',  label: 'Comercial',  color: '#4A9EFF', dashboards: ['bigplayers', 'bolipoits', 'clientes'] },
                 { key: 'finanzas',   label: 'Finanzas',   color: '#B47FFF', dashboards: ['ingreso_tarjetas'] },
                 { key: 'productos',  label: 'Máquinas',  color: '#3DD68C', dashboards: ['adt', 'desempeno', 'rtp', 'aforo'] },
-                { key: 'ti',         label: 'TI',          color: '#FF7A6E', dashboards: ['inventario', 'proyectos', 'oficina_proyectos', 'logs_bi'] }
+                { key: 'ti',         label: 'TI',          color: '#FF7A6E', dashboards: ['inventario', 'proyectos', 'oficina_proyectos', 'logs_bi', 'incidencias_cat'] }
             ];
 
             // Construir árbol por áreas
