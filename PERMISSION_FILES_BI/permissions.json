@@ -10,7 +10,8 @@
                 "diccionario",
                 "inventario",
                 "oficina_proyectos",
-                "logs_bi"
+                "logs_bi",
+                "incidencias_cat"
             ],
             "base_conocimiento": true
         },
