@@ -714,12 +714,12 @@ async function syncFromGithub() {
     } catch(e) { updateGithubStatus(false,'Error al sincronizar'); showAlert('⚠️ '+e.message,'error'); }
 }
 
-async function saveToGithub() {
+async function saveToGithub(silent = false) {
     // Garantizar token compartido si no hay uno propio
     if (!githubConfig.token) githubConfig.token = GITHUB_SHARED_TOKEN;
     if (!githubConfig.token) { showAlert('⚠️ Error de configuración','error'); return; }
     if (!githubConfig.sha)   { showAlert('⚠️ Sincroniza primero.','warning'); return; }
-    if (!confirm('¿Guardar cambios en GitHub?\n\nArchivo: '+githubConfig.file)) return;
+    if (!silent && !confirm('¿Guardar cambios en GitHub?\n\nArchivo: '+githubConfig.file)) return;
     updateGithubStatus(false,'Guardando...');
     try {
         const out = { users:{} };
@@ -919,9 +919,9 @@ async function saveEditedPerms(email,btn) {
     renderAll();
     m.remove();
 
-    // Guardar automáticamente en GitHub
+    // Guardar automáticamente en GitHub (silencioso, sin confirm)
     try {
-        await saveToGithub();
+        await saveToGithub(true);
     } catch(e) {
         showAlert('Error al guardar en GitHub: ' + e, 'error');
         return;
