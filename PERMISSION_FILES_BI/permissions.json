@@ -3,6 +3,7 @@
         "francisco.zamora@bigbola.com": {
             "dashboards": [
                 "principal",
+                "auditoria",
                 "bigplayers",
                 "bolipoits",
                 "desempeno",
