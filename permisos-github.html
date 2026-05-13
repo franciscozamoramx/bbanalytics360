@@ -309,7 +309,20 @@ const EMAILJS_TEMPLATE_NUEVO_ACCESO = EMAILJS_TEMPLATE_USUARIO;
 emailjs.init(EMAILJS_PUBLIC_KEY);
 
 async function sendEmail(templateId, params) {
-    return emailjs.send(EMAILJS_SERVICE_ID, templateId, params);
+    const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            lib_version:     '4.4.1',
+            user_id:         EMAILJS_PUBLIC_KEY,
+            service_id:      EMAILJS_SERVICE_ID,
+            template_id:     templateId,
+            template_params: params
+        })
+    });
+    const text = await res.text();
+    if (!res.ok) throw new Error('EmailJS ' + res.status + ': ' + text);
+    return text;
 }
 
 // ─── GITHUB SHARED CONFIG ─────────────────────────────────────────────────────
