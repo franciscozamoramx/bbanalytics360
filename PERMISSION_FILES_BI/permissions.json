@@ -32,7 +32,8 @@
                 "oficina_proyectos",
                 "rtp",
                 "logs_bi",
-                "aforo"
+                "aforo",
+                "incidencias_cat"
             ]
         },
         "rafael.blanco@bigbola.com": {
