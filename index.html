@@ -3234,21 +3234,6 @@ REGLAS:
             function toggleMobileSidebar() {
                 isSidebarOpen = !isSidebarOpen;
                 mobileSidebar.classList.toggle('active');
-                // Rotar isotipo al abrir el menú móvil
-                if (mobileSidebar.classList.contains('active')) {
-                    const logo = mobileSidebar.querySelector('.mobile-sidebar-logo');
-                    if (logo) { logo.classList.remove('spinning'); void logo.offsetWidth; logo.classList.add('spinning'); }
-                }
-
-                // Rotar cada 20 segundos si el menú móvil está abierto
-                if (!mobileSidebar._spinInterval) {
-                    mobileSidebar._spinInterval = setInterval(function() {
-                        if (mobileSidebar.classList.contains('active')) {
-                            const logo = mobileSidebar.querySelector('.mobile-sidebar-logo');
-                            if (logo) { logo.classList.remove('spinning'); void logo.offsetWidth; logo.classList.add('spinning'); }
-                        }
-                    }, 20000);
-                }
                 mobileOverlay.classList.toggle('active');
                 mobileIframeContainer.classList.toggle('sidebar-open');
             }
@@ -4867,13 +4852,6 @@ REGLAS:
                                 }
                             }
 
-                            // Rotar cada 20 segundos si el menú está abierto
-                            setInterval(function() {
-                                if (isSidebarOpen) {
-                                    const logo = sidebar.querySelector('.sidebar-logo');
-                                    if (logo) { logo.classList.remove('spinning'); void logo.offsetWidth; logo.classList.add('spinning'); }
-                                }
-                            }, 20000);
                             
                             function logout() {
                                 if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
