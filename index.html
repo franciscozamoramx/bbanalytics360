@@ -113,9 +113,17 @@
         }
         
         .logo {
-            max-width: 250px;
+            width: 120px;
+            height: 120px;
             margin: 0 auto 20px;
             display: block;
+            border-radius: 50%;
+            animation: logoSpin 60s linear infinite;
+        }
+        @keyframes logoSpin {
+            0%   { transform: rotate(0deg); }
+            1.67% { transform: rotate(360deg); }
+            100% { transform: rotate(360deg); }
         }
         
         h1 {
@@ -1075,7 +1083,7 @@
             "seguimiento_auditores": "Control de actividades de auditoría",
 			"diccionario": "Definiciones y métricas clave",
             "logs_bi": "Registro de accesos y actividad de BB Analytics 360",
-			"incidencias_cat": "Incidencias gestionadas por el Call Center",
+			"incidencias_cat": "Incidencias Gestionadas por el Centro de Atención al Cliente",
 			"aforo": "Aforo electrónico en salas"
         };
 
