@@ -113,17 +113,9 @@
         }
         
         .logo {
-            width: 120px;
-            height: 120px;
+            max-width: 250px;
             margin: 0 auto 20px;
             display: block;
-            border-radius: 50%;
-            animation: logoSpin 60s linear infinite;
-        }
-        @keyframes logoSpin {
-            0%   { transform: rotate(0deg); }
-            1.67% { transform: rotate(360deg); }
-            100% { transform: rotate(360deg); }
         }
         
         h1 {
@@ -2588,9 +2580,11 @@ REGLAS:
                     }
                     
                     .mobile-sidebar-logo {
-                        height: 60px;
-                        width: auto;
+                        height: 120px;
+                        width: 120px;
                         margin-bottom: 15px;
+                        border-radius: 50%;
+                        animation: sidebarSpin 60s linear infinite;
                     }
                     
                     .mobile-sidebar-title {
@@ -3814,9 +3808,16 @@ REGLAS:
                         }
                         
                         .sidebar-logo {
-                            height: 60px;
-                            width: auto;
+                            height: 120px;
+                            width: 120px;
                             margin-bottom: 15px;
+                            border-radius: 50%;
+                            animation: sidebarSpin 60s linear infinite;
+                        }
+                        @keyframes sidebarSpin {
+                            0%    { transform: rotate(0deg); }
+                            1.67% { transform: rotate(360deg); }
+                            100%  { transform: rotate(360deg); }
                         }
                         
                         .sidebar-title {
