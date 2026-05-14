@@ -2012,18 +2012,11 @@ REGLAS:
                 dashboardWindow.document.close();
                 dashboardWindow.focus();
 
-                // Ocultar pantalla de login — mostrar pantalla de espera
-                document.body.innerHTML = `
-                    <div style="position:fixed;inset:0;background:linear-gradient(135deg,#0f1e4a 0%,#152c6e 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Outfit','Segoe UI',sans-serif;color:white;z-index:9999;">
-                        <img src="./icon_crystal.png" style="width:100px;height:100px;margin-bottom:20px;animation:spin 3s linear infinite;">
-                        <style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>
-                        <h2 style="color:#FFD700;font-size:1.5em;margin-bottom:8px;">BB Analytics 360</h2>
-                        <p style="color:rgba(255,255,255,0.6);font-size:0.9em;">Dashboard abierto en otra ventana</p>
-                        <button onclick="location.reload()" style="margin-top:28px;padding:11px 28px;background:linear-gradient(145deg,#FFD700,#FF8C00);border:none;border-radius:50px;color:#152c6e;font-weight:700;font-size:0.95em;cursor:pointer;font-family:inherit;">
-                            ↩ Volver al inicio
-                        </button>
-                    </div>
-                `;
+                // Limpiar el formulario de login sin mostrar pantalla extra
+                document.getElementById('email').value = '';
+                showStatus('', '');
+                const userInfo = document.getElementById('userInfo');
+                if (userInfo) userInfo.style.display = 'none';
 
                 // Si el usuario cierra la ventana del dashboard, recarga el login
                 const checkClosed = setInterval(() => {
