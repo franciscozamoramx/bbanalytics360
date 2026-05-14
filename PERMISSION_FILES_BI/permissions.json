@@ -11,6 +11,7 @@
                 "inventario",
                 "oficina_proyectos",
                 "logs_bi",
+                "aforo",
                 "incidencias_cat"
             ],
             "base_conocimiento": true
