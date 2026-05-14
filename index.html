@@ -2584,8 +2584,9 @@ REGLAS:
                         width: 120px;
                         margin-bottom: 15px;
                         border-radius: 50%;
-                        animation: sidebarSpin 20s linear infinite;
+                        transition: transform 0s;
                     }
+                    .mobile-sidebar-logo.spinning { animation: sidebarSpin 1s linear 1; }
                     
                     .mobile-sidebar-title {
                         font-size: 18px;
@@ -3233,6 +3234,21 @@ REGLAS:
             function toggleMobileSidebar() {
                 isSidebarOpen = !isSidebarOpen;
                 mobileSidebar.classList.toggle('active');
+                // Rotar isotipo al abrir el menú móvil
+                if (mobileSidebar.classList.contains('active')) {
+                    const logo = mobileSidebar.querySelector('.mobile-sidebar-logo');
+                    if (logo) { logo.classList.remove('spinning'); void logo.offsetWidth; logo.classList.add('spinning'); }
+                }
+
+                // Rotar cada 20 segundos si el menú móvil está abierto
+                if (!mobileSidebar._spinInterval) {
+                    mobileSidebar._spinInterval = setInterval(function() {
+                        if (mobileSidebar.classList.contains('active')) {
+                            const logo = mobileSidebar.querySelector('.mobile-sidebar-logo');
+                            if (logo) { logo.classList.remove('spinning'); void logo.offsetWidth; logo.classList.add('spinning'); }
+                        }
+                    }, 20000);
+                }
                 mobileOverlay.classList.toggle('active');
                 mobileIframeContainer.classList.toggle('sidebar-open');
             }
@@ -3812,12 +3828,12 @@ REGLAS:
                             width: 120px;
                             margin-bottom: 15px;
                             border-radius: 50%;
-                            animation: sidebarSpin 20s linear infinite;
+                            transition: transform 0s;
                         }
+                        .sidebar-logo.spinning { animation: sidebarSpin 1s linear 1; }
                         @keyframes sidebarSpin {
-                            0%    { transform: rotate(0deg); }
-                            5%    { transform: rotate(360deg); }
-                            100%  { transform: rotate(360deg); }
+                            from { transform: rotate(0deg); }
+                            to   { transform: rotate(360deg); }
                         }
                         
                         .sidebar-title {
@@ -4844,7 +4860,20 @@ REGLAS:
                                 sidebar.classList.toggle('active');
                                 overlay.classList.toggle('active');
                                 iframeContainer.classList.toggle('sidebar-open');
+                                // Rotar isotipo al abrir
+                                if (isSidebarOpen) {
+                                    const logo = sidebar.querySelector('.sidebar-logo');
+                                    if (logo) { logo.classList.remove('spinning'); void logo.offsetWidth; logo.classList.add('spinning'); }
+                                }
                             }
+
+                            // Rotar cada 20 segundos si el menú está abierto
+                            setInterval(function() {
+                                if (isSidebarOpen) {
+                                    const logo = sidebar.querySelector('.sidebar-logo');
+                                    if (logo) { logo.classList.remove('spinning'); void logo.offsetWidth; logo.classList.add('spinning'); }
+                                }
+                            }, 20000);
                             
                             function logout() {
                                 if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
