@@ -465,7 +465,7 @@ async function saveEditCase(id, btn) {
         brains = Array.from({length:6}, () => ({
             x: Math.random()*W,
             y: H + Math.random()*H,
-            size: 22 + Math.random()*12,
+            size: 55 + Math.random()*10,
             vy: -(Math.random()*0.35+0.1),
             vx: (Math.random()-0.5)*0.12,
             op: Math.random()*0.15+0.05,
@@ -475,62 +475,62 @@ async function saveEditCase(id, btn) {
     }
 
     function drawBrain(x, y, size, alpha) {
-        const s = size / 40;
+        const s = size / 50;
         ctx.save();
         ctx.globalAlpha = alpha;
         ctx.strokeStyle = '#229ED9';
-        ctx.lineWidth = 1.4;
+        ctx.lineWidth = 1.5;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
 
-        // Hemisferio izquierdo
+        // Contorno exterior del cerebro (vista lateral)
         ctx.beginPath();
-        ctx.moveTo(x, y - 2*s);
-        ctx.bezierCurveTo(x - 2*s, y - 8*s, x - 10*s, y - 12*s, x - 14*s, y - 8*s);
-        ctx.bezierCurveTo(x - 20*s, y - 6*s, x - 20*s, y + 2*s, x - 16*s, y + 6*s);
-        ctx.bezierCurveTo(x - 14*s, y + 10*s, x - 10*s, y + 14*s, x - 6*s, y + 12*s);
-        ctx.bezierCurveTo(x - 3*s, y + 14*s, x - 1*s, y + 10*s, x, y + 8*s);
+        ctx.moveTo(x - 2*s, y + 18*s);       // base izq
+        ctx.bezierCurveTo(x - 12*s, y + 18*s, x - 22*s, y + 12*s, x - 22*s, y + 2*s);   // lado izq abajo
+        ctx.bezierCurveTo(x - 22*s, y - 8*s, x - 18*s, y - 16*s, x - 10*s, y - 20*s);   // lado izq arriba
+        ctx.bezierCurveTo(x - 4*s, y - 24*s, x + 4*s, y - 26*s, x + 10*s, y - 22*s);    // tope
+        ctx.bezierCurveTo(x + 18*s, y - 18*s, x + 22*s, y - 8*s, x + 20*s, y + 2*s);    // lado der arriba
+        ctx.bezierCurveTo(x + 18*s, y + 10*s, x + 12*s, y + 16*s, x + 6*s, y + 18*s);   // lado der abajo
+        ctx.bezierCurveTo(x + 2*s, y + 20*s, x + 2*s, y + 22*s, x + 2*s, y + 22*s);     // tronco der
+        ctx.bezierCurveTo(x + 2*s, y + 24*s, x - 4*s, y + 24*s, x - 4*s, y + 22*s);     // base tronco
+        ctx.bezierCurveTo(x - 4*s, y + 22*s, x - 4*s, y + 20*s, x - 2*s, y + 18*s);     // tronco izq
+        ctx.closePath();
         ctx.stroke();
 
-        // Hemisferio derecho
+        // Surco frontal superior
         ctx.beginPath();
-        ctx.moveTo(x, y - 2*s);
-        ctx.bezierCurveTo(x + 2*s, y - 8*s, x + 10*s, y - 12*s, x + 14*s, y - 8*s);
-        ctx.bezierCurveTo(x + 20*s, y - 6*s, x + 20*s, y + 2*s, x + 16*s, y + 6*s);
-        ctx.bezierCurveTo(x + 14*s, y + 10*s, x + 10*s, y + 14*s, x + 6*s, y + 12*s);
-        ctx.bezierCurveTo(x + 3*s, y + 14*s, x + 1*s, y + 10*s, x, y + 8*s);
+        ctx.moveTo(x - 8*s, y - 18*s);
+        ctx.bezierCurveTo(x - 4*s, y - 14*s, x - 6*s, y - 8*s, x - 10*s, y - 6*s);
         ctx.stroke();
 
-        // Línea central (surco interhemisférico)
+        // Surco central
         ctx.beginPath();
-        ctx.moveTo(x, y - 2*s);
-        ctx.bezierCurveTo(x - 1*s, y + 2*s, x + 1*s, y + 5*s, x, y + 8*s);
+        ctx.moveTo(x + 2*s, y - 22*s);
+        ctx.bezierCurveTo(x + 0*s, y - 14*s, x + 2*s, y - 6*s, x - 2*s, y + 0*s);
         ctx.stroke();
 
-        // Surcos hemisferio izquierdo
+        // Surco parietal
         ctx.beginPath();
-        ctx.moveTo(x - 12*s, y - 6*s);
-        ctx.bezierCurveTo(x - 10*s, y - 2*s, x - 10*s, y + 4*s, x - 12*s, y + 8*s);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(x - 6*s, y - 10*s);
-        ctx.bezierCurveTo(x - 5*s, y - 6*s, x - 5*s, y, x - 7*s, y + 4*s);
+        ctx.moveTo(x + 10*s, y - 16*s);
+        ctx.bezierCurveTo(x + 8*s, y - 8*s, x + 10*s, y - 2*s, x + 8*s, y + 6*s);
         ctx.stroke();
 
-        // Surcos hemisferio derecho
+        // Surco temporal superior
         ctx.beginPath();
-        ctx.moveTo(x + 12*s, y - 6*s);
-        ctx.bezierCurveTo(x + 10*s, y - 2*s, x + 10*s, y + 4*s, x + 12*s, y + 8*s);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(x + 6*s, y - 10*s);
-        ctx.bezierCurveTo(x + 5*s, y - 6*s, x + 5*s, y, x + 7*s, y + 4*s);
+        ctx.moveTo(x - 18*s, y + 0*s);
+        ctx.bezierCurveTo(x - 10*s, y - 2*s, x - 2*s, y + 2*s, x + 4*s, y + 0*s);
         ctx.stroke();
 
-        // Tronco encefálico
+        // Surco temporal inferior
         ctx.beginPath();
-        ctx.moveTo(x - 3*s, y + 12*s);
-        ctx.bezierCurveTo(x - 3*s, y + 16*s, x + 3*s, y + 16*s, x + 3*s, y + 12*s);
+        ctx.moveTo(x - 16*s, y + 8*s);
+        ctx.bezierCurveTo(x - 8*s, y + 6*s, x + 0*s, y + 8*s, x + 6*s, y + 6*s);
+        ctx.stroke();
+
+        // Surco occipital
+        ctx.beginPath();
+        ctx.moveTo(x + 14*s, y + 6*s);
+        ctx.bezierCurveTo(x + 16*s, y + 2*s, x + 18*s, y - 4*s, x + 16*s, y - 10*s);
         ctx.stroke();
 
         ctx.restore();
