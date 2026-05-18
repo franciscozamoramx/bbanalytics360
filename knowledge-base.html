@@ -528,7 +528,6 @@ async function saveEditCase(id, btn) {
             const flicker = Math.sin(b.pulse)*0.08+0.92;
             drawBrain(b.x, b.y, b.size, b.color, b.op * flicker);
         });
-        });
         raf = requestAnimationFrame(animate);
     }
 
