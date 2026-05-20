@@ -1468,7 +1468,8 @@
             const isTouch = (typeof window.orientation !== "undefined") ||
                             navigator.userAgent.indexOf('IEMobile') !== -1 ||
                             /android|iphone|ipad|ipod/.test(ua);
-            const isSmallScreen = window.innerWidth <= 768;
+            // Usar screen.width (físico) en lugar de innerWidth (afectado por zoom)
+            const isSmallScreen = screen.width <= 768;
             return isTouch || isSmallScreen;
         }
 
