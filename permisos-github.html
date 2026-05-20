@@ -730,10 +730,15 @@ async function saveToGithub(silent = false) {
     try {
         const out = { users:{} };
         Object.keys(permissionsData.users).forEach(e => {
-            out.users[e] = { dashboards: permissionsData.users[e] };
+            const userData = permissionsData.users[e];
+            const dashboards = Array.isArray(userData) ? userData : (userData.dashboards || []);
+            out.users[e] = { dashboards };
             const ud = permissionsData.usersData && permissionsData.usersData[e];
-            if (ud && ud.base_conocimiento) out.users[e].base_conocimiento = true;
-            if (ud && ud.aliases && ud.aliases.length > 0) out.users[e].aliases = ud.aliases;
+            // base_conocimiento
+            if ((userData.base_conocimiento) || (ud && ud.base_conocimiento)) out.users[e].base_conocimiento = true;
+            // aliases
+            const aliases = userData.aliases || (ud && ud.aliases);
+            if (aliases && aliases.length > 0) out.users[e].aliases = aliases;
         });
         const r = await fetch(`https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.file}`, {
             method:'PUT',
@@ -892,15 +897,18 @@ function deleteUser(email) {
     if (confirm('¿Eliminar a '+email+'?')) { delete permissionsData.users[email]; renderAll(); showAlert('✓ Usuario eliminado','success'); }
 }
 function togglePermission(email,id) {
-    const p=permissionsData.users[email],i=p.indexOf(id);
+    const user = permissionsData.users[email];
+    const p = Array.isArray(user) ? user : (user.dashboards || []);
+    const i=p.indexOf(id);
     if (i>-1) p.splice(i,1); else p.push(id);
+    if (!Array.isArray(user)) permissionsData.users[email].dashboards = p;
     renderAll(); showAlert('✓ Permiso actualizado','success');
 }
 function editUserPermissions(email) {
     const cur=permissionsData.users[email]||[];
     const userData = permissionsData.usersData && permissionsData.usersData[email] || {};
     const hasKB = userData.base_conocimiento || false;
-    const currentAliases = (permissionsData.users[email] && permissionsData.users[email].aliases || []).join(', ');
+    const currentAliases = (userData.aliases || (permissionsData.users[email] && permissionsData.users[email].aliases) || []).join(', ');
     const cbs=DASHBOARDS_CONFIG.map(d=>'<label class="checkbox-label"><input type="checkbox" value="'+d.id+'" '+(cur.includes(d.id)?'checked':'')+' class="edit-cb"><span>'+d.name+'</span></label>').join('');
     const kbCheck='<label class="checkbox-label" style="border:1px solid rgba(255,215,0,0.3);border-radius:8px;padding:8px 12px;background:rgba(255,215,0,0.07);"><input type="checkbox" value="base_conocimiento" '+(hasKB?'checked':'')+' id="edit-kb-cb"><span style="color:#FFD700;font-weight:600;">⚙️ Base de Conocimiento</span></label>';
     const aliasField='<div style="margin-bottom:14px;"><p style="color:rgba(255,255,255,0.5);font-size:0.8em;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Correos alias (opcional)</p><input id="edit-aliases" type="text" value="'+currentAliases+'" placeholder="alias1@bigbola.com, alias2@bigbola.com" style="width:100%;padding:9px 12px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:white;font-size:0.85em;font-family:inherit;outline:none;box-sizing:border-box;"><p style="color:rgba(255,255,255,0.3);font-size:0.75em;margin-top:5px;">Separa múltiples alias con coma. El usuario podrá iniciar sesión con cualquiera de ellos.</p></div>';
