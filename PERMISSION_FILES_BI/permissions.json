@@ -172,6 +172,15 @@
                 "principal",
                 "oficina_proyectos"
             ]
+        },
+        "felipe.lopez@bigbola.com": {
+            "dashboards": [
+                "clientes",
+                "desempeno",
+                "ingreso_tarjetas",
+                "promociones",
+                "aforo"
+            ]
         }
     }
 }
