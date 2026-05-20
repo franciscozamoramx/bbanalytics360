@@ -3,11 +3,20 @@
         "francisco.zamora@bigbola.com": {
             "dashboards": [
                 "principal",
+                "adt",
                 "auditoria",
                 "bigplayers",
+                "bolipoits",
+                "clientes",
                 "desempeno",
                 "diccionario",
+                "ingreso_tarjetas",
+                "inventario",
+                "promociones",
+                "proyectos",
                 "oficina_proyectos",
+                "rtp",
+                "seguimiento_auditores",
                 "logs_bi",
                 "aforo",
                 "incidencias_cat"
