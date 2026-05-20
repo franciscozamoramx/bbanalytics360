@@ -1702,6 +1702,7 @@
         // ── WIDGET CHATBOT IA EN PANTALLA PRINCIPAL ─────────────────────────
         function buildMainTelegramWidget(tgUser) {
             if (document.getElementById('tgWidgetMain')) return;
+            if (!document.body) { setTimeout(function(){ buildMainTelegramWidget(tgUser); }, 200); return; }
             const TG_BOT  = atob('ODYwOTMxNjM1ODpBQUYwdmZkcXVkUlFXR0hjLW9mZHJidUJfSFJDY1BqTGZxRQ==');
             const TG_CHAT = ['-100','3946550368'].join('');
             const ANTHROPIC_KEY = ['sk-ant-api03-','ZaEcZDwWiK4X03eCPIszWbK6eFhQo63zZBMuWYOO2rb2ASzx','fhLQjhM0JWTotGC49mn6xGGph1ujdrKvrzqbzg-gGwnSwAA'].join('');
@@ -2336,7 +2337,8 @@ REGLAS:
             const mobileHTML = generateMobileDashboardHTML();
             document.body.innerHTML = mobileHTML;
             initMobileDashboardFunctionality();
-            buildMainTelegramWidget(currentUser);
+            // Retrasar widget para garantizar que el DOM está completamente listo
+            setTimeout(function() { buildMainTelegramWidget(currentUser); }, 500);
 
             // Ocultar barra de direcciones automáticamente
             var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
