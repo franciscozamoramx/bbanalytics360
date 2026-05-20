@@ -678,10 +678,14 @@ function parseUsersFromJSON(data) {
         if (Array.isArray(v))                      r[email] = v;
         else if (v && Array.isArray(v.dashboards)) r[email] = v.dashboards;
         else                                        r[email] = [];
-        // Preservar base_conocimiento
+        // Preservar base_conocimiento y aliases
         if (v && v.base_conocimiento) {
             if (!permissionsData.usersData[email]) permissionsData.usersData[email] = {};
             permissionsData.usersData[email].base_conocimiento = true;
+        }
+        if (v && v.aliases && v.aliases.length > 0) {
+            if (!permissionsData.usersData[email]) permissionsData.usersData[email] = {};
+            permissionsData.usersData[email].aliases = v.aliases;
         }
     });
     return r;
@@ -727,10 +731,9 @@ async function saveToGithub(silent = false) {
         const out = { users:{} };
         Object.keys(permissionsData.users).forEach(e => {
             out.users[e] = { dashboards: permissionsData.users[e] };
-            // Preservar base_conocimiento si existe
-            if (permissionsData.usersData && permissionsData.usersData[e] && permissionsData.usersData[e].base_conocimiento) {
-                out.users[e].base_conocimiento = true;
-            }
+            const ud = permissionsData.usersData && permissionsData.usersData[e];
+            if (ud && ud.base_conocimiento) out.users[e].base_conocimiento = true;
+            if (ud && ud.aliases && ud.aliases.length > 0) out.users[e].aliases = ud.aliases;
         });
         const r = await fetch(`https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.file}`, {
             method:'PUT',
@@ -897,10 +900,12 @@ function editUserPermissions(email) {
     const cur=permissionsData.users[email]||[];
     const userData = permissionsData.usersData && permissionsData.usersData[email] || {};
     const hasKB = userData.base_conocimiento || false;
+    const currentAliases = (permissionsData.users[email] && permissionsData.users[email].aliases || []).join(', ');
     const cbs=DASHBOARDS_CONFIG.map(d=>'<label class="checkbox-label"><input type="checkbox" value="'+d.id+'" '+(cur.includes(d.id)?'checked':'')+' class="edit-cb"><span>'+d.name+'</span></label>').join('');
     const kbCheck='<label class="checkbox-label" style="border:1px solid rgba(255,215,0,0.3);border-radius:8px;padding:8px 12px;background:rgba(255,215,0,0.07);"><input type="checkbox" value="base_conocimiento" '+(hasKB?'checked':'')+' id="edit-kb-cb"><span style="color:#FFD700;font-weight:600;">⚙️ Base de Conocimiento</span></label>';
+    const aliasField='<div style="margin-bottom:14px;"><p style="color:rgba(255,255,255,0.5);font-size:0.8em;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Correos alias (opcional)</p><input id="edit-aliases" type="text" value="'+currentAliases+'" placeholder="alias1@bigbola.com, alias2@bigbola.com" style="width:100%;padding:9px 12px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:white;font-size:0.85em;font-family:inherit;outline:none;box-sizing:border-box;"><p style="color:rgba(255,255,255,0.3);font-size:0.75em;margin-top:5px;">Separa múltiples alias con coma. El usuario podrá iniciar sesión con cualquiera de ellos.</p></div>';
     const m=document.createElement('div'); m.className='modal-overlay';
-    m.innerHTML='<div class="modal-box"><h2>Editar: '+email+'</h2><div style="margin-bottom:14px;"><p style="color:rgba(255,255,255,0.5);font-size:0.8em;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">Permisos especiales</p>'+kbCheck+'</div><div class="checkbox-group">'+cbs+'</div><div style="margin-top:20px;display:flex;gap:10px;"><button class="btn btn-success" id="savePermsBtn">✓ Guardar</button><button class="btn btn-secondary" id="cancelPermsBtn">Cancelar</button></div></div>';
+    m.innerHTML='<div class="modal-box"><h2>Editar: '+email+'</h2>'+aliasField+'<div style="margin-bottom:14px;"><p style="color:rgba(255,255,255,0.5);font-size:0.8em;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">Permisos especiales</p>'+kbCheck+'</div><div class="checkbox-group">'+cbs+'</div><div style="margin-top:20px;display:flex;gap:10px;"><button class="btn btn-success" id="savePermsBtn">✓ Guardar</button><button class="btn btn-secondary" id="cancelPermsBtn">Cancelar</button></div></div>';
     document.body.appendChild(m);
     m.querySelector('#savePermsBtn').addEventListener('click', function() { saveEditedPerms(email, this); });
     m.querySelector('#cancelPermsBtn').addEventListener('click', function() { m.remove(); });
@@ -910,6 +915,8 @@ async function saveEditedPerms(email,btn) {
     const prevPerms = (permissionsData.users[email] || []).slice();
     const newPerms  = Array.from(m.querySelectorAll('.edit-cb:checked')).map(cb=>cb.value);
     const hasKB     = m.querySelector('#edit-kb-cb') && m.querySelector('#edit-kb-cb').checked;
+    const aliasInput = m.querySelector('#edit-aliases').value.trim();
+    const aliases = aliasInput ? aliasInput.split(',').map(a=>a.trim().toLowerCase()).filter(Boolean) : [];
 
     // Guardar permiso base_conocimiento en usersData
     if (!permissionsData.usersData) permissionsData.usersData = {};
@@ -919,7 +926,15 @@ async function saveEditedPerms(email,btn) {
     // Detectar dashboards recién agregados (que no estaban antes)
     const added = newPerms.filter(id => !prevPerms.includes(id));
 
-    permissionsData.users[email] = newPerms;
+    permissionsData.users[email] = { dashboards: newPerms };
+    // Guardar aliases directamente en el usuario
+    const aliasInput = m.querySelector('#edit-aliases') ? m.querySelector('#edit-aliases').value.trim() : '';
+    const aliases = aliasInput ? aliasInput.split(',').map(a=>a.trim().toLowerCase()).filter(a=>a.endsWith('@bigbola.com')) : [];
+    if (aliases.length > 0) {
+        permissionsData.users[email].aliases = aliases;
+    }
+    // Guardar base_conocimiento
+    if (hasKB) permissionsData.users[email].base_conocimiento = true;
     renderAll();
     m.remove();
 
