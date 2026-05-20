@@ -1467,8 +1467,8 @@
             const ua = navigator.userAgent.toLowerCase();
             const isTouch = (typeof window.orientation !== "undefined") ||
                             navigator.userAgent.indexOf('IEMobile') !== -1 ||
-                            /android|iphone|ipad|ipod|tablet/.test(ua);
-            const isSmallScreen = window.innerWidth <= 1024;
+                            /android|iphone|ipad|ipod/.test(ua);
+            const isSmallScreen = window.innerWidth <= 768;
             return isTouch || isSmallScreen;
         }
 
