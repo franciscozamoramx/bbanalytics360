@@ -1945,9 +1945,18 @@ REGLAS:
                 return;
             }
             
-            if (permissionsData.users && permissionsData.users[email]) {
-                currentUser = email;
-                currentUserPermissions = permissionsData.users[email].dashboards || [];
+            // Resolver alias — si el email es alias de otro usuario, usar el usuario principal
+            let resolvedEmail = email;
+            if (permissionsData.users && !permissionsData.users[email]) {
+                const found = Object.entries(permissionsData.users).find(([user, data]) =>
+                    data.aliases && data.aliases.map(a => a.toLowerCase()).includes(email)
+                );
+                if (found) resolvedEmail = found[0];
+            }
+
+            if (permissionsData.users && permissionsData.users[resolvedEmail]) {
+                currentUser = resolvedEmail;
+                currentUserPermissions = permissionsData.users[resolvedEmail].dashboards || [];
                 currentSessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                 
                 // ✅ CAMBIO 3: Fire-and-forget — no bloquea la apertura del dashboard
@@ -1981,7 +1990,7 @@ REGLAS:
                     showStatus('Verificando permisos actualizados...', 'success');
                     setTimeout(async () => {
                         await loadPermissions();
-                        if (permissionsData.users && permissionsData.users[email]) {
+                        if (permissionsData.users && (permissionsData.users[email] || Object.values(permissionsData.users).some(d => d.aliases && d.aliases.map(a=>a.toLowerCase()).includes(email)))) {
                             handleLogin(); // reintentar con datos frescos
                         } else {
                             logger.log('login_failed', null, email);
