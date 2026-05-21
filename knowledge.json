@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "updated": "2026-05-12",
+  "updated": "2026-05-21",
   "casos": [
     {
       "id": 1,
@@ -67,6 +67,18 @@
         "contraseña",
         "no ingreso",
         "ingreso"
+      ],
+      "area": "Accesos",
+      "resuelto": true
+    },
+    {
+      "id": 1779389825459,
+      "problema": "Agregar a Mis Favoritos a Analytics",
+      "solucion": "Más que agregar a favoritos o guardar el link de Analytics 360, se recomienda instalar la aplicación por lo que entrando en Google Chrome a la página principal de Analytics abajo del botón ingresar está la opción de instalar la aplicación web, donde una vez instalada da la opción de agregar el acceso de Analytics en la barra herramientas principal",
+      "keywords": [
+        "link",
+        "agregar favoritos",
+        "aplicación"
       ],
       "area": "Accesos",
       "resuelto": true
