@@ -175,8 +175,10 @@
         },
         "felipe.lopez@bigbola.com": {
             "dashboards": [
+                "principal",
                 "clientes",
                 "desempeno",
+                "diccionario",
                 "ingreso_tarjetas",
                 "promociones",
                 "aforo"
