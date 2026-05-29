@@ -1211,9 +1211,10 @@
             
             // Enviar a Supabase
             async sendToSupabase(logEntry) {
-                // Fecha en hora local (UTC-6 México)
+                // Fecha en hora local México (UTC-6)
                 const now = new Date();
-                const localISO = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, -1);
+                const mexicoOffset = -6 * 60; // UTC-6 en minutos
+                const localISO = new Date(now.getTime() + mexicoOffset * 60000).toISOString().slice(0, -1);
 
                 const record = {
                     "FechaHora": localISO,
