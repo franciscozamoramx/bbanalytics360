@@ -1084,14 +1084,14 @@
         let currentSessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         let userIP = null;
 
-        // CONFIGURACIÓN AIRTABLE
-        const AIRTABLE_CONFIG = {
-            baseId: 'appyLYRPaDHgHRMfg',
-            apiKey: 'patotjwpztoSwMBKc.19277efd2f0944e48d327235c5ecd969e1ece9b46543924225445a24d0992e23',
-            tableName: 'Logs'
+        // CONFIGURACIÓN SUPABASE
+        const SUPABASE_CONFIG = {
+            url: 'https://sjljxynqpsyrhjefevdp.supabase.co',
+            apiKey: 'sb_publishable_LpBbCf9gaDgQa7Bmn6c6QQ_a2sYf5y7',
+            table: 'logs'
         };
 
-        class AirtableLogger {
+        class SupabaseLogger {
             constructor() {
                 this.pendingLogs = [];
                 this.isOnline = navigator.onLine;
@@ -1119,7 +1119,7 @@
                 // Sincronizar cada 30 segundos
                 setInterval(() => this.flushPendingLogs(), 30000);
                 
-                console.log('✅ Logger Airtable inicializado');
+                console.log('✅ Logger Supabase inicializado');
             }
             
             // Obtener IP del usuario (no bloqueante, con timeout de 3s)
@@ -1192,14 +1192,15 @@
                 // 1. Guardar localmente
                 this.saveToLocalStorage(logEntry);
                 
-                // 2. Intentar enviar a Airtable
+                // 2. Intentar enviar a Supabase
                 if (this.isOnline) {
                     try {
-                        await this.sendToAirtable(logEntry);
-                        console.log('✅ Log enviado a Airtable');
+                        await this.sendToSupabase(logEntry);
+                        console.log('✅ Log enviado a Supabase');
                     } catch (error) {
-                        console.warn('⚠️ Error Airtable, guardando pendiente:', error.message);
+                        console.warn('⚠️ Error Supabase, guardando pendiente:', error.message);
                         this.saveAsPending(logEntry);
+                    }
                     }
                 } else {
                     this.saveAsPending(logEntry);
@@ -1209,44 +1210,42 @@
                 return logEntry;
             }
             
-            // Enviar a Airtable - CON NOMBRES EXACTOS DE CAMPOS
-            async sendToAirtable(logEntry) {
-                const airtableRecord = {
-                    fields: {
-                        "FechaHora": logEntry.timestamp,
-                        "Usuario": logEntry.user,
-                        "Accion": logEntry.action,
-                        "Dashboard": logEntry.dashboard || '',
-                        "DashboardNombre": logEntry.dashboardName || '',
-                        "Dispositivo": logEntry.deviceType,
-                        "IP": logEntry.ip,
-                        "UserAgent": logEntry.userAgent.substring(0, 300),
-                        "SesionID": logEntry.sessionId
-                    }
+            // Enviar a Supabase
+            async sendToSupabase(logEntry) {
+                const record = {
+                    "Usuario": logEntry.user,
+                    "Accion": logEntry.action,
+                    "Dashboard": logEntry.dashboard || '',
+                    "DashboardName": logEntry.dashboardName || '',
+                    "Dispositivo": logEntry.deviceType,
+                    "IP": logEntry.ip,
+                    "UserAgent": logEntry.userAgent.substring(0, 300),
+                    "SesionID": logEntry.sessionId
                 };
-                
-                const url = `https://api.airtable.com/v0/${AIRTABLE_CONFIG.baseId}/${AIRTABLE_CONFIG.tableName}`;
-                
-                console.log('Enviando a Airtable:', airtableRecord.fields);
-                
+
+                const url = `${SUPABASE_CONFIG.url}/rest/v1/${SUPABASE_CONFIG.table}`;
+
+                console.log('Enviando a Supabase:', record);
+
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${AIRTABLE_CONFIG.apiKey}`,
-                        'Content-Type': 'application/json'
+                        'apikey': SUPABASE_CONFIG.apiKey,
+                        'Authorization': `Bearer ${SUPABASE_CONFIG.apiKey}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
                     },
-                    body: JSON.stringify(airtableRecord)
+                    body: JSON.stringify(record)
                 });
-                
+
                 if (!response.ok) {
                     const errorText = await response.text();
-                    console.error('❌ Error Airtable:', response.status, errorText);
-                    throw new Error(`Airtable error ${response.status}: ${errorText}`);
+                    console.error('❌ Error Supabase:', response.status, errorText);
+                    throw new Error(`Supabase error ${response.status}: ${errorText}`);
                 }
-                
-                const result = await response.json();
-                console.log('✅ Airtable response:', result);
-                return result;
+
+                console.log('✅ Supabase log guardado');
+                return true;
             }
             
             // Guardar en localStorage
@@ -1303,7 +1302,7 @@
                     const logEntry = pending[i];
                     
                     try {
-                        await this.sendToAirtable(logEntry);
+                        await this.sendToSupabase(logEntry);
                         console.log(`✅ Pendiente ${i+1} enviado`);
                     } catch (error) {
                         logEntry.retries = (logEntry.retries || 0) + 1;
@@ -1440,7 +1439,7 @@
         }
 
         // Instancia global del logger
-        const logger = new AirtableLogger();
+        const logger = new SupabaseLogger();
         window.bbLogger = logger;
 
         // Permisos por defecto
@@ -4360,25 +4359,29 @@ REGLAS:
                         const currentSessionId = "${currentSessionId}";
                         
                         // Mini logger para la ventana de dashboard
-                        const AIRTABLE_BASE = 'appyLYRPaDHgHRMfg';
-                        const AIRTABLE_KEY = 'patotjwpztoSwMBKc.19277efd2f0944e48d327235c5ecd969e1ece9b46543924225445a24d0992e23';
+                        const SUPABASE_URL = 'https://sjljxynqpsyrhjefevdp.supabase.co';
+                        const SUPABASE_KEY = 'sb_publishable_LpBbCf9gaDgQa7Bmn6c6QQ_a2sYf5y7';
                         window.bbLogger = {
                             log: function(action, dashboard, user, extra) {
                                 try {
-                                    fetch('https://api.airtable.com/v0/' + AIRTABLE_BASE + '/Logs', {
+                                    fetch(SUPABASE_URL + '/rest/v1/logs', {
                                         method: 'POST',
-                                        headers: { 'Authorization': 'Bearer ' + AIRTABLE_KEY, 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ fields: {
-                                            FechaHora: new Date().toISOString(),
+                                        headers: {
+                                            'apikey': SUPABASE_KEY,
+                                            'Authorization': 'Bearer ' + SUPABASE_KEY,
+                                            'Content-Type': 'application/json',
+                                            'Prefer': 'return=minimal'
+                                        },
+                                        body: JSON.stringify({
                                             Usuario: user || currentUser,
                                             Accion: action,
                                             Dashboard: dashboard || '',
-                                            DashboardNombre: (typeof dashboardNames !== 'undefined' && dashboardNames[dashboard]) || '',
+                                            DashboardName: (typeof dashboardNames !== 'undefined' && dashboardNames[dashboard]) || '',
                                             Dispositivo: 'desktop',
                                             IP: 'IP no disponible',
                                             UserAgent: navigator.userAgent.substring(0, 300),
                                             SesionID: currentSessionId
-                                        }})
+                                        })
                                     }).catch(function(e) { console.warn('Log error:', e); });
                                 } catch(e) { console.warn('Log error:', e); }
                             }
@@ -4778,7 +4781,7 @@ REGLAS:
                                     sessionDuration: Date.now() - parseInt(currentSessionId.split('_')[1])
                                 };
                                 
-                                // Enviar mensaje al padre (login page) para logging en Airtable
+                                // Enviar mensaje al padre (login page) para logging en Supabase
                                 if (window.opener && !window.opener.closed) {
                                     try {
                                         window.opener.postMessage({
@@ -4787,7 +4790,7 @@ REGLAS:
                                             source: 'dashboard_button'
                                         }, '*');
                                         
-                                        console.log('📤 Mensaje de logout enviado al padre para Airtable');
+                                        console.log('📤 Mensaje de logout enviado al padre para Supabase');
                                         
                                     } catch (error) {
                                         console.warn('Error enviando mensaje al padre:', error);
