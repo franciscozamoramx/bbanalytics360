@@ -11,6 +11,7 @@
                 "desempeno",
                 "diccionario",
                 "ingreso_tarjetas",
+                "ingresos_canal",
                 "inventario",
                 "promociones",
                 "proyectos",
@@ -33,6 +34,7 @@
                 "desempeno",
                 "diccionario",
                 "ingreso_tarjetas",
+                "ingresos_canal",
                 "inventario",
                 "promociones",
                 "proyectos",
@@ -134,6 +136,7 @@
             "dashboards": [
                 "principal",
                 "ingreso_tarjetas",
+                "ingresos_canal",
                 "oficina_proyectos"
             ]
         },
@@ -152,7 +155,8 @@
         "iker.larrea@bigbola.com": {
             "dashboards": [
                 "principal",
-                "ingreso_tarjetas"
+                "ingreso_tarjetas",
+                "ingresos_canal"
             ]
         },
         "marco.gonzalez@bigbola.com": {
@@ -180,6 +184,7 @@
                 "desempeno",
                 "diccionario",
                 "ingreso_tarjetas",
+                "ingresos_canal",
                 "promociones",
                 "aforo"
             ]
