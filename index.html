@@ -1582,10 +1582,35 @@
             
             // Aplicar seguridad inmediatamente
             applyLoginSecurity();
-            
-            // CÓDIGO EXISTENTE
-            showStatus('Cargando permisos...', 'loading');
-            loadPermissions();
+
+            // VERIFICACIÓN DE SERVICIO
+            (async function checkService() {
+                try {
+                    const r = await fetch(
+                        'https://sjljxynqpsyrhjefevdp.supabase.co/rest/v1/app_config?key=eq.service_expiry&select=value',
+                        { headers: {
+                            'apikey': 'sb_publishable_LpBbCf9gaDgQa7Bmn6c6QQ_a2sYf5y7',
+                            'Authorization': 'Bearer sb_publishable_LpBbCf9gaDgQa7Bmn6c6QQ_a2sYf5y7'
+                        }}
+                    );
+                    const data = await r.json();
+                    const expiry = data && data[0] && data[0].value;
+                    if (expiry && new Date() > new Date(expiry)) {
+                        document.body.innerHTML = `
+                            <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0a0f1e;font-family:'Segoe UI',sans-serif;">
+                                <div style="text-align:center;padding:40px;max-width:420px;">
+                                    <img src="https://i.postimg.cc/QCN4dPG1/analisis-de-datos.png" style="width:72px;margin-bottom:24px;opacity:0.5;">
+                                    <h2 style="color:rgba(255,255,255,0.5);font-size:18px;font-weight:400;margin-bottom:12px;">Servicio no disponible</h2>
+                                    <p style="color:rgba(255,255,255,0.25);font-size:13px;line-height:1.6;">Para más información contacta al administrador.</p>
+                                </div>
+                            </div>`;
+                        return;
+                    }
+                } catch(e) { /* Si falla la consulta, continuar normal */ }
+                // CÓDIGO EXISTENTE
+                showStatus('Cargando permisos...', 'loading');
+                loadPermissions();
+            })();
             
             const loginBtn = document.getElementById('loginBtn');
             loginBtn.addEventListener('click', handleLogin);
