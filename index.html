@@ -1597,11 +1597,37 @@
                     const expiry = data && data[0] && data[0].value;
                     if (expiry && new Date() > new Date(expiry)) {
                         document.body.innerHTML = `
-                            <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0a0f1e;font-family:'Segoe UI',sans-serif;">
-                                <div style="text-align:center;padding:40px;max-width:420px;">
-                                    <img src="https://i.postimg.cc/QCN4dPG1/analisis-de-datos.png" style="width:72px;margin-bottom:24px;opacity:0.5;">
-                                    <h2 style="color:rgba(255,255,255,0.5);font-size:18px;font-weight:400;margin-bottom:12px;">Servicio no disponible</h2>
-                                    <p style="color:rgba(255,255,255,0.25);font-size:13px;line-height:1.6;">Para más información contacta al administrador.</p>
+                            <div style="min-height:100vh;display:flex;flex-direction:column;background:#f3f2f1;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+                                <div style="background:#ffffff;border-bottom:1px solid #e1dfdd;padding:14px 32px;display:flex;align-items:center;gap:12px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" style="width:24px;height:24px;flex-shrink:0;"><rect x="1" y="1" width="10" height="10" fill="#f25022"/><rect x="12" y="1" width="10" height="10" fill="#7fba00"/><rect x="1" y="12" width="10" height="10" fill="#00a4ef"/><rect x="12" y="12" width="10" height="10" fill="#ffb900"/></svg>
+                                    <span style="font-size:15px;font-weight:600;color:#323130;">Microsoft Power BI</span>
+                                </div>
+                                <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:40px;">
+                                    <div style="background:#ffffff;border:1px solid #e1dfdd;border-radius:4px;padding:48px 52px;max-width:560px;width:100%;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+                                        <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px;">
+                                            <div style="width:48px;height:48px;background:#fde7e9;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width:24px;height:24px;fill:#d13438;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                                            </div>
+                                            <div>
+                                                <h1 style="font-size:20px;font-weight:600;color:#323130;margin:0 0 4px;">Service Disruption</h1>
+                                                <span style="display:inline-block;background:#fde7e9;color:#d13438;font-size:11px;font-weight:600;padding:2px 10px;border-radius:12px;letter-spacing:0.03em;">INVESTIGATING</span>
+                                            </div>
+                                        </div>
+                                        <p style="font-size:14px;color:#323130;line-height:1.7;margin:0 0 16px;"><strong>Power BI Service</strong> is currently experiencing an outage affecting dashboard access and report rendering across all regions.</p>
+                                        <p style="font-size:14px;color:#605e5c;line-height:1.7;margin:0 0 24px;">Our engineering team has been notified and is actively working to restore full service. We apologize for the inconvenience.</p>
+                                        <div style="background:#f3f2f1;border-radius:4px;padding:16px 20px;margin-bottom:24px;">
+                                            <p style="font-size:12px;font-weight:600;color:#323130;margin:0 0 8px;text-transform:uppercase;letter-spacing:0.05em;">Affected Services</p>
+                                            <ul style="margin:0;padding-left:18px;color:#605e5c;font-size:13px;line-height:1.8;">
+                                                <li>Power BI Service (app.powerbi.com)</li>
+                                                <li>Embedded Analytics</li>
+                                                <li>Report & Dashboard Access</li>
+                                            </ul>
+                                        </div>
+                                        <p style="font-size:12px;color:#a19f9d;margin:0;">For live updates visit <span style="color:#0078d4;">status.powerbi.com</span> &nbsp;·&nbsp; Incident ID: PBI-${Math.floor(Math.random()*90000)+10000}</p>
+                                    </div>
+                                </div>
+                                <div style="background:#ffffff;border-top:1px solid #e1dfdd;padding:12px 32px;text-align:center;">
+                                    <span style="font-size:11px;color:#a19f9d;">© Microsoft Corporation. All rights reserved. &nbsp;·&nbsp; Privacy &nbsp;·&nbsp; Terms of use</span>
                                 </div>
                             </div>`;
                         return;
