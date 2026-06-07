@@ -11,7 +11,7 @@ on:
 jobs:
   obfuscate-deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout dev
         uses: actions/checkout@v4
@@ -72,7 +72,7 @@ jobs:
                       with open(out_file, 'r', encoding='utf-8') as of:
                           obf_code = of.read()
                       replacements.append((m.start(), m.end(), m.group(1) + '\n' + obf_code + '\n' + m.group(3)))
-                      print(f"  [{i}] {len(code):,} → {len(obf_code):,} chars ✓")
+                      print(f"  [{i}] {len(code):,} -> {len(obf_code):,} chars OK")
                   else:
                       print(f"  [{i}] ERROR: {result.stderr[:200]}")
                       replacements.append((m.start(), m.end(), m.group(0)))
@@ -84,9 +84,7 @@ jobs:
                   f.write(content)
               print(f"Guardado: {output_file}")
 
-          html_files = glob.glob('**/*.html', recursive=True) + glob.glob('*.html')
-          html_files = list(set(html_files))
-
+          html_files = list(set(glob.glob('**/*.html', recursive=True) + glob.glob('*.html')))
           os.makedirs('obfuscated', exist_ok=True)
           for f in html_files:
               print(f"Ofuscando: {f}")
@@ -98,7 +96,7 @@ jobs:
         with:
           ref: main
           path: main-branch
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.BB_PAT }}
 
       - name: Copy obfuscated files to main
         run: |
@@ -119,5 +117,5 @@ jobs:
           else
             git commit -m "chore: auto-obfuscate JS from dev [skip ci]"
             git push origin main
-            echo "✓ Push a main exitoso"
+            echo "Push a main exitoso"
           fi
