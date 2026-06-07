@@ -1,4 +1,4 @@
-name: Obfuscate & Deploy to main
+name: Obfuscate & Deploy to main-obf
 
 on:
   push:
@@ -91,24 +91,24 @@ jobs:
               obfuscate_html(f, f'obfuscated/{os.path.basename(f)}')
           PYEOF
 
-      - name: Checkout main
+      - name: Checkout main-obf
         uses: actions/checkout@v4
         with:
-          ref: main
-          path: main-branch
+          ref: main-obf
+          path: main-obf-branch
           token: ${{ secrets.BB_PAT }}
 
-      - name: Copy obfuscated files to main
+      - name: Copy obfuscated files to main-obf
         run: |
           for f in obfuscated/*.html; do
             fname=$(basename "$f")
-            cp "$f" "main-branch/$fname"
+            cp "$f" "main-obf-branch/$fname"
             echo "Copiado: $fname"
           done
 
-      - name: Commit and push to main
+      - name: Commit and push to main-obf
         run: |
-          cd main-branch
+          cd main-obf-branch
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add *.html
@@ -116,6 +116,6 @@ jobs:
             echo "Sin cambios en HTML, nada que hacer."
           else
             git commit -m "chore: auto-obfuscate JS from dev [skip ci]"
-            git push origin main
-            echo "Push a main exitoso"
+            git push origin main-obf
+            echo "Push a main-obf exitoso"
           fi
