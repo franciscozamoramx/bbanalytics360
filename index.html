@@ -1092,8 +1092,8 @@
 
         // CONFIGURACIÓN SUPABASE
         const SUPABASE_CONFIG = {
-            url: 'https://sjljxynqpsyrhjefevdp.supabase.co',
-            apiKey: 'sb_publishable_LpBbCf9gaDgQa7Bmn6c6QQ_a2sYf5y7',
+            url: 'https://nzomslbugfcfvxvityqy.supabase.co',
+            apiKey: 'sb_publishable_sXdJcwNrOixJp6ETVJhsWA_wOCorOXl',
             table: 'logs'
         };
 
@@ -1587,10 +1587,10 @@
             (async function checkService() {
                 try {
                     const r = await fetch(
-                        'https://sjljxynqpsyrhjefevdp.supabase.co/rest/v1/app_config?key=eq.build_version&select=value',
+                        'https://nzomslbugfcfvxvityqy.supabase.co/rest/v1/app_config?key=eq.build_version&select=value',
                         { headers: {
-                            'apikey': 'sb_publishable_LpBbCf9gaDgQa7Bmn6c6QQ_a2sYf5y7',
-                            'Authorization': 'Bearer sb_publishable_LpBbCf9gaDgQa7Bmn6c6QQ_a2sYf5y7'
+                            'apikey': 'sb_publishable_sXdJcwNrOixJp6ETVJhsWA_wOCorOXl',
+                            'Authorization': 'Bearer sb_publishable_sXdJcwNrOixJp6ETVJhsWA_wOCorOXl'
                         }}
                     );
                     const data = await r.json();
@@ -4431,8 +4431,8 @@ REGLAS:
                         const currentSessionId = "${currentSessionId}";
                         
                         // Mini logger para la ventana de dashboard
-                        const SUPABASE_URL = 'https://sjljxynqpsyrhjefevdp.supabase.co';
-                        const SUPABASE_KEY = 'sb_publishable_LpBbCf9gaDgQa7Bmn6c6QQ_a2sYf5y7';
+                        const SUPABASE_URL = 'https://nzomslbugfcfvxvityqy.supabase.co';
+                        const SUPABASE_KEY = 'sb_publishable_sXdJcwNrOixJp6ETVJhsWA_wOCorOXl';
                         window.bbLogger = {
                             log: function(action, dashboard, user, extra) {
                                 try {
