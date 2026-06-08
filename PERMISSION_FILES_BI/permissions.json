@@ -181,6 +181,7 @@
                 "desempeno",
                 "diccionario",
                 "ingreso_tarjetas",
+                "ingresos_canal",
                 "promociones",
                 "aforo"
             ]
