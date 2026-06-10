@@ -19,7 +19,8 @@
                 "rtp",
                 "logs_bi",
                 "aforo",
-                "incidencias_cat"
+                "incidencias_cat",
+                "ventas"
             ],
             "base_conocimiento": true
         },
