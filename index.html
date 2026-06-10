@@ -960,6 +960,7 @@
 			"diccionario": "https://app.powerbi.com/reportEmbed?reportId=95918a25-c06b-411a-a346-f462b03e557b&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
             "ingreso_tarjetas": "https://app.powerbi.com/reportEmbed?reportId=4a1f75f7-2ff9-4914-b43b-1311b1a86fa8&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
             "ingresos_canal": "https://app.powerbi.com/reportEmbed?reportId=f1ed4f65-5c7e-4d44-87bb-3db697dcf1d3&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
+            "ventas": "https://app.powerbi.com/reportEmbed?reportId=b0e290c7-1242-4454-8ba1-e97bd9b7f5a0&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
 			"inventario": "https://app.powerbi.com/reportEmbed?reportId=4fe689c1-3fa7-4632-8367-4b7a7abc492c&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
             "promociones": "https://app.powerbi.com/reportEmbed?reportId=373b28bf-5d1b-46a0-b98b-4b3e378520c4&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
             "proyectos": "https://app.powerbi.com/reportEmbed?reportId=c2e5834e-4e3d-418c-a9dc-43e33d79a62e&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
@@ -981,6 +982,7 @@
             "seguimiento_auditores":"https://app.powerbi.com/groups/c7d75b83-b07c-4e19-855d-2ae538c61094/reports/f298656f-f4fb-4110-9580-321f04c0cfd6",
             "ingreso_tarjetas":     "https://app.powerbi.com/groups/a1e1e4f8-5d9a-4922-bda8-02ec37780602/reports/4a1f75f7-2ff9-4914-b43b-1311b1a86fa8",
             "ingresos_canal":       "https://app.powerbi.com/groups/a1e1e4f8-5d9a-4922-bda8-02ec37780602/reports/f1ed4f65-5c7e-4d44-87bb-3db697dcf1d3",
+            "ventas":               "https://app.powerbi.com/groups/a1e1e4f8-5d9a-4922-bda8-02ec37780602/reports/b0e290c7-1242-4454-8ba1-e97bd9b7f5a0",
             "diccionario":          "https://app.powerbi.com/groups/me/reports/95918a25-c06b-411a-a346-f462b03e557b",
             "proyectos":            "https://app.powerbi.com/groups/me/reports/c2e5834e-4e3d-418c-a9dc-43e33d79a62e",
             "oficina_proyectos":         "https://app.powerbi.com/groups/bd6bb8c1-8457-4c0e-9cf2-eedd91672d1b/reports/fc5a0646-55ba-4b61-b478-0f015af3fd81",
@@ -1005,6 +1007,7 @@
             "diccionario": "Diccionario KPI's",
 			"ingreso_tarjetas": "Ingreso por Tarjetas",
 			"ingresos_canal": "Ingresos por Canal",
+			"ventas": "Ventas",
 			"inventario": "Inventario TI",
 			"promociones": "Promociones",
             "proyectos": "Proyectos BI",
@@ -1028,6 +1031,7 @@
             "diccionario": "fas fa-book",
 			"ingreso_tarjetas": "fas fa-credit-card",
 			"ingresos_canal": "fas fa-money-bill-wave",
+			"ventas": "fas fa-chart-line",
 			"inventario": "fas fa-desktop",
             "promociones": "fas fa-gift",
             "proyectos": "fas fa-project-diagram",
@@ -1050,6 +1054,7 @@
 			"desempeno": "https://i.postimg.cc/zGmWzXXF/Desempeño.png",
             "ingreso_tarjetas": "https://i.postimg.cc/DyZ659M1/Pagos_con_tarjeta.png",
             "ingresos_canal": "https://i.postimg.cc/XJpCYFfm/Captura-de-pantalla-2026-06-04-114353.png",
+            "ventas": "https://i.postimg.cc/tgzNh1Nf/Captura-de-pantalla-2026-06-10-113051.png",
 			"inventario": "https://i.postimg.cc/W1rHdPLR/Inventario.jpg",
             "promociones": "https://i.postimg.cc/q7TZnZ4N/Promociones.jpg",
             "proyectos": "https://i.postimg.cc/43Q21bxB/Proyectos.jpg",
@@ -1073,6 +1078,7 @@
 			"desempeno": "Rendimiento de máquinas",
             "ingreso_tarjetas": "Ingresos por tarjeta por pasarela de pago",
             "ingresos_canal": "Ingresos por kiosco y caja: canal, billete y tarjeta",
+            "ventas": "Analítica de las ventas",
 			"inventario": "Análisis de equipos tecnológicos",
             "promociones": "Análisis de campañas promocionales",
             "proyectos": "Seguimiento de proyectos de BI",
@@ -2454,7 +2460,7 @@ REGLAS:
             const areaConfig = [
                 { key: 'auditoria',  label: 'Auditoría', color: '#FFB84A', dashboards: ['auditoria', 'promociones', 'seguimiento_auditores'] },
                 { key: 'comercial',  label: 'Comercial',  color: '#4A9EFF', dashboards: ['bigplayers', 'bolipoits', 'clientes'] },
-                { key: 'finanzas',   label: 'Finanzas',   color: '#B47FFF', dashboards: ['ingreso_tarjetas', 'ingresos_canal'] },
+                { key: 'finanzas',   label: 'Finanzas',   color: '#B47FFF', dashboards: ['ingreso_tarjetas', 'ingresos_canal', 'ventas'] },
                 { key: 'productos',  label: 'Máquinas',  color: '#3DD68C', dashboards: ['adt', 'desempeno', 'rtp', 'aforo'] },
                 { key: 'operaciones', label: 'Operaciones', color: '#00C9A7', dashboards: ['incidencias_cat'] },
                 { key: 'ti',         label: 'TI',          color: '#FF7A6E', dashboards: ['inventario', 'proyectos', 'oficina_proyectos', 'logs_bi'] }
@@ -3172,6 +3178,7 @@ REGLAS:
                     bigplayers:'Comercial', bolipoits:'Comercial', clientes:'Comercial',
                     ingreso_tarjetas:'Finanzas',
                     ingresos_canal:'Finanzas',
+                    ventas:'Finanzas',
                     inventario:'TI', proyectos:'TI', oficina_proyectos:'TI', logs_bi:'TI',
                     incidencias_cat:'Operaciones',
                     principal:'Inicio'
@@ -3727,7 +3734,7 @@ REGLAS:
             const areaConfig = [
                 { key: 'auditoria',  label: 'Auditoría',  color: '#FFB84A', dashboards: ['auditoria', 'promociones', 'seguimiento_auditores'] },
                 { key: 'comercial',  label: 'Comercial',  color: '#4A9EFF', dashboards: ['bigplayers', 'bolipoits', 'clientes'] },
-                { key: 'finanzas',   label: 'Finanzas',   color: '#B47FFF', dashboards: ['ingreso_tarjetas', 'ingresos_canal'] },
+                { key: 'finanzas',   label: 'Finanzas',   color: '#B47FFF', dashboards: ['ingreso_tarjetas', 'ingresos_canal', 'ventas'] },
                 { key: 'productos',  label: 'Máquinas',  color: '#3DD68C', dashboards: ['adt', 'desempeno', 'rtp', 'aforo'] },
                 { key: 'operaciones', label: 'Operaciones', color: '#00C9A7', dashboards: ['incidencias_cat'] },
                 { key: 'ti',         label: 'TI',          color: '#FF7A6E', dashboards: ['inventario', 'proyectos', 'oficina_proyectos', 'logs_bi'] }
@@ -4526,6 +4533,7 @@ REGLAS:
                                 bigplayers:'Comercial', bolipoits:'Comercial', clientes:'Comercial',
                                 ingreso_tarjetas:'Finanzas',
                     ingresos_canal:'Finanzas',
+                    ventas:'Finanzas',
                                 inventario:'TI', proyectos:'TI', oficina_proyectos:'TI', logs_bi:'TI',
                                 incidencias_cat:'Operaciones',
                                 principal:'Inicio'
