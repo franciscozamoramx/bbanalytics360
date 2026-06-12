@@ -35,6 +35,8 @@
                 "desempeno",
                 "diccionario",
                 "ingreso_tarjetas",
+                "ingresos_canal",
+                "ventas",
                 "inventario",
                 "promociones",
                 "proyectos",
