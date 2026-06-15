@@ -1962,22 +1962,9 @@ REGLAS:
                 }, 200);
                 
             } else {
-                // Si el usuario no existe, recargar permisos frescos
-                showStatus('Verificando permisos actualizados...', 'success');
-                setTimeout(async () => {
-                    await loadPermissions();
-                    if (permissionsData.users && (permissionsData.users[email] || Object.values(permissionsData.users).some(d => d.aliases && d.aliases.map(a=>a.toLowerCase()).includes(email)))) {
-                        handleLogin(); // reintentar con datos frescos
-                        } else {
-                            logger.log('login_failed', null, email);
-                            showStatus('No tienes permisos para acceder a BB Analytics 360 o el correo no está registrado.', 'error');
-                        }
-                    }, 500);
-                } else {
-                    // Fire-and-forget para login fallido también
-                    logger.log('login_failed', null, email);
-                    showStatus('No tienes permisos para acceder a BB Analytics 360 o el correo no está registrado.', 'error');
-                }
+                // Fire-and-forget para login fallido
+                logger.log('login_failed', null, email);
+                showStatus('No tienes permisos para acceder a BB Analytics 360 o el correo no está registrado.', 'error');
             }
         }
 
