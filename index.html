@@ -2386,15 +2386,6 @@ REGLAS:
             }
 
             // Definición de áreas
-            const areaConfig = [
-                { key: 'auditoria',  label: 'Auditoría', color: '#FFB84A', dashboards: ['auditoria', 'promociones', 'seguimiento_auditores'] },
-                { key: 'comercial',  label: 'Comercial',  color: '#4A9EFF', dashboards: ['bigplayers', 'bolipoits', 'clientes'] },
-                { key: 'finanzas',   label: 'Finanzas',   color: '#B47FFF', dashboards: ['ingreso_tarjetas', 'ingresos_canal', 'ventas'] },
-                { key: 'productos',  label: 'Máquinas',  color: '#3DD68C', dashboards: ['adt', 'desempeno', 'rtp', 'aforo'] },
-                { key: 'operaciones', label: 'Operaciones', color: '#00C9A7', dashboards: ['incidencias_cat'] },
-                { key: 'ti',         label: 'TI',          color: '#FF7A6E', dashboards: ['inventario', 'proyectos', 'oficina_proyectos', 'logs_bi'] }
-            ];
-
             const permSet = new Set(currentUserPermissions);
             let hasAnyArea = false;
 
@@ -3660,15 +3651,6 @@ REGLAS:
             }
 
             // Definición de áreas y sus dashboards (excluye principal y diccionario)
-            const areaConfig = [
-                { key: 'auditoria',  label: 'Auditoría',  color: '#FFB84A', dashboards: ['auditoria', 'promociones', 'seguimiento_auditores'] },
-                { key: 'comercial',  label: 'Comercial',  color: '#4A9EFF', dashboards: ['bigplayers', 'bolipoits', 'clientes'] },
-                { key: 'finanzas',   label: 'Finanzas',   color: '#B47FFF', dashboards: ['ingreso_tarjetas', 'ingresos_canal', 'ventas'] },
-                { key: 'productos',  label: 'Máquinas',  color: '#3DD68C', dashboards: ['adt', 'desempeno', 'rtp', 'aforo'] },
-                { key: 'operaciones', label: 'Operaciones', color: '#00C9A7', dashboards: ['incidencias_cat'] },
-                { key: 'ti',         label: 'TI',          color: '#FF7A6E', dashboards: ['inventario', 'proyectos', 'oficina_proyectos', 'logs_bi'] }
-            ];
-
             // Construir árbol por áreas
             const permSet = new Set(currentUserPermissions);
             let hasAnyArea = false;
@@ -4992,3 +4974,4 @@ REGLAS:
 
 <div id="contextMenuMessageLogin" style="position: fixed; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.7); color: white; padding: 10px; border-radius: 5px; z-index: 10000; font-size: 14px; display: none; animation: 3s ease-in-out 0s 1 normal none running fadeInOut;">Menú contextual deshabilitado</div>
 </body></html>
+
