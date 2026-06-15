@@ -208,8 +208,7 @@
         </div>
         <div>
             <button class="btn btn-secondary" id="btnConfigGithub" onclick="switchTab('config')">Configurar GitHub</button>
-            <button class="btn btn-success" onclick="syncFromGithub()" id="syncBtn" disabled>Sincronizar</button>
-            <button class="btn btn-primary" onclick="saveToGithub()" id="saveBtn" disabled>Guardar en GitHub</button>
+            <button class="btn btn-success" onclick="syncFromGithub()" id="syncBtn" disabled>🔄 Sincronizar</button>
         </div>
     </div>
     <div class="stats">
@@ -626,7 +625,6 @@ function loadGithubConfig() {
 
     updateGithubStatus(true, 'Conectado — sincronizando...');
     document.getElementById('syncBtn').disabled = false;
-    document.getElementById('saveBtn').disabled = false;
     syncFromGithub();
 }
 
@@ -683,7 +681,6 @@ function saveGithubConfig() {
     localStorage.setItem('bbAnalyticsGithubConfig', JSON.stringify(githubConfig));
     updateGithubStatus(true, 'Configuración guardada');
     document.getElementById('syncBtn').disabled = false;
-    document.getElementById('saveBtn').disabled = false;
     showAlert('✓ Configuración guardada. Probando conexión...', 'success', 'alertContainerConfig');
     setTimeout(testGithubConnection, 800);
 }
@@ -1308,4 +1305,5 @@ init();
 })();
 </script>
 </body>
+
 
