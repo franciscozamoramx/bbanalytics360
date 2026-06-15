@@ -1568,7 +1568,10 @@
                 } catch(e) { /* Si falla la consulta, continuar normal */ }
                 // CÓDIGO EXISTENTE
                 showStatus('Cargando permisos...', 'loading');
-                loadPermissions();
+                const loginBtn_ = document.getElementById('loginBtn');
+                if (loginBtn_) { loginBtn_.disabled = true; loginBtn_.style.opacity = '0.5'; loginBtn_.style.cursor = 'not-allowed'; }
+                await loadPermissions();
+                if (loginBtn_) { loginBtn_.disabled = false; loginBtn_.style.opacity = ''; loginBtn_.style.cursor = ''; }
             })();
             
             const loginBtn = document.getElementById('loginBtn');
