@@ -1614,48 +1614,51 @@
             });
         });
 
-        // Función para cargar los permisos desde el JSON
+        // Función para cargar los permisos desde Supabase
         async function loadPermissions() {
             // Cargar dashboards desde Supabase antes de renderizar el portal
             await loadDashboardsFromSupabase();
 
             try {
-                const jsonUrl = 'https://raw.githubusercontent.com/franciscozamoramx/bbanalytics360/refs/heads/main/PERMISSION_FILES_BI/permissions.json?t=' + Date.now();
-                
-                console.log('Cargando permisos desde red:', jsonUrl);
-                
-                const response = await fetch(jsonUrl);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const text = await response.text();
-                
-                if (!text.trim()) {
-                    throw new Error('El archivo JSON está vacío');
-                }
-                
-                const data = JSON.parse(text);
-                
-                if (!data.users) {
-                    throw new Error('Estructura de JSON inválida: falta propiedad "users"');
-                }
-                
-                permissionsData = data;
+                // Cargar usuarios con sus aliases y base_conocimiento
+                const usersRes = await fetch(
+                    `${BB_SUPABASE_URL}/rest/v1/users?select=email,nombre,activo,base_conocimiento,aliases&activo=eq.true`,
+                    { headers: { 'apikey': BB_SUPABASE_KEY, 'Authorization': 'Bearer ' + BB_SUPABASE_KEY } }
+                );
+                if (!usersRes.ok) throw new Error('HTTP users ' + usersRes.status);
+                const usersRows = await usersRes.json();
 
-                console.log('Permisos cargados correctamente desde GitHub Pages', permissionsData);
+                // Cargar todos los permisos
+                const permsRes = await fetch(
+                    `${BB_SUPABASE_URL}/rest/v1/permissions?select=email,dashboard_id`,
+                    { headers: { 'apikey': BB_SUPABASE_KEY, 'Authorization': 'Bearer ' + BB_SUPABASE_KEY } }
+                );
+                if (!permsRes.ok) throw new Error('HTTP permissions ' + permsRes.status);
+                const permsRows = await permsRes.json();
+
+                // Construir permissionsData en el mismo formato que el JSON anterior
+                const users = {};
+                usersRows.forEach(u => {
+                    users[u.email] = {
+                        dashboards: [],
+                        ...(u.base_conocimiento && { base_conocimiento: true }),
+                        ...(u.aliases && u.aliases.length > 0 && { aliases: u.aliases })
+                    };
+                });
+                permsRows.forEach(p => {
+                    if (users[p.email]) users[p.email].dashboards.push(p.dashboard_id);
+                });
+
+                permissionsData = { users };
+
+                console.log('✅ Permisos cargados desde Supabase:', Object.keys(users).length, 'usuarios');
                 showStatus('Permisos cargados correctamente', 'success');
                 setTimeout(hideStatus, 2000);
-                
+
             } catch (error) {
-                console.error('Error al cargar permisos:', error);
-                
-                let errorMessage = 'Error cargando permisos: ' + error.message;
-                
+                console.error('❌ Error al cargar permisos desde Supabase:', error);
                 permissionsData = defaultPermissions;
-                showStatus('Usando permisos por defecto - ' + errorMessage, 'error');
-                console.log('Permisos por defecto cargados:', permissionsData);
+                showStatus('Usando permisos por defecto - ' + error.message, 'error');
             }
         }
 
@@ -4933,5 +4936,6 @@ REGLAS:
 
 <div id="contextMenuMessageLogin" style="position: fixed; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.7); color: white; padding: 10px; border-radius: 5px; z-index: 10000; font-size: 14px; display: none; animation: 3s ease-in-out 0s 1 normal none running fadeInOut;">Menú contextual deshabilitado</div>
 </body></html>
+
 
 
