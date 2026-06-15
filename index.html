@@ -1615,29 +1615,9 @@
         async function loadPermissions() {
             // Cargar dashboards desde Supabase antes de renderizar el portal
             await loadDashboardsFromSupabase();
-            const CACHE_KEY = 'bb_permissions_cache';
-            const CACHE_TTL = 30 * 1000; // 30 segundos — evita bloquear usuarios recién dados de alta
-
-            // ✅ CAMBIO 2: Usar caché de sessionStorage para evitar fetch en cada visita
-            try {
-                const cached = sessionStorage.getItem(CACHE_KEY);
-                if (cached) {
-                    const { data, timestamp } = JSON.parse(cached);
-                    if (Date.now() - timestamp < CACHE_TTL && data.users) {
-                        permissionsData = data;
-                        console.log('✅ Permisos cargados desde caché');
-                        showStatus('Permisos cargados correctamente', 'success');
-                        setTimeout(hideStatus, 2000);
-                        return;
-                    }
-                }
-            } catch (e) {
-                console.warn('Error leyendo caché, se cargará desde red:', e);
-            }
 
             try {
-                // Usar la ruta absoluta de GitHub Pages (sin cache-busting: el sessionStorage lo maneja)
-                const jsonUrl = 'https://raw.githubusercontent.com/franciscozamoramx/bbanalytics360/refs/heads/main/PERMISSION_FILES_BI/permissions.json';
+                const jsonUrl = 'https://raw.githubusercontent.com/franciscozamoramx/bbanalytics360/refs/heads/main/PERMISSION_FILES_BI/permissions.json?t=' + Date.now();
                 
                 console.log('Cargando permisos desde red:', jsonUrl);
                 
@@ -1660,13 +1640,6 @@
                 }
                 
                 permissionsData = data;
-
-                // Guardar en caché
-                try {
-                    sessionStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }));
-                } catch (e) {
-                    console.warn('No se pudo guardar caché de permisos:', e);
-                }
 
                 console.log('Permisos cargados correctamente desde GitHub Pages', permissionsData);
                 showStatus('Permisos cargados correctamente', 'success');
@@ -1986,16 +1959,12 @@ REGLAS:
                 }, 200);
                 
             } else {
-                // Si el usuario no existe, puede ser caché vieja — intentar recargar permisos frescos
-                const cacheKey = 'bb_permissions_cache';
-                const hadCache = !!sessionStorage.getItem(cacheKey);
-                if (hadCache) {
-                    sessionStorage.removeItem(cacheKey);
-                    showStatus('Verificando permisos actualizados...', 'success');
-                    setTimeout(async () => {
-                        await loadPermissions();
-                        if (permissionsData.users && (permissionsData.users[email] || Object.values(permissionsData.users).some(d => d.aliases && d.aliases.map(a=>a.toLowerCase()).includes(email)))) {
-                            handleLogin(); // reintentar con datos frescos
+                // Si el usuario no existe, recargar permisos frescos
+                showStatus('Verificando permisos actualizados...', 'success');
+                setTimeout(async () => {
+                    await loadPermissions();
+                    if (permissionsData.users && (permissionsData.users[email] || Object.values(permissionsData.users).some(d => d.aliases && d.aliases.map(a=>a.toLowerCase()).includes(email)))) {
+                        handleLogin(); // reintentar con datos frescos
                         } else {
                             logger.log('login_failed', null, email);
                             showStatus('No tienes permisos para acceder a BB Analytics 360 o el correo no está registrado.', 'error');
@@ -4974,4 +4943,5 @@ REGLAS:
 
 <div id="contextMenuMessageLogin" style="position: fixed; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.7); color: white; padding: 10px; border-radius: 5px; z-index: 10000; font-size: 14px; display: none; animation: 3s ease-in-out 0s 1 normal none running fadeInOut;">Menú contextual deshabilitado</div>
 </body></html>
+
 
