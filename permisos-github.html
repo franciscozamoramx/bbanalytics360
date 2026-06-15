@@ -630,22 +630,45 @@ function loadGithubConfig() {
     syncFromGithub();
 }
 
-// Sync sin token usando raw.githubusercontent.com (solo lectura, repo público)
-async function syncFromGithubPublic() {
+// Sync desde Supabase
+async function syncFromSupabase() {
+    updateGithubStatus(false, 'Sincronizando desde Supabase...');
     try {
-        const url = `https://raw.githubusercontent.com/${githubConfig.user}/${githubConfig.repo}/main/${githubConfig.file}?t=${Date.now()}`;
-        const r   = await fetch(url);
-        if (r.ok) {
-            const json = await r.json();
-            permissionsData.users = parseUsersFromJSON(json);
-            const n = Object.keys(permissionsData.users).length;
-            updateGithubStatus(true, `Sincronizado ✓ — ${n} usuarios (solo lectura)`);
-            updateLastSync(); renderAll();
-        } else {
-            updateGithubStatus(false, 'Error al sincronizar');
-        }
+        const usersRes = await fetch(
+            `${BB_SUPABASE_URL}/rest/v1/users?select=email,nombre,activo,base_conocimiento,aliases&activo=eq.true`,
+            { headers: { 'apikey': BB_SUPABASE_KEY, 'Authorization': 'Bearer ' + BB_SUPABASE_KEY } }
+        );
+        if (!usersRes.ok) throw new Error('HTTP users ' + usersRes.status);
+        const usersRows = await usersRes.json();
+
+        const permsRes = await fetch(
+            `${BB_SUPABASE_URL}/rest/v1/permissions?select=email,dashboard_id`,
+            { headers: { 'apikey': BB_SUPABASE_KEY, 'Authorization': 'Bearer ' + BB_SUPABASE_KEY } }
+        );
+        if (!permsRes.ok) throw new Error('HTTP permissions ' + permsRes.status);
+        const permsRows = await permsRes.json();
+
+        permissionsData.users = {};
+        permissionsData.usersData = {};
+        usersRows.forEach(u => {
+            permissionsData.users[u.email] = [];
+            permissionsData.usersData[u.email] = {
+                nombre: u.nombre,
+                base_conocimiento: u.base_conocimiento || false,
+                aliases: u.aliases || []
+            };
+        });
+        permsRows.forEach(p => {
+            if (permissionsData.users[p.email]) permissionsData.users[p.email].push(p.dashboard_id);
+        });
+
+        const n = Object.keys(permissionsData.users).length;
+        updateGithubStatus(true, `Sincronizado ✓ — ${n} usuarios`);
+        updateLastSync(); renderAll();
+        showAlert('✓ Sincronizado: ' + n + ' usuarios cargados', 'success');
     } catch(e) {
-        updateGithubStatus(false, 'Error de red');
+        updateGithubStatus(false, 'Error al sincronizar');
+        showAlert('⚠️ ' + e.message, 'error');
     }
 }
 
@@ -703,62 +726,13 @@ function parseUsersFromJSON(data) {
 
 // ─── SYNC ────────────────────────────────────────────────────────────────────
 async function syncFromGithub() {
-    // Si no hay token, sincronizar via URL pública (solo lectura)
-    if (!githubConfig.token) {
-        return syncFromGithubPublic();
-    }
-    if (!githubConfig.user || !githubConfig.repo) {
-        updateGithubStatus(false,'No configurado — ve a ⚙️ Configuración'); return;
-    }
-    updateGithubStatus(false,'Sincronizando...');
-    try {
-        const r = await fetch(`https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.file}`,
-            { headers:{ 'Authorization':'token '+githubConfig.token,'Accept':'application/vnd.github.v3+json' } });
-        if (r.ok) {
-            const d    = await r.json();
-            const json = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));
-            permissionsData.users = parseUsersFromJSON(json);
-            githubConfig.sha = d.sha;
-            localStorage.setItem('bbAnalyticsGithubConfig', JSON.stringify(githubConfig));
-            const n = Object.keys(permissionsData.users).length;
-            updateGithubStatus(true,'Sincronizado ✓ — '+n+' usuarios');
-            updateLastSync(); renderAll();
-            showAlert('✓ Sincronizado: '+n+' usuarios cargados','success');
-        } else if (r.status===404) { updateGithubStatus(false,'Archivo no encontrado'); showAlert('⚠️ Archivo no encontrado: '+githubConfig.file,'warning'); }
-        else if (r.status===401)   { updateGithubStatus(false,'Token inválido'); showAlert('⚠️ Token inválido.','error'); }
-        else { throw new Error('HTTP '+r.status); }
-    } catch(e) { updateGithubStatus(false,'Error al sincronizar'); showAlert('⚠️ '+e.message,'error'); }
+    return syncFromSupabase();
 }
 
 async function saveToGithub(silent = false) {
-    // Garantizar token compartido si no hay uno propio
-    if (!githubConfig.token) githubConfig.token = GITHUB_SHARED_TOKEN;
-    if (!githubConfig.token) { showAlert('⚠️ Error de configuración','error'); return; }
-    if (!githubConfig.sha)   { showAlert('⚠️ Sincroniza primero.','warning'); return; }
-    if (!silent && !confirm('¿Guardar cambios en GitHub?\n\nArchivo: '+githubConfig.file)) return;
-    updateGithubStatus(false,'Guardando...');
-    try {
-        const out = { users:{} };
-        Object.keys(permissionsData.users).forEach(e => {
-            out.users[e] = { dashboards: permissionsData.users[e] };
-            const ud = permissionsData.usersData && permissionsData.usersData[e];
-            if (ud && ud.base_conocimiento) out.users[e].base_conocimiento = true;
-            if (ud && ud.aliases && ud.aliases.length > 0) out.users[e].aliases = ud.aliases;
-        });
-        const r = await fetch(`https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.file}`, {
-            method:'PUT',
-            headers:{ 'Authorization':'token '+githubConfig.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json' },
-            body: JSON.stringify({ message:'Update permissions - '+new Date().toLocaleString('es-MX'), content: btoa(unescape(encodeURIComponent(JSON.stringify(out,null,4)))), sha: githubConfig.sha })
-        });
-        if (r.ok) {
-            const d = await r.json();
-            githubConfig.sha = d.content.sha;
-            localStorage.setItem('bbAnalyticsGithubConfig', JSON.stringify(githubConfig));
-            updateGithubStatus(true,'Guardado en GitHub ✓'); updateLastSync();
-            showAlert('✓ Cambios guardados en GitHub','success');
-        } else if (r.status===409) { updateGithubStatus(false,'Conflicto'); showAlert('⚠️ Conflicto: sincroniza primero.','error'); }
-        else { throw new Error('HTTP '+r.status); }
-    } catch(e) { updateGithubStatus(false,'Error'); showAlert('⚠️ '+e.message,'error'); }
+    // No-op: los cambios se guardan directamente en Supabase por cada operación
+    updateGithubStatus(true, 'Guardado en Supabase ✓');
+    updateLastSync();
 }
 
 // ─── UI HELPERS ──────────────────────────────────────────────────────────────
@@ -866,6 +840,29 @@ async function addUser() {
     const perms=Array.from(document.querySelectorAll('.permission-checkbox:checked')).map(cb=>cb.value);
     if (!perms.length) { showAlert('⚠️ Selecciona al menos un dashboard','error'); return; }
 
+    // INSERT usuario en Supabase
+    try {
+        const namePart_ = email.split('@')[0].split('.').map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(' ');
+        const uRes = await fetch(`${BB_SUPABASE_URL}/rest/v1/users`, {
+            method: 'POST',
+            headers: { 'apikey': BB_SUPABASE_KEY, 'Authorization': 'Bearer ' + BB_SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+            body: JSON.stringify({ email, nombre: namePart_, activo: true, base_conocimiento: false, aliases: [] })
+        });
+        if (!uRes.ok && uRes.status !== 409) throw new Error('Error creando usuario: ' + uRes.status);
+
+        // INSERT permisos
+        const permRows = perms.map(id => ({ email, dashboard_id: id }));
+        const pRes = await fetch(`${BB_SUPABASE_URL}/rest/v1/permissions`, {
+            method: 'POST',
+            headers: { 'apikey': BB_SUPABASE_KEY, 'Authorization': 'Bearer ' + BB_SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+            body: JSON.stringify(permRows)
+        });
+        if (!pRes.ok) throw new Error('Error guardando permisos: ' + pRes.status);
+    } catch(err) {
+        showAlert('⚠️ Error en Supabase: ' + err.message, 'error');
+        return;
+    }
+
     permissionsData.users[email] = perms;
     document.getElementById('newUserEmail').value='';
     document.querySelectorAll('.permission-checkbox').forEach(cb=>cb.checked=false);
@@ -898,13 +895,48 @@ async function addUser() {
         showAlert('✓ Usuario agregado. Correo no enviado: '+(err.text||err), 'warning');
     }
 }
-function deleteUser(email) {
-    if (confirm('¿Eliminar a '+email+'?')) { delete permissionsData.users[email]; renderAll(); showAlert('✓ Usuario eliminado','success'); }
+async function deleteUser(email) {
+    if (!confirm('¿Eliminar a '+email+'?')) return;
+    try {
+        const r = await fetch(`${BB_SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(email)}`, {
+            method: 'DELETE',
+            headers: { 'apikey': BB_SUPABASE_KEY, 'Authorization': 'Bearer ' + BB_SUPABASE_KEY }
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+    } catch(err) {
+        showAlert('⚠️ Error eliminando usuario: ' + err.message, 'error');
+        return;
+    }
+    delete permissionsData.users[email];
+    if (permissionsData.usersData) delete permissionsData.usersData[email];
+    renderAll();
+    showAlert('✓ Usuario eliminado', 'success');
 }
-function togglePermission(email,id) {
-    const p=permissionsData.users[email],i=p.indexOf(id);
-    if (i>-1) p.splice(i,1); else p.push(id);
-    renderAll(); showAlert('✓ Permiso actualizado','success');
+async function togglePermission(email, id) {
+    const p = permissionsData.users[email], i = p.indexOf(id);
+    try {
+        if (i > -1) {
+            const r = await fetch(`${BB_SUPABASE_URL}/rest/v1/permissions?email=eq.${encodeURIComponent(email)}&dashboard_id=eq.${id}`, {
+                method: 'DELETE',
+                headers: { 'apikey': BB_SUPABASE_KEY, 'Authorization': 'Bearer ' + BB_SUPABASE_KEY }
+            });
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            p.splice(i, 1);
+        } else {
+            const r = await fetch(`${BB_SUPABASE_URL}/rest/v1/permissions`, {
+                method: 'POST',
+                headers: { 'apikey': BB_SUPABASE_KEY, 'Authorization': 'Bearer ' + BB_SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                body: JSON.stringify({ email, dashboard_id: id })
+            });
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            p.push(id);
+        }
+    } catch(err) {
+        showAlert('⚠️ Error: ' + err.message, 'error');
+        return;
+    }
+    renderAll();
+    showAlert('✓ Permiso actualizado', 'success');
 }
 function editUserPermissions(email) {
     const cur=permissionsData.users[email]||[];
@@ -937,17 +969,39 @@ async function saveEditedPerms(email,btn) {
     // Detectar dashboards recién agregados (que no estaban antes)
     const added = newPerms.filter(id => !prevPerms.includes(id));
 
+    // Guardar en Supabase: borrar permisos actuales e insertar nuevos
+    try {
+        const delR = await fetch(`${BB_SUPABASE_URL}/rest/v1/permissions?email=eq.${encodeURIComponent(email)}`, {
+            method: 'DELETE',
+            headers: { 'apikey': BB_SUPABASE_KEY, 'Authorization': 'Bearer ' + BB_SUPABASE_KEY }
+        });
+        if (!delR.ok) throw new Error('Error borrando permisos: ' + delR.status);
+
+        if (newPerms.length > 0) {
+            const insR = await fetch(`${BB_SUPABASE_URL}/rest/v1/permissions`, {
+                method: 'POST',
+                headers: { 'apikey': BB_SUPABASE_KEY, 'Authorization': 'Bearer ' + BB_SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                body: JSON.stringify(newPerms.map(id => ({ email, dashboard_id: id })))
+            });
+            if (!insR.ok) throw new Error('Error insertando permisos: ' + insR.status);
+        }
+
+        // Actualizar aliases y base_conocimiento en users
+        const updR = await fetch(`${BB_SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(email)}`, {
+            method: 'PATCH',
+            headers: { 'apikey': BB_SUPABASE_KEY, 'Authorization': 'Bearer ' + BB_SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+            body: JSON.stringify({ base_conocimiento: hasKB, aliases })
+        });
+        if (!updR.ok) throw new Error('Error actualizando usuario: ' + updR.status);
+
+    } catch(e) {
+        showAlert('Error al guardar en Supabase: ' + e.message, 'error');
+        return;
+    }
+
     permissionsData.users[email] = newPerms;
     renderAll();
     m.remove();
-
-    // Guardar automáticamente en GitHub (silencioso, sin confirm)
-    try {
-        await saveToGithub(true);
-    } catch(e) {
-        showAlert('Error al guardar en GitHub: ' + e, 'error');
-        return;
-    }
 
     if (added.length > 0) {
         // Construir lista legible de dashboards nuevos
@@ -1254,3 +1308,4 @@ init();
 })();
 </script>
 </body>
+
