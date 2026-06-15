@@ -332,28 +332,33 @@ const GITHUB_USER         = 'franciscozamoramx';
 const GITHUB_REPO         = 'bbanalytics360';
 
 // ─── DASHBOARDS ───────────────────────────────────────────────────────────────
-const DASHBOARDS_CONFIG = [
-    { id: 'principal',             name: 'Inicio'                   },
-    { id: 'adt',                   name: 'ADT'                      },
-    { id: 'auditoria',             name: 'Auditoría de Salas'       },
-    { id: 'bigplayers',            name: "Big Player's"             },
-    { id: 'bolipoits',             name: 'Canje de Bolipoints'      },
-    { id: 'clientes',              name: 'Clientes Big Bola'        },
-    { id: 'desempeno',             name: 'Desempeño de Máquinas'    },
-    { id: 'diccionario',           name: "Diccionario KPI's"        },
-    { id: 'ingreso_tarjetas',      name: 'Ingreso por Tarjetas'     },
-    { id: 'ingresos_canal',        name: 'Ingresos por Canal'       },
-    { id: 'ventas',                name: 'Ventas'                   },
-    { id: 'inventario',            name: 'Inventario TI'            },
-    { id: 'promociones',           name: 'Promociones'              },
-    { id: 'proyectos',             name: 'Proyectos BI'             },
-    { id: 'oficina_proyectos',          name: 'Oficina Proyectos'        },
-    { id: 'rtp',                   name: 'RTP'                      },
-    { id: 'seguimiento_auditores', name: 'Seguimiento de Auditores' },
-    { id: 'logs_bi',               name: 'Logs BB Analytics 360'    },
-    { id: 'aforo',                 name: 'Aforo en salas'           },
-    { id: 'incidencias_cat',       name: 'Incidencias CAT'          }
-];
+const BB_SUPABASE_URL = 'https://sjljxynqpsyrhjefevdp.supabase.co';
+const BB_SUPABASE_KEY = 'sb_publishable_LpBbCf9gaDgQa7Bmn6c6QQ_a2sYf5y7';
+
+// Se llena dinámicamente desde Supabase al iniciar
+let DASHBOARDS_CONFIG = [];
+
+async function loadDashboardsConfig() {
+    try {
+        const res = await fetch(
+            `${BB_SUPABASE_URL}/rest/v1/dashboards?select=id,nombre&activo=eq.true&order=area,orden`,
+            {
+                headers: {
+                    'apikey': BB_SUPABASE_KEY,
+                    'Authorization': 'Bearer ' + BB_SUPABASE_KEY
+                }
+            }
+        );
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const rows = await res.json();
+        DASHBOARDS_CONFIG = rows.map(d => ({ id: d.id, name: d.nombre }));
+        console.log('✅ DASHBOARDS_CONFIG cargado desde Supabase:', DASHBOARDS_CONFIG.length);
+    } catch (err) {
+        console.error('❌ Error cargando DASHBOARDS_CONFIG:', err);
+        // Fallback mínimo para que el portal no quede vacío
+        DASHBOARDS_CONFIG = [{ id: 'principal', name: 'Inicio' }];
+    }
+}
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
 let permissionsData = { users: {} };
@@ -540,6 +545,9 @@ function doLogout() {
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 async function init() {
+    // 0. Cargar dashboards desde Supabase antes de cualquier render
+    await loadDashboardsConfig();
+
     // 1. ¿Hay token de activación? → mostrar pantalla de activación
     const isActivation = await maybeShowActivation();
     if (isActivation) return;
