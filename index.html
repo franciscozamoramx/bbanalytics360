@@ -310,8 +310,7 @@
                             90% { opacity: 1; }
                             100% { opacity: 0; }
                         }
-                    </style><!-- build:trigger -->
-</head>
+                    </style></head>
 <body>
     <!-- Canvas animado de fondo - Analytics -->
     <canvas id="bgCharts" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
@@ -949,150 +948,77 @@
     </script>
 
     <script>
-        // Mapeo de dashboards a URLs
-        const dashboardUrls = {
-            "principal": "", // Carrusel integrado
-            "adt": "https://app.powerbi.com/reportEmbed?reportId=1149b379-aad5-4876-bfe6-c325dc89308f&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
-            "auditoria": "https://app.powerbi.com/reportEmbed?reportId=23dbdb70-5e05-4e2f-9cf6-38a11489cd3e&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
-            "bigplayers": "https://app.powerbi.com/reportEmbed?reportId=8e08098b-ce0e-46af-a8b5-e90b0b216e76&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
-            "bolipoits": "https://app.powerbi.com/reportEmbed?reportId=74438490-c641-4240-930f-b55782ba7d39&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
-            "clientes": "https://app.powerbi.com/reportEmbed?reportId=64eb35ab-f5af-4e9f-a28d-824247601dde&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
-			"desempeno": "https://app.powerbi.com/reportEmbed?reportId=28c07103-a77e-42f4-a9ca-7d9345b48131&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
-			"diccionario": "https://app.powerbi.com/reportEmbed?reportId=95918a25-c06b-411a-a346-f462b03e557b&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
-            "ingreso_tarjetas": "https://app.powerbi.com/reportEmbed?reportId=4a1f75f7-2ff9-4914-b43b-1311b1a86fa8&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
-            "ingresos_canal": "https://app.powerbi.com/reportEmbed?reportId=f1ed4f65-5c7e-4d44-87bb-3db697dcf1d3&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
-            "ventas": "https://app.powerbi.com/reportEmbed?reportId=b0e290c7-1242-4454-8ba1-e97bd9b7f5a0&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
-			"inventario": "https://app.powerbi.com/reportEmbed?reportId=4fe689c1-3fa7-4632-8367-4b7a7abc492c&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
-            "promociones": "https://app.powerbi.com/reportEmbed?reportId=373b28bf-5d1b-46a0-b98b-4b3e378520c4&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
-            "proyectos": "https://app.powerbi.com/reportEmbed?reportId=c2e5834e-4e3d-418c-a9dc-43e33d79a62e&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
-            "oficina_proyectos": "https://app.powerbi.com/reportEmbed?reportId=fc5a0646-55ba-4b61-b478-0f015af3fd81&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
-            "rtp": "https://app.powerbi.com/reportEmbed?reportId=01ac285e-618f-43de-be89-d62b1a46374c&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
-            "seguimiento_auditores": "https://app.powerbi.com/reportEmbed?reportId=f298656f-f4fb-4110-9580-321f04c0cfd6&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
-            "logs_bi": "https://app.powerbi.com/reportEmbed?reportId=36b35095-427f-4ded-82d4-27ce644ddeac&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
-            "incidencias_cat": "https://app.powerbi.com/reportEmbed?reportId=813562ad-c52b-41ff-8586-f210dcb8a584&groupId=656ca7ba-1f79-47d9-be99-0f52953b2dd7&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX",
-			"aforo": "https://app.powerbi.com/reportEmbed?reportId=416f739b-51f2-4696-a698-c45636691de6&autoAuth=true&ctid=b19d1a80-fff1-4a7e-b9ce-93f694e7b65c&navContentPaneEnabled=false&filterPaneEnabled=false&language=es-MX"
+        // ==================== DASHBOARDS DESDE SUPABASE ====================
+        const BB_SUPABASE_URL = 'https://sjljxynqpsyrhjefevdp.supabase.co';
+        const BB_SUPABASE_KEY = 'sb_publishable_LpBbCf9gaDgQa7Bmn6c6QQ_a2sYf5y7';
+
+        // Objetos globales — se llenan al cargar desde Supabase
+        let dashboardUrls        = {};
+        let dashboardMobileUrls  = {};
+        let dashboardNames       = {};
+        let dashboardIcons       = {};
+        let dashboardImages      = {};
+        let dashboardDescriptions = {};
+        let areaConfig           = [];
+
+        const AREA_META = {
+            auditoria:   { label: 'Auditoría', color: '#FFB84A' },
+            comercial:   { label: 'Comercial',  color: '#4A9EFF' },
+            finanzas:    { label: 'Finanzas',   color: '#B47FFF' },
+            productos:   { label: 'Máquinas',   color: '#3DD68C' },
+            operaciones: { label: 'Operaciones',color: '#00C9A7' },
+            ti:          { label: 'TI',         color: '#FF7A6E' }
         };
 
-        // URLs de Power BI Service para móvil (abren en browser con layout vertical)
-        const dashboardMobileUrls = {
-            "bigplayers":           "https://app.powerbi.com/groups/a5d9b077-bf5c-4f5b-a90f-b4e374793ee8/reports/8e08098b-ce0e-46af-a8b5-e90b0b216e76",
-            "bolipoits":            "https://app.powerbi.com/groups/a5d9b077-bf5c-4f5b-a90f-b4e374793ee8/reports/74438490-c641-4240-930f-b55782ba7d39",
-            "clientes":             "https://app.powerbi.com/groups/a5d9b077-bf5c-4f5b-a90f-b4e374793ee8/reports/64eb35ab-f5af-4e9f-a28d-824247601dde",
-            "auditoria":            "https://app.powerbi.com/groups/c7d75b83-b07c-4e19-855d-2ae538c61094/reports/23dbdb70-5e05-4e2f-9cf6-38a11489cd3e",
-            "promociones":          "https://app.powerbi.com/groups/c7d75b83-b07c-4e19-855d-2ae538c61094/reports/373b28bf-5d1b-46a0-b98b-4b3e378520c4",
-            "seguimiento_auditores":"https://app.powerbi.com/groups/c7d75b83-b07c-4e19-855d-2ae538c61094/reports/f298656f-f4fb-4110-9580-321f04c0cfd6",
-            "ingreso_tarjetas":     "https://app.powerbi.com/groups/a1e1e4f8-5d9a-4922-bda8-02ec37780602/reports/4a1f75f7-2ff9-4914-b43b-1311b1a86fa8",
-            "ingresos_canal":       "https://app.powerbi.com/groups/a1e1e4f8-5d9a-4922-bda8-02ec37780602/reports/f1ed4f65-5c7e-4d44-87bb-3db697dcf1d3",
-            "ventas":               "https://app.powerbi.com/groups/a1e1e4f8-5d9a-4922-bda8-02ec37780602/reports/b0e290c7-1242-4454-8ba1-e97bd9b7f5a0",
-            "diccionario":          "https://app.powerbi.com/groups/me/reports/95918a25-c06b-411a-a346-f462b03e557b",
-            "proyectos":            "https://app.powerbi.com/groups/me/reports/c2e5834e-4e3d-418c-a9dc-43e33d79a62e",
-            "oficina_proyectos":         "https://app.powerbi.com/groups/bd6bb8c1-8457-4c0e-9cf2-eedd91672d1b/reports/fc5a0646-55ba-4b61-b478-0f015af3fd81",
-            "logs_bi":              "https://app.powerbi.com/groups/me/reports/36b35095-427f-4ded-82d4-27ce644ddeac",
-            "incidencias_cat":       "https://app.powerbi.com/groups/656ca7ba-1f79-47d9-be99-0f52953b2dd7/reports/813562ad-c52b-41ff-8586-f210dcb8a584",
-            "adt":                  "https://app.powerbi.com/groups/bd6bb8c1-8457-4c0e-9cf2-eedd91672d1b/reports/1149b379-aad5-4876-bfe6-c325dc89308f",
-            "desempeno":            "https://app.powerbi.com/groups/bd6bb8c1-8457-4c0e-9cf2-eedd91672d1b/reports/28c07103-a77e-42f4-a9ca-7d9345b48131",
-            "rtp":                  "https://app.powerbi.com/groups/bd6bb8c1-8457-4c0e-9cf2-eedd91672d1b/reports/01ac285e-618f-43de-be89-d62b1a46374c",
-            "aforo":                "https://app.powerbi.com/groups/bd6bb8c1-8457-4c0e-9cf2-eedd91672d1b/reports/416f739b-51f2-4696-a698-c45636691de6",
-            "inventario":           "https://app.powerbi.com/groups/656ca7ba-1f79-47d9-be99-0f52953b2dd7/reports/4fe689c1-3fa7-4632-8367-4b7a7abc492c"
-        };
+        async function loadDashboardsFromSupabase() {
+            try {
+                const res = await fetch(
+                    `${BB_SUPABASE_URL}/rest/v1/dashboards?select=*&activo=eq.true&order=area,orden`,
+                    {
+                        headers: {
+                            'apikey': BB_SUPABASE_KEY,
+                            'Authorization': 'Bearer ' + BB_SUPABASE_KEY
+                        }
+                    }
+                );
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const rows = await res.json();
 
-        // Mapeo de nombres de dashboards
-        const dashboardNames = {
-            "principal": "Inicio",
-            "adt": "ADT",
-            "auditoria": "Auditoría de Salas",
-            "bigplayers": "Big Player's",
-            "bolipoits": "Canje de Bolipoints",
-            "clientes": "Clientes Big Bola",
-			"desempeno": "Desempeño de Máquinas",
-            "diccionario": "Diccionario KPI's",
-			"ingreso_tarjetas": "Ingreso por Tarjetas",
-			"ingresos_canal": "Ingresos por Canal",
-			"ventas": "Ventas",
-			"inventario": "Inventario TI",
-			"promociones": "Promociones",
-            "proyectos": "Proyectos BI",
-            "oficina_proyectos": "Oficina Proyectos",
-            "rtp": "RTP",
-            "seguimiento_auditores": "Seguimiento de Auditores",
-            "logs_bi": "Logs BB Analytics 360",
-			"incidencias_cat": "Incidencias CAT",
-			"aforo": "Aforo en salas"
-        };
+                const areaMap = {};
 
-        // Mapeo de íconos para dashboards
-        const dashboardIcons = {
-            "principal": "fas fa-home",
-            "adt": "fas fa-chart-line",
-            "auditoria": "fas fa-search",
-            "bigplayers": "fas fa-gem",
-            "bolipoits": "fas fa-ticket-alt",
-            "clientes": "fas fa-user-friends",
-			"desempeno": "fas fa-tachometer-alt",
-            "diccionario": "fas fa-book",
-			"ingreso_tarjetas": "fas fa-credit-card",
-			"ingresos_canal": "fas fa-money-bill-wave",
-			"ventas": "fas fa-chart-line",
-			"inventario": "fas fa-desktop",
-            "promociones": "fas fa-gift",
-            "proyectos": "fas fa-project-diagram",
-            "oficina_proyectos": "fas fa-tasks",
-            "rtp": "fas fa-coins",
-            "seguimiento_auditores": "fas fa-user-check",
-            "logs_bi": "fas fa-clipboard-list",
-			"incidencias_cat": "fas fa-headset",
-			"aforo": "fas fa-users"
-        };
+                rows.forEach(d => {
+                    dashboardNames[d.id]        = d.nombre;
+                    dashboardIcons[d.id]        = d.icono || 'fas fa-chart-bar';
+                    dashboardImages[d.id]       = d.imagen_url || 'https://i.postimg.cc/QCN4dPG1/analisis-de-datos.png';
+                    dashboardDescriptions[d.id] = d.descripcion || 'Dashboard de Business Intelligence';
+                    dashboardUrls[d.id]         = d.embed_url || '';
+                    if (d.mobile_url) dashboardMobileUrls[d.id] = d.mobile_url;
 
-        // Mapeo de imágenes para el carrusel
-        const dashboardImages = {
-            "principal": "https://i.postimg.cc/nLbWqZYg/Intro-BB-Analytics-260.png",
-            "adt": "https://i.postimg.cc/Xq3MYDhc/ADT.jpg",
-            "auditoria": "https://i.postimg.cc/G2qk2tyB/Auditorias.png",
-            "bigplayers": "https://i.postimg.cc/1tRC7ngP/BigPlayers.jpg",
-            "bolipoits": "https://i.postimg.cc/tJPwZSD2/Bolipoints.png",
-            "clientes": "https://i.postimg.cc/jSmczYBF/Captura-de-pantalla-2026-04-23-185933.png",
-			"desempeno": "https://i.postimg.cc/zGmWzXXF/Desempeño.png",
-            "ingreso_tarjetas": "https://i.postimg.cc/DyZ659M1/Pagos_con_tarjeta.png",
-            "ingresos_canal": "https://i.postimg.cc/XJpCYFfm/Captura-de-pantalla-2026-06-04-114353.png",
-            "ventas": "https://i.postimg.cc/tgzNh1Nf/Captura-de-pantalla-2026-06-10-113051.png",
-			"inventario": "https://i.postimg.cc/W1rHdPLR/Inventario.jpg",
-            "promociones": "https://i.postimg.cc/q7TZnZ4N/Promociones.jpg",
-            "proyectos": "https://i.postimg.cc/43Q21bxB/Proyectos.jpg",
-            "oficina_proyectos": "https://i.postimg.cc/tJHnCwsj/Captura-de-pantalla-2026-04-17-121911.png",
-            "rtp": "https://i.postimg.cc/rmhhBVW4/RTP.jpg",
-            "diccionario": "https://i.postimg.cc/fy05qV9V/Diccionario.png",
-            "seguimiento_auditores": "https://i.postimg.cc/W1cYKw8K/Seguimiento.png",
-            "logs_bi": "https://i.postimg.cc/wM3nqxRV/Logs.png",
-			"incidencias_cat": "https://i.postimg.cc/cCPp95p6/Captura-de-pantalla-2026-05-13-165514.png",
-			"aforo": "https://i.postimg.cc/gkPbSG0Q/aforo.png"
-        };
+                    if (d.area && AREA_META[d.area]) {
+                        if (!areaMap[d.area]) areaMap[d.area] = [];
+                        areaMap[d.area].push(d.id);
+                    }
+                });
 
-        // Mapeo de descripciones para el carrusel
-        const dashboardDescriptions = {
-            "principal": "Bienvenido a BB Analytics 360",
-            "adt": "Average Daily Theoretical",
-            "auditoria": "Control y seguimiento de auditorías",
-            "bigplayers": "Análisis de promociones BigPlayer otorgadas",
-            "bolipoits": "Analitica del sistema Big Club Reward",
-            "clientes": "Analítica de clientes Big Bola",
-			"desempeno": "Rendimiento de máquinas",
-            "ingreso_tarjetas": "Ingresos por tarjeta por pasarela de pago",
-            "ingresos_canal": "Ingresos por kiosco y caja: canal, billete y tarjeta",
-            "ventas": "Analítica de las ventas",
-			"inventario": "Análisis de equipos tecnológicos",
-            "promociones": "Análisis de campañas promocionales",
-            "proyectos": "Seguimiento de proyectos de BI",
-            "oficina_proyectos": "Seguimiento de proyectos de la Oficina de Proyectos",
-            "rtp": "Return to Player",
-            "seguimiento_auditores": "Control de actividades de auditoría",
-			"diccionario": "Definiciones y métricas clave",
-            "logs_bi": "Registro de accesos y actividad de BB Analytics 360",
-			"incidencias_cat": "Incidencias Gestionadas por el Centro de Atención al Cliente",
-			"aforo": "Aforo electrónico en salas"
-        };
+                // Reconstruir areaConfig en orden fijo
+                const AREA_ORDER = ['auditoria', 'comercial', 'finanzas', 'productos', 'operaciones', 'ti'];
+                areaConfig = AREA_ORDER
+                    .filter(k => areaMap[k] && areaMap[k].length > 0)
+                    .map(k => ({
+                        key:        k,
+                        label:      AREA_META[k].label,
+                        color:      AREA_META[k].color,
+                        dashboards: areaMap[k]
+                    }));
 
-        // ==================== AIRTABLE LOGGER COMPLETO ====================
+                console.log('✅ Dashboards cargados desde Supabase:', rows.length);
+            } catch (err) {
+                console.error('❌ Error cargando dashboards desde Supabase:', err);
+                // Fallback: objetos quedan vacíos — el portal mostrará sin dashboards
+            }
+        }
+
+        // ==================== AIRTABLE LOGGER COMPLETO ====================        // ==================== AIRTABLE LOGGER COMPLETO ====================
         const LOGGING_ENABLED = true;
         let currentSessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         let userIP = null;
@@ -1687,6 +1613,8 @@
 
         // Función para cargar los permisos desde el JSON
         async function loadPermissions() {
+            // Cargar dashboards desde Supabase antes de renderizar el portal
+            await loadDashboardsFromSupabase();
             const CACHE_KEY = 'bb_permissions_cache';
             const CACHE_TTL = 30 * 1000; // 30 segundos — evita bloquear usuarios recién dados de alta
 
@@ -4444,17 +4372,6 @@ REGLAS:
                         window.bbLogger = {
                             log: function(action, dashboard, user, extra) {
                                 try {
-                                    const now = new Date();
-                                    const parts = new Intl.DateTimeFormat('en-CA', {
-                                        timeZone: 'America/Mexico_City',
-                                        year: 'numeric', month: '2-digit', day: '2-digit',
-                                        hour: '2-digit', minute: '2-digit', second: '2-digit',
-                                        hour12: false
-                                    }).formatToParts(now);
-                                    const p = {};
-                                    parts.forEach(function(x) { p[x.type] = x.value; });
-                                    const localISO = p.year+'-'+p.month+'-'+p.day+'T'+p.hour+':'+p.minute+':'+p.second;
-
                                     fetch(SUPABASE_URL + '/rest/v1/logs', {
                                         method: 'POST',
                                         headers: {
@@ -4464,7 +4381,6 @@ REGLAS:
                                             'Prefer': 'return=minimal'
                                         },
                                         body: JSON.stringify({
-                                            FechaHora: localISO,
                                             Usuario: user || currentUser,
                                             Accion: action,
                                             Dashboard: dashboard || '',
