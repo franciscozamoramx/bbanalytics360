@@ -1863,7 +1863,7 @@ REGLAS:
                         : SYSTEM_PROMPT;
                     const res = await fetch(atob('aHR0cHM6Ly9hcGkuYW50aHJvcGljLmNvbS92MS9tZXNzYWdlcw=='), {
                         method: 'POST',
-                        headers: {'Content-Type':'application/json','x-api-key':AI_KEY,atob('YW50aHJvcGljLXZlcnNpb24='):'2023-06-01',atob('YW50aHJvcGljLWRhbmdlcm91cy1kaXJlY3QtYnJvd3Nlci1hY2Nlc3M='):'true'},
+                        headers: {'Content-Type':'application/json','x-api-key':AI_KEY,[atob('YW50aHJvcGljLXZlcnNpb24=')]:'2023-06-01',[atob('YW50aHJvcGljLWRhbmdlcm91cy1kaXJlY3QtYnJvd3Nlci1hY2Nlc3M=')]:'true'},
                         body: JSON.stringify({model:atob('Y2xhdWRlLWhhaWt1LTQtNS0yMDI1MTAwMQ=='),max_tokens:300,system:systemWithKB,messages:chatHistory.slice(-6)})
                     });
                     const data = await res.json();
@@ -2220,8 +2220,8 @@ REGLAS:
                             headers: {
                                 'Content-Type': 'application/json',
                                 'x-api-key': AI_KEY,
-                                atob('YW50aHJvcGljLXZlcnNpb24='): '2023-06-01',
-                                atob('YW50aHJvcGljLWRhbmdlcm91cy1kaXJlY3QtYnJvd3Nlci1hY2Nlc3M='): 'true'
+                                [atob('YW50aHJvcGljLXZlcnNpb24=')]: '2023-06-01',
+                                [atob('YW50aHJvcGljLWRhbmdlcm91cy1kaXJlY3QtYnJvd3Nlci1hY2Nlc3M=')]: 'true'
                             },
                             body: JSON.stringify({
                                 model: atob('Y2xhdWRlLWhhaWt1LTQtNS0yMDI1MTAwMQ=='),
