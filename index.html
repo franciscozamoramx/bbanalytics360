@@ -1393,21 +1393,6 @@
         const logger = new SupabaseLogger();
         window.bbLogger = logger;
 
-        // Permisos por defecto
-        const defaultPermissions = {
-            "users": {
-                "francisco.zamora@bigbola.com": {
-                    "dashboards": ["principal", "adt", "bigplayers", "desempeno", "proyectos", "rtp", "diccionario"]
-                },
-                "gerente@bigbola.com": {
-                    "dashboards": ["principal", "adt"]
-                },
-                "demo@bigbola.com": {
-                    "dashboards": ["principal", "adt", "auditoria", "bigplayers", "desempeno"]
-                }
-            }
-        };
-
         let permissionsData = null;
         let currentUser = null;
         let currentUserPermissions = [];
@@ -1657,8 +1642,8 @@
 
             } catch (error) {
                 console.error('❌ Error al cargar permisos desde Supabase:', error);
-                permissionsData = defaultPermissions;
-                showStatus('Usando permisos por defecto - ' + error.message, 'error');
+                permissionsData = { users: {} };
+                showStatus('Error cargando permisos. Intenta de nuevo.', 'error');
             }
         }
 
@@ -4936,6 +4921,7 @@ REGLAS:
 
 <div id="contextMenuMessageLogin" style="position: fixed; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.7); color: white; padding: 10px; border-radius: 5px; z-index: 10000; font-size: 14px; display: none; animation: 3s ease-in-out 0s 1 normal none running fadeInOut;">Menú contextual deshabilitado</div>
 </body></html>
+
 
 
 
