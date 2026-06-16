@@ -1554,9 +1554,17 @@
                 // CÓDIGO EXISTENTE
                 showStatus('Cargando permisos...', 'loading');
                 const loginBtn_ = document.getElementById('loginBtn');
+                const enableBtn = () => { if (loginBtn_) { loginBtn_.disabled = false; loginBtn_.style.opacity = ''; loginBtn_.style.cursor = ''; } };
                 if (loginBtn_) { loginBtn_.disabled = true; loginBtn_.style.opacity = '0.5'; loginBtn_.style.cursor = 'not-allowed'; }
-                await loadPermissions();
-                if (loginBtn_) { loginBtn_.disabled = false; loginBtn_.style.opacity = ''; loginBtn_.style.cursor = ''; }
+                try {
+                    await loadPermissions();
+                } catch(e) {
+                    console.error('Error en loadPermissions:', e);
+                    permissionsData = { users: {} };
+                    showStatus('Error cargando permisos. Intenta de nuevo.', 'error');
+                } finally {
+                    enableBtn();
+                }
             })();
             
             const loginBtn = document.getElementById('loginBtn');
@@ -4921,6 +4929,7 @@ REGLAS:
 
 <div id="contextMenuMessageLogin" style="position: fixed; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.7); color: white; padding: 10px; border-radius: 5px; z-index: 10000; font-size: 14px; display: none; animation: 3s ease-in-out 0s 1 normal none running fadeInOut;">Menú contextual deshabilitado</div>
 </body></html>
+
 
 
 
