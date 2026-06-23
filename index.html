@@ -1722,6 +1722,7 @@ REGLAS:
                 #tgInputMain{flex:1;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:white;font-size:12px;padding:8px 10px;outline:none;font-family:inherit;}
                 #tgInputMain:focus{border-color:#229ED9;}
                 #tgSendBtnMain{width:36px;height:36px;background:#229ED9;border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+                #tgWidgetMain.tg-fade{opacity:0.4;transition:opacity 0.3s ease-in-out;}
             `;
             document.head.appendChild(style);
 
@@ -1937,6 +1938,11 @@ REGLAS:
                 
                 // ✅ CAMBIO 3: Fire-and-forget — no bloquea la apertura del dashboard
                 logger.log('login', null, currentUser);
+                // Hacer el widget 60% transparente después de 10 segundos
+                setTimeout(function() {
+                    const widget = document.getElementById('tgWidgetMain');
+                    if (widget) widget.classList.add('tg-fade');
+                }, 10000);
                 
                 // Mostrar información breve
                 document.getElementById('userEmail').textContent = email;
@@ -4942,6 +4948,7 @@ REGLAS:
 
 <div id="contextMenuMessageLogin" style="position: fixed; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.7); color: white; padding: 10px; border-radius: 5px; z-index: 10000; font-size: 14px; display: none; animation: 3s ease-in-out 0s 1 normal none running fadeInOut;">Menú contextual deshabilitado</div>
 </body></html>
+
 
 
 
