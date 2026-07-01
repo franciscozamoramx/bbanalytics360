@@ -6,5 +6,13 @@
     "unique_users": 0,
     "actions_summary": {},
     "device_summary": {}
+  },
+  "2026-07-01-08": {
+    "hour": "2026-07-01-08",
+    "generated_at": "2026-07-01T08:06:46.584Z",
+    "total_logs_in_hour": 0,
+    "unique_users": 0,
+    "actions_summary": {},
+    "device_summary": {}
   }
 }
