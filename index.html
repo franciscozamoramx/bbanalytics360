@@ -1681,7 +1681,7 @@
             if (!document.body) { setTimeout(function(){ buildMainTelegramWidget(tgUser); }, 200); return; }
             const TG_BOT  = atob('ODYwOTMxNjM1ODpBQUYwdmZkcXVkUlFXR0hjLW9mZHJidUJfSFJDY1BqTGZxRQ==');
             const TG_CHAT = ['-100','3946550368'].join('');
-            const AI_KEY = ['sk-ant-api03-','ZaEcZDwWiK4X03eCPIszWbK6eFhQo63zZBMuWYOO2rb2ASzx','fhLQjhM0JWTotGC49mn6xGGph1ujdrKvrzqbzg-gGwnSwAA'].join('');
+            const ANTHROPIC_KEY = ['sk-ant-api03-','ZaEcZDwWiK4X03eCPIszWbK6eFhQo63zZBMuWYOO2rb2ASzx','fhLQjhM0JWTotGC49mn6xGGph1ujdrKvrzqbzg-gGwnSwAA'].join('');
             const ADMIN_TG = 'Business_Intelligence_BB';
             const SYSTEM_PROMPT = `Eres el asistente virtual de soporte de BB Analytics 360, el portal de Business Intelligence de Big Bola Casinos. Responde siempre en español, de forma concisa y amable.
 INFORMACIÓN DEL SISTEMA:
@@ -1864,10 +1864,10 @@ REGLAS:
                     const systemWithKB = kbMatch
                         ? SYSTEM_PROMPT + '\n\nCASOCONOCIDO: ' + kbMatch.problema + '\nSOLUCION PROBADA: ' + kbMatch.solucion
                         : SYSTEM_PROMPT;
-                    const res = await fetch(atob('aHR0cHM6Ly9hcGkuYW50aHJvcGljLmNvbS92MS9tZXNzYWdlcw=='), {
+                    const res = await fetch('https://api.anthropic.com/v1/messages', {
                         method: 'POST',
-                        headers: {'Content-Type':'application/json','x-api-key':AI_KEY,[atob('YW50aHJvcGljLXZlcnNpb24=')]:'2023-06-01',[atob('YW50aHJvcGljLWRhbmdlcm91cy1kaXJlY3QtYnJvd3Nlci1hY2Nlc3M=')]:'true'},
-                        body: JSON.stringify({model:atob('Y2xhdWRlLWhhaWt1LTQtNS0yMDI1MTAwMQ=='),max_tokens:300,system:systemWithKB,messages:chatHistory.slice(-6)})
+                        headers: {'Content-Type':'application/json','x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+                        body: JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,system:systemWithKB,messages:chatHistory.slice(-6)})
                     });
                     const data = await res.json();
                     const reply = data.content && data.content[0] ? data.content[0].text : 'Lo siento, no pude procesar tu pregunta. Intenta de nuevo.';
@@ -2191,7 +2191,7 @@ REGLAS:
                     img.src = url;
                 }
 
-                const AI_KEY = ['sk-ant-api03-','ZaEcZDwWiK4X03eCPIszWbK6eFhQo63zZBMuWYOO2rb2ASzx','fhLQjhM0JWTotGC49mn6xGGph1ujdrKvrzqbzg-gGwnSwAA'].join('');
+                const ANTHROPIC_KEY = ['sk-ant-api03-','ZaEcZDwWiK4X03eCPIszWbK6eFhQo63zZBMuWYOO2rb2ASzx','fhLQjhM0JWTotGC49mn6xGGph1ujdrKvrzqbzg-gGwnSwAA'].join('');
 
                 async function sendMessage() {
                     const input = dw.document.getElementById('tgInput');
@@ -2225,16 +2225,16 @@ REGLAS:
                             if (best) kbSystem += '\n\nCASOCONOCIDO: ' + best.problema + '\nSOLUCION PROBADA: ' + best.solucion;
                         } catch(e) {}
 
-                        const res = await fetch(atob('aHR0cHM6Ly9hcGkuYW50aHJvcGljLmNvbS92MS9tZXNzYWdlcw=='), {
+                        const res = await fetch('https://api.anthropic.com/v1/messages', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'x-api-key': AI_KEY,
-                                [atob('YW50aHJvcGljLXZlcnNpb24=')]: '2023-06-01',
-                                [atob('YW50aHJvcGljLWRhbmdlcm91cy1kaXJlY3QtYnJvd3Nlci1hY2Nlc3M=')]: 'true'
+                                'x-api-key': ANTHROPIC_KEY,
+                                'anthropic-version': '2023-06-01',
+                                'anthropic-dangerous-direct-browser-access': 'true'
                             },
                             body: JSON.stringify({
-                                model: atob('Y2xhdWRlLWhhaWt1LTQtNS0yMDI1MTAwMQ=='),
+                                model: 'claude-haiku-4-5-20251001',
                                 max_tokens: 300,
                                 system: kbSystem,
                                 messages: chatHistory.slice(-6)
@@ -4952,6 +4952,7 @@ REGLAS:
 
 <div id="contextMenuMessageLogin" style="position: fixed; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.7); color: white; padding: 10px; border-radius: 5px; z-index: 10000; font-size: 14px; display: none; animation: 3s ease-in-out 0s 1 normal none running fadeInOut;">Menú contextual deshabilitado</div>
 </body></html>
+
 
 
 
