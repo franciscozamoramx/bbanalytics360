@@ -55,26 +55,22 @@ jobs:
                       '--output', out_file,
                       '--compact', 'true',
                       '--self-defending', 'false',
-                      '--identifier-names-generator', 'hexadecimal',
-                      '--string-array', 'true',
-                      '--string-array-encoding', 'base64',
-                      '--string-array-threshold', '0.75',
-                      '--string-array-rotate', 'true',
-                      '--string-array-shuffle', 'true',
-                      '--split-strings', 'true',
-                      '--split-strings-chunk-length', '10',
-                      '--numbers-to-expressions', 'true',
+                      '--identifier-names-generator', 'mangled',
+                      '--string-array', 'false',
+                      '--split-strings', 'false',
+                      '--numbers-to-expressions', 'false',
                       '--dead-code-injection', 'false',
                       '--control-flow-flattening', 'false',
+                      '--rename-globals', 'false',
                   ], capture_output=True, text=True)
 
                   if result.returncode == 0 and os.path.exists(out_file):
                       with open(out_file, 'r', encoding='utf-8') as of:
                           obf_code = of.read()
                       replacements.append((m.start(), m.end(), m.group(1) + '\n' + obf_code + '\n' + m.group(3)))
-                      print(f"  [{i}] {len(code):,} -> {len(obf_code):,} chars OK")
+                      print(f'  [{i}] {len(code):,} -> {len(obf_code):,} chars OK')
                   else:
-                      print(f"  [{i}] ERROR: {result.stderr[:200]}")
+                      print(f'  [{i}] ERROR: {result.stderr[:200]}')
                       replacements.append((m.start(), m.end(), m.group(0)))
 
               for start, end, new_text in sorted(replacements, key=lambda x: x[0], reverse=True):
@@ -82,12 +78,12 @@ jobs:
 
               with open(output_file, 'w', encoding='utf-8') as f:
                   f.write(content)
-              print(f"Guardado: {output_file}")
+              print(f'Guardado: {output_file}')
 
           html_files = list(set(glob.glob('**/*.html', recursive=True) + glob.glob('*.html')))
           os.makedirs('obfuscated', exist_ok=True)
           for f in html_files:
-              print(f"Ofuscando: {f}")
+              print(f'Ofuscando: {f}')
               obfuscate_html(f, f'obfuscated/{os.path.basename(f)}')
           PYEOF
 
