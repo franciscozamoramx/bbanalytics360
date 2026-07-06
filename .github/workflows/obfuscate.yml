@@ -1,15 +1,12 @@
-name: Obfuscate & Deploy to main-obf
+name: Deploy to main-obf
 
 on:
   push:
     branches:
       - dev
-    paths:
-      - '*.html'
-      - '**/*.html'
 
 jobs:
-  obfuscate-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,74 +16,6 @@ jobs:
           ref: dev
           fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install javascript-obfuscator
-        run: npm install -g javascript-obfuscator
-
-      - name: Obfuscate HTML files
-        run: |
-          python3 << 'PYEOF'
-          import re, subprocess, os, glob
-
-          def obfuscate_html(input_file, output_file):
-              with open(input_file, 'r', encoding='utf-8') as f:
-                  content = f.read()
-
-              pattern = r'(<script(?![^>]*src)[^>]*>)([\s\S]*?)(</script>)'
-              matches = list(re.finditer(pattern, content, re.IGNORECASE))
-              replacements = []
-
-              for i, m in enumerate(matches):
-                  code = m.group(2).strip()
-                  if len(code) < 50:
-                      continue
-
-                  js_file = f'/tmp/script_{i}.js'
-                  out_file = f'/tmp/script_{i}_obf.js'
-                  with open(js_file, 'w', encoding='utf-8') as jf:
-                      jf.write(code)
-
-                  result = subprocess.run([
-                      'javascript-obfuscator', js_file,
-                      '--output', out_file,
-                      '--compact', 'true',
-                      '--self-defending', 'false',
-                      '--identifier-names-generator', 'mangled',
-                      '--string-array', 'false',
-                      '--split-strings', 'false',
-                      '--numbers-to-expressions', 'false',
-                      '--dead-code-injection', 'false',
-                      '--control-flow-flattening', 'false',
-                      '--rename-globals', 'false',
-                  ], capture_output=True, text=True)
-
-                  if result.returncode == 0 and os.path.exists(out_file):
-                      with open(out_file, 'r', encoding='utf-8') as of:
-                          obf_code = of.read()
-                      replacements.append((m.start(), m.end(), m.group(1) + '\n' + obf_code + '\n' + m.group(3)))
-                      print(f'  [{i}] {len(code):,} -> {len(obf_code):,} chars OK')
-                  else:
-                      print(f'  [{i}] ERROR: {result.stderr[:200]}')
-                      replacements.append((m.start(), m.end(), m.group(0)))
-
-              for start, end, new_text in sorted(replacements, key=lambda x: x[0], reverse=True):
-                  content = content[:start] + new_text + content[end:]
-
-              with open(output_file, 'w', encoding='utf-8') as f:
-                  f.write(content)
-              print(f'Guardado: {output_file}')
-
-          html_files = list(set(glob.glob('**/*.html', recursive=True) + glob.glob('*.html')))
-          os.makedirs('obfuscated', exist_ok=True)
-          for f in html_files:
-              print(f'Ofuscando: {f}')
-              obfuscate_html(f, f'obfuscated/{os.path.basename(f)}')
-          PYEOF
-
       - name: Checkout main-obf
         uses: actions/checkout@v4
         with:
@@ -94,24 +23,20 @@ jobs:
           path: main-obf-branch
           token: ${{ secrets.BB_PAT }}
 
-      - name: Copy obfuscated files to main-obf
+      - name: Copy files to main-obf
         run: |
-          for f in obfuscated/*.html; do
-            fname=$(basename "$f")
-            cp "$f" "main-obf-branch/$fname"
-            echo "Copiado: $fname"
-          done
+          rsync -av --exclude='.git' --exclude='.github' --exclude='main-obf-branch' ./ main-obf-branch/
 
       - name: Commit and push to main-obf
         run: |
           cd main-obf-branch
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add *.html
+          git add -A
           if git diff --staged --quiet; then
-            echo "Sin cambios en HTML, nada que hacer."
+            echo "Sin cambios, nada que hacer."
           else
-            git commit -m "chore: auto-obfuscate JS from dev [skip ci]"
+            git commit -m "chore: sync from dev [skip ci]"
             git push origin main-obf
             echo "Push a main-obf exitoso"
           fi
