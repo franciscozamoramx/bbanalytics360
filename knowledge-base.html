@@ -234,7 +234,256 @@
 </div>
 
 <script>
-const GITHUB_TOKEN=['ghp_Ph3F','QlX17h7tgeHxxZKjX','IRA0RtvlX4DLfIG']['join'](''),GITHUB_REPO='franciscozamoramx/bbanalytics360',KB_FILE='knowledge.json',PERMISSIONS_URL='https://raw.githubusercontent.com/'+GITHUB_REPO+'/main/PERMISSION_FILES_BI/permissions.json';let kbData=null,currentUser=null,currentFilter='all';async function doLogin(){const a=document['getElementById']('loginUser')['value']['trim']()['toLowerCase'](),b=document['getElementById']('loginPass')['value'],c=document['getElementById']('loginError');c['textContent']='';if(!a||!b){c['textContent']='Ingresa\x20tu\x20correo\x20y\x20contraseña.';return;}if(!a['endsWith']('@bigbola.com')){c['textContent']='Solo\x20se\x20permiten\x20correos\x20corporativos\x20@bigbola.com.';return;}try{const d=await fetch('https://api.github.com/repos/'+GITHUB_REPO+'/contents/PERMISSION_FILES_BI/permissions.json',{'headers':{'Authorization':'token\x20'+GITHUB_TOKEN}}),f=await d['json'](),g=JSON['parse'](atob(f['content']['replace'](/\n/g,''))),h=g['users']&&g['users'][a];if(!h){c['textContent']='Usuario\x20no\x20encontrado\x20en\x20el\x20sistema.';return;}if(!h['base_conocimiento']){c['textContent']='No\x20tienes\x20permiso\x20para\x20acceder\x20a\x20la\x20Base\x20de\x20Conocimiento.';return;}const i=await crypto['subtle']['digest']('SHA-256',new TextEncoder()['encode'](b)),j=Array['from'](new Uint8Array(i))['map'](l=>l['toString'](0x10)['padStart'](0x2,'0'))['join'](''),k=h['passHash']||localStorage['getItem']('bbKBPassHash_'+a);if(!k)localStorage['setItem']('bbKBPassHash_'+a,j);else{if(j!==k){c['textContent']='Contraseña\x20incorrecta.';return;}}currentUser=a,document['getElementById']('headerUser')['textContent']=a,document['getElementById']('loginScreen')['style']['display']='none',document['getElementById']('mainApp')['style']['display']='block',await loadKB();}catch(l){c['textContent']='Error\x20al\x20verificar\x20acceso.\x20Intenta\x20de\x20nuevo.';}}function logout(){currentUser=null,document['getElementById']('loginScreen')['style']['display']='flex',document['getElementById']('mainApp')['style']['display']='none',document['getElementById']('loginPass')['value']='',document['getElementById']('loginError')['textContent']='';}async function loadKB(){try{const a=await fetch('https://raw.githubusercontent.com/'+GITHUB_REPO+'/main/'+KB_FILE+'?t='+Date['now']());kbData=await a['json'](),renderStats(),renderCases();}catch(b){document['getElementById']('casesList')['innerHTML']='<div\x20class=\x22empty-state\x22>Error\x20al\x20cargar\x20los\x20casos.</div>';}}function renderStats(){const a=kbData['casos']||[];document['getElementById']('statTotal')['textContent']=a['length'],document['getElementById']('statAccesos')['textContent']=a['filter'](b=>b['area']==='Accesos')['length'],document['getElementById']('statTecnico')['textContent']=a['filter'](b=>b['area']==='Técnico')['length'],document['getElementById']('statDatos')['textContent']=a['filter'](b=>b['area']==='Datos')['length'];}function renderCases(){const a=(kbData['casos']||[])['filter'](d=>currentFilter==='all'||d['area']===currentFilter),b=document['getElementById']('casesList');if(!a['length']){b['innerHTML']='<div\x20class=\x22empty-state\x22>No\x20hay\x20casos\x20en\x20esta\x20categoría.</div>';return;}b['innerHTML']=a['map'](c=>'\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22case-card\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22case-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22case-area\x20area-'+c['area']+'\x22>'+c['area']+'</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22case-problema\x22>'+c['problema']+'</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22case-solucion\x22>'+c['solucion']+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22case-keywords\x22>'+c['keywords']['map'](d=>'<span\x20class=\x22kw-tag\x22>'+d+'</span>')['join']('')+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22case-footer\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22btn-edit\x22\x20onclick=\x22editCase('+c['id']+')\x22>✏️\x20Editar</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22btn-delete\x22\x20onclick=\x22deleteCase('+c['id']+')\x22>✕\x20Eliminar</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20')['join']('');}function filterCases(a,b){currentFilter=a,document['querySelectorAll']('.filter-btn')['forEach'](c=>c['classList']['remove']('active')),b['classList']['add']('active'),renderCases();}async function saveKB(a){const b=await fetch('https://api.github.com/repos/'+GITHUB_REPO+'/contents/'+KB_FILE,{'headers':{'Authorization':'token\x20'+GITHUB_TOKEN}}),c=await b['json']();kbData['updated']=new Date()['toISOString']()['split']('T')[0x0],await fetch('https://api.github.com/repos/'+GITHUB_REPO+'/contents/'+KB_FILE,{'method':'PUT','headers':{'Authorization':'token\x20'+GITHUB_TOKEN,'Content-Type':'application/json'},'body':JSON['stringify']({'message':a,'content':btoa(unescape(encodeURIComponent(JSON['stringify'](kbData,null,0x2)))),'sha':c['sha']})});}async function addCase(){const a=document['getElementById']('kbProblema')['value']['trim'](),b=document['getElementById']('kbSolucion')['value']['trim'](),c=document['getElementById']('kbKeywords')['value']['trim'](),d=document['getElementById']('kbArea')['value'],f=document['getElementById']('saveStatus');if(!a||!b||!c){f['style']['color']='#fca5a5',f['textContent']='Completa\x20todos\x20los\x20campos.';return;}f['style']['color']='#93c5fd',f['textContent']='Guardando...',kbData['casos']['push']({'id':Date['now'](),'problema':a,'solucion':b,'keywords':c['split'](',')['map'](g=>g['trim']())['filter'](Boolean),'area':d,'resuelto':!![]});try{await saveKB('feat:\x20agregar\x20caso\x20—\x20'+a['substring'](0x0,0x32)),f['style']['color']='#6ee7b7',f['textContent']='✓\x20Caso\x20guardado.',document['getElementById']('kbProblema')['value']='',document['getElementById']('kbSolucion')['value']='',document['getElementById']('kbKeywords')['value']='',renderStats(),renderCases(),setTimeout(()=>f['textContent']='',0xbb8);}catch(g){f['style']['color']='#fca5a5',f['textContent']='Error\x20al\x20guardar.',kbData['casos']['pop']();}}async function deleteCase(a){if(!confirm('¿Eliminar\x20este\x20caso?'))return;kbData['casos']=kbData['casos']['filter'](b=>b['id']!==a);try{await saveKB('fix:\x20eliminar\x20caso\x20de\x20knowledge\x20base'),renderStats(),renderCases();}catch(b){alert('Error\x20al\x20eliminar.');}}function editCase(a){const b=kbData['casos']['find'](d=>d['id']===a);if(!b)return;const c=document['createElement']('div');c['className']='modal-overlay',c['innerHTML']='\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22modal-box\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h3>✏️\x20Editar\x20caso</h3>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22form-grid\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22field\x20full\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<label>Problema</label>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<input\x20id=\x22edit-problema\x22\x20type=\x22text\x22\x20value=\x22'+b['problema']['replace'](/"/g,'&quot;')+'\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22field\x20full\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<label>Solución</label>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<textarea\x20id=\x22edit-solucion\x22>'+b['solucion']+'</textarea>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22field\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<label>Palabras\x20clave\x20(separadas\x20por\x20coma)</label>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<input\x20id=\x22edit-keywords\x22\x20type=\x22text\x22\x20value=\x22'+b['keywords']['join'](',\x20')+'\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22field\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<label>Área</label>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<select\x20id=\x22edit-area\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<option\x20value=\x22Accesos\x22\x20'+(b['area']==='Accesos'?'selected':'')+'>Accesos</option>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<option\x20value=\x22Técnico\x22\x20'+(b['area']==='Técnico'?'selected':'')+'>Técnico</option>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<option\x20value=\x22Datos\x22\x20'+(b['area']==='Datos'?'selected':'')+'>Datos</option>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<option\x20value=\x22General\x22\x20'+(b['area']==='General'?'selected':'')+'>General</option>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</select>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20id=\x22edit-status\x22\x20style=\x22font-size:0.82em;min-height:16px;margin-top:10px;\x22></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22modal-actions\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22btn-save\x22\x20onclick=\x22saveEditCase('+a+',\x20this)\x22>Guardar\x20cambios</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22btn-cancel\x22\x20onclick=\x22this.closest(\x27.modal-overlay\x27).remove()\x22>Cancelar</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20',document['body']['appendChild'](c);}async function saveEditCase(a,b){const c=b['closest']('.modal-overlay'),d=c['querySelector']('#edit-status'),f=c['querySelector']('#edit-problema')['value']['trim'](),g=c['querySelector']('#edit-solucion')['value']['trim'](),h=c['querySelector']('#edit-keywords')['value']['trim'](),i=c['querySelector']('#edit-area')['value'];if(!f||!g||!h){d['style']['color']='#fca5a5',d['textContent']='Completa\x20todos\x20los\x20campos.';return;}d['style']['color']='#93c5fd',d['textContent']='Guardando...';const j=kbData['casos']['findIndex'](k=>k['id']===a);if(j===-0x1)return;kbData['casos'][j]={...kbData['casos'][j],'problema':f,'solucion':g,'keywords':h['split'](',')['map'](l=>l['trim']())['filter'](Boolean),'area':i};try{await saveKB('fix:\x20editar\x20caso\x20—\x20'+f['substring'](0x0,0x32)),c['remove'](),renderStats(),renderCases();}catch(k){d['style']['color']='#fca5a5',d['textContent']='Error\x20al\x20guardar.';}}(function(){const a=document['getElementById']('loginCanvas'),b=a['getContext']('2d'),c=['#FFD700','#229ED9','#00ced1','#ff6b6b','#3DD68C'];let d,e,f=[],g;function h(){d=a['width']=window['innerWidth'],e=a['height']=window['innerHeight'],f=Array['from']({'length':0x28},()=>({'x':Math['random']()*d,'y':Math['random']()*e,'r':Math['random']()*2.5+0.5,'vy':-(Math['random']()*0.5+0.1),'vx':(Math['random']()-0.5)*0.15,'op':Math['random']()*0.35+0.08,'color':c[Math['floor'](Math['random']()*c['length'])],'pulse':Math['random']()*Math['PI']*0x2}));}function i(j){b['clearRect'](0x0,0x0,d,e),f['forEach'](k=>{k['y']+=k['vy'],k['x']+=k['vx'],k['pulse']+=0.02;k['y']<-0xa&&(k['y']=e+0x5,k['x']=Math['random']()*d);const l=Math['sin'](k['pulse'])*0.1+0.9;b['globalAlpha']=k['op']*l,b['fillStyle']=k['color'],b['beginPath'](),b['arc'](k['x'],k['y'],k['r'],0x0,Math['PI']*0x2),b['fill'](),b['globalAlpha']=k['op']*l*0.25,b['beginPath'](),b['arc'](k['x'],k['y'],k['r']*0x3,0x0,Math['PI']*0x2),b['fill']();}),g=requestAnimationFrame(i);}h(),window['addEventListener']('resize',h),g=requestAnimationFrame(i);}());
+// ── CONFIG ───────────────────────────────────────────────────────────────────
+const GITHUB_TOKEN = ['ghp_Ph3F','QlX17h7tgeHxxZKjX','IRA0RtvlX4DLfIG'].join('');
+const GITHUB_REPO  = 'franciscozamoramx/bbanalytics360';
+const KB_FILE      = 'knowledge.json';
+const PERMISSIONS_URL = 'https://raw.githubusercontent.com/' + GITHUB_REPO + '/main/PERMISSION_FILES_BI/permissions.json';
+
+let kbData = null;
+let currentUser = null;
+let currentFilter = 'all';
+
+// ── LOGIN ────────────────────────────────────────────────────────────────────
+async function doLogin() {
+    const email = document.getElementById('loginUser').value.trim().toLowerCase();
+    const pass  = document.getElementById('loginPass').value;
+    const errEl = document.getElementById('loginError');
+    errEl.textContent = '';
+
+    if (!email || !pass) { errEl.textContent = 'Ingresa tu correo y contraseña.'; return; }
+    if (!email.endsWith('@bigbola.com')) { errEl.textContent = 'Solo se permiten correos corporativos @bigbola.com.'; return; }
+
+    try {
+        const res  = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/PERMISSION_FILES_BI/permissions.json', {
+            headers: { 'Authorization': 'token ' + GITHUB_TOKEN }
+        });
+        const file = await res.json();
+        const data = JSON.parse(atob(file.content.replace(/\n/g,'')));
+        const user = data.users && data.users[email];
+
+        if (!user) { errEl.textContent = 'Usuario no encontrado en el sistema.'; return; }
+        if (!user.base_conocimiento) { errEl.textContent = 'No tienes permiso para acceder a la Base de Conocimiento.'; return; }
+
+        // Validar contraseña (hash SHA-256)
+        const hashBuf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pass));
+        const hashHex = Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2,'0')).join('');
+        const stored  = user.passHash || localStorage.getItem('bbKBPassHash_' + email);
+
+        if (!stored) {
+            // Primera vez: guardar hash
+            localStorage.setItem('bbKBPassHash_' + email, hashHex);
+        } else if (hashHex !== stored) {
+            errEl.textContent = 'Contraseña incorrecta.';
+            return;
+        }
+
+        currentUser = email;
+        document.getElementById('headerUser').textContent = email;
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
+        await loadKB();
+    } catch(e) {
+        errEl.textContent = 'Error al verificar acceso. Intenta de nuevo.';
+    }
+}
+
+function logout() {
+    currentUser = null;
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('mainApp').style.display = 'none';
+    document.getElementById('loginPass').value = '';
+    document.getElementById('loginError').textContent = '';
+}
+
+// ── KNOWLEDGE BASE ───────────────────────────────────────────────────────────
+async function loadKB() {
+    try {
+        const res = await fetch('https://raw.githubusercontent.com/' + GITHUB_REPO + '/main/' + KB_FILE + '?t=' + Date.now());
+        kbData = await res.json();
+        renderStats();
+        renderCases();
+    } catch(e) {
+        document.getElementById('casesList').innerHTML = '<div class="empty-state">Error al cargar los casos.</div>';
+    }
+}
+
+function renderStats() {
+    const casos = kbData.casos || [];
+    document.getElementById('statTotal').textContent   = casos.length;
+    document.getElementById('statAccesos').textContent = casos.filter(c => c.area === 'Accesos').length;
+    document.getElementById('statTecnico').textContent = casos.filter(c => c.area === 'Técnico').length;
+    document.getElementById('statDatos').textContent   = casos.filter(c => c.area === 'Datos').length;
+}
+
+function renderCases() {
+    const casos = (kbData.casos || []).filter(c => currentFilter === 'all' || c.area === currentFilter);
+    const list = document.getElementById('casesList');
+    if (!casos.length) { list.innerHTML = '<div class="empty-state">No hay casos en esta categoría.</div>'; return; }
+    list.innerHTML = casos.map(caso => `
+        <div class="case-card">
+            <div class="case-header">
+                <span class="case-area area-${caso.area}">${caso.area}</span>
+                <span class="case-problema">${caso.problema}</span>
+            </div>
+            <div class="case-solucion">${caso.solucion}</div>
+            <div class="case-keywords">${caso.keywords.map(k => `<span class="kw-tag">${k}</span>`).join('')}</div>
+            <div class="case-footer">
+                <button class="btn-edit" onclick="editCase(${caso.id})">✏️ Editar</button>
+                <button class="btn-delete" onclick="deleteCase(${caso.id})">✕ Eliminar</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function filterCases(area, btn) {
+    currentFilter = area;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCases();
+}
+
+async function saveKB(commitMsg) {
+    const shaRes  = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + KB_FILE, { headers: { 'Authorization': 'token ' + GITHUB_TOKEN } });
+    const shaData = await shaRes.json();
+    kbData.updated = new Date().toISOString().split('T')[0];
+    await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + KB_FILE, {
+        method: 'PUT',
+        headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: commitMsg, content: btoa(unescape(encodeURIComponent(JSON.stringify(kbData, null, 2)))), sha: shaData.sha })
+    });
+}
+
+async function addCase() {
+    const problema = document.getElementById('kbProblema').value.trim();
+    const solucion = document.getElementById('kbSolucion').value.trim();
+    const keywords = document.getElementById('kbKeywords').value.trim();
+    const area     = document.getElementById('kbArea').value;
+    const status   = document.getElementById('saveStatus');
+
+    if (!problema || !solucion || !keywords) { status.style.color='#fca5a5'; status.textContent='Completa todos los campos.'; return; }
+    status.style.color='#93c5fd'; status.textContent='Guardando...';
+
+    kbData.casos.push({ id: Date.now(), problema, solucion, keywords: keywords.split(',').map(k=>k.trim()).filter(Boolean), area, resuelto: true });
+    try {
+        await saveKB('feat: agregar caso — ' + problema.substring(0,50));
+        status.style.color='#6ee7b7'; status.textContent='✓ Caso guardado.';
+        document.getElementById('kbProblema').value='';
+        document.getElementById('kbSolucion').value='';
+        document.getElementById('kbKeywords').value='';
+        renderStats(); renderCases();
+        setTimeout(() => status.textContent='', 3000);
+    } catch(e) { status.style.color='#fca5a5'; status.textContent='Error al guardar.'; kbData.casos.pop(); }
+}
+
+async function deleteCase(id) {
+    if (!confirm('¿Eliminar este caso?')) return;
+    kbData.casos = kbData.casos.filter(c => c.id !== id);
+    try { await saveKB('fix: eliminar caso de knowledge base'); renderStats(); renderCases(); }
+    catch(e) { alert('Error al eliminar.'); }
+}
+
+function editCase(id) {
+    const caso = kbData.casos.find(c => c.id === id);
+    if (!caso) return;
+    const m = document.createElement('div');
+    m.className = 'modal-overlay';
+    m.innerHTML = `
+        <div class="modal-box">
+            <h3>✏️ Editar caso</h3>
+            <div class="form-grid">
+                <div class="field full">
+                    <label>Problema</label>
+                    <input id="edit-problema" type="text" value="${caso.problema.replace(/"/g,'&quot;')}">
+                </div>
+                <div class="field full">
+                    <label>Solución</label>
+                    <textarea id="edit-solucion">${caso.solucion}</textarea>
+                </div>
+                <div class="field">
+                    <label>Palabras clave (separadas por coma)</label>
+                    <input id="edit-keywords" type="text" value="${caso.keywords.join(', ')}">
+                </div>
+                <div class="field">
+                    <label>Área</label>
+                    <select id="edit-area">
+                        <option value="Accesos" ${caso.area==='Accesos'?'selected':''}>Accesos</option>
+                        <option value="Técnico" ${caso.area==='Técnico'?'selected':''}>Técnico</option>
+                        <option value="Datos" ${caso.area==='Datos'?'selected':''}>Datos</option>
+                        <option value="General" ${caso.area==='General'?'selected':''}>General</option>
+                    </select>
+                </div>
+            </div>
+            <div id="edit-status" style="font-size:0.82em;min-height:16px;margin-top:10px;"></div>
+            <div class="modal-actions">
+                <button class="btn-save" onclick="saveEditCase(${id}, this)">Guardar cambios</button>
+                <button class="btn-cancel" onclick="this.closest('.modal-overlay').remove()">Cancelar</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(m);
+}
+
+async function saveEditCase(id, btn) {
+    const m       = btn.closest('.modal-overlay');
+    const status  = m.querySelector('#edit-status');
+    const problema = m.querySelector('#edit-problema').value.trim();
+    const solucion = m.querySelector('#edit-solucion').value.trim();
+    const keywords = m.querySelector('#edit-keywords').value.trim();
+    const area     = m.querySelector('#edit-area').value;
+    if (!problema || !solucion || !keywords) { status.style.color='#fca5a5'; status.textContent='Completa todos los campos.'; return; }
+    status.style.color='#93c5fd'; status.textContent='Guardando...';
+    const idx = kbData.casos.findIndex(c => c.id === id);
+    if (idx === -1) return;
+    kbData.casos[idx] = { ...kbData.casos[idx], problema, solucion, keywords: keywords.split(',').map(k=>k.trim()).filter(Boolean), area };
+    try {
+        await saveKB('fix: editar caso — ' + problema.substring(0,50));
+        m.remove();
+        renderStats(); renderCases();
+    } catch(e) { status.style.color='#fca5a5'; status.textContent='Error al guardar.'; }
+}
+
+// ── CANVAS LOGIN ANIMATION ───────────────────────────────────────────────────
+(function() {
+    const canvas = document.getElementById('loginCanvas');
+    const ctx = canvas.getContext('2d');
+    const colors = ['#FFD700','#229ED9','#00ced1','#ff6b6b','#3DD68C'];
+    let W, H, particles = [], raf;
+
+    function resize() {
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+        particles = Array.from({length:40}, () => ({
+            x: Math.random()*W, y: Math.random()*H,
+            r: Math.random()*2.5+0.5,
+            vy: -(Math.random()*0.5+0.1),
+            vx: (Math.random()-0.5)*0.15,
+            op: Math.random()*0.35+0.08,
+            color: colors[Math.floor(Math.random()*colors.length)],
+            pulse: Math.random()*Math.PI*2
+        }));
+
+    }
+
+    function animate(t) {
+        ctx.clearRect(0,0,W,H);
+        // Partículas
+        particles.forEach(p => {
+            p.y+=p.vy; p.x+=p.vx; p.pulse+=0.02;
+            if(p.y<-10){p.y=H+5;p.x=Math.random()*W;}
+            const flicker = Math.sin(p.pulse)*0.1+0.9;
+            ctx.globalAlpha=p.op*flicker; ctx.fillStyle=p.color;
+            ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+            ctx.globalAlpha=p.op*flicker*0.25; ctx.beginPath(); ctx.arc(p.x,p.y,p.r*3,0,Math.PI*2); ctx.fill();
+        });
+
+        raf = requestAnimationFrame(animate);
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+    raf = requestAnimationFrame(animate);
+})();
 </script>
 </body>
 </html>

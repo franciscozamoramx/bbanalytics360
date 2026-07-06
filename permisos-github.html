@@ -300,11 +300,1009 @@
 </div>
 
 <script>
-const EMAILJS_PUBLIC_KEY='i8jJnO_gXmp3LwrXZ',EMAILJS_SERVICE_ID='service_5703ddf',EMAILJS_TEMPLATE_ID='template_m63jqxf',EMAILJS_TEMPLATE_USUARIO='template_x3alsku',EMAILJS_TEMPLATE_NUEVO_ACCESO=EMAILJS_TEMPLATE_USUARIO;async function sendEmail(a,b){const c=await fetch('https://api.emailjs.com/api/v1.0/email/send',{'method':'POST','headers':{'Content-Type':'application/json'},'body':JSON['stringify']({'lib_version':'4.4.1','user_id':EMAILJS_PUBLIC_KEY,'service_id':EMAILJS_SERVICE_ID,'template_id':a,'template_params':b})}),d=await c['text']();if(!c['ok'])throw new Error('EmailJS\x20'+c['status']+':\x20'+d);return d;}const GITHUB_SHARED_TOKEN=['ghp_Vsr2','geXJFdA2gyIfgF2M','cL31GK9Vrz2eFw1r']['join'](''),GITHUB_USER='franciscozamoramx',GITHUB_REPO='bbanalytics360',BB_SUPABASE_URL='https://sjljxynqpsyrhjefevdp.supabase.co',BB_SUPABASE_KEY='sb_publishable_LpBbCf9gaDgQa7Bmn6c6QQ_a2sYf5y7';let DASHBOARDS_CONFIG=[];async function loadDashboardsConfig(){try{const a=await fetch(BB_SUPABASE_URL+'/rest/v1/dashboards?select=id,nombre&activo=eq.true&order=area,orden',{'headers':{'apikey':BB_SUPABASE_KEY,'Authorization':'Bearer\x20'+BB_SUPABASE_KEY}});if(!a['ok'])throw new Error('HTTP\x20'+a['status']);const b=await a['json']();DASHBOARDS_CONFIG=b['map'](c=>({'id':c['id'],'name':c['nombre']})),console['log']('✅\x20DASHBOARDS_CONFIG\x20cargado\x20desde\x20Supabase:',DASHBOARDS_CONFIG['length']);}catch(c){console['error']('❌\x20Error\x20cargando\x20DASHBOARDS_CONFIG:',c),DASHBOARDS_CONFIG=[{'id':'principal','name':'Inicio'}];}}let permissionsData={'users':{}},githubConfig={'user':GITHUB_USER,'repo':GITHUB_REPO,'token':GITHUB_SHARED_TOKEN,'file':'PERMISSION_FILES_BI/permissions.json'};const SALT='bbanalytics360_v2',SECRET='BBAnalytics360_'+SALT;async function sha256(a){const b=await crypto['subtle']['digest']('SHA-256',new TextEncoder()['encode'](a));return Array['from'](new Uint8Array(b))['map'](c=>c['toString'](0x10)['padStart'](0x2,'0'))['join']('');}function getAdmins(){try{return JSON['parse'](localStorage['getItem']('bb_admins_cache')||'[]');}catch(a){return[];}}function saveAdmins(b){localStorage['setItem']('bb_admins_cache',JSON['stringify'](b));}async function saveAdminsToGithub(a){if(!githubConfig['token'])return;try{const b='https://api.github.com/repos/'+githubConfig['user']+'/'+githubConfig['repo']+'/contents/PERMISSION_FILES_BI/admins.json',c=localStorage['getItem']('bb_admins_sha')||undefined,f={'message':'Update\x20admins','content':btoa(unescape(encodeURIComponent(JSON['stringify'](a,null,0x2))))};if(c)f['sha']=c;const g=await fetch(b,{'method':'PUT','headers':{'Authorization':'token\x20'+githubConfig['token'],'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},'body':JSON['stringify'](f)});if(g['ok']){const h=await g['json']();localStorage['setItem']('bb_admins_sha',h['content']['sha']);}}catch(i){}saveAdmins(a);}async function maybeShowActivation(){const a=new URLSearchParams(window['location']['search']),b=a['get']('token'),c=a['get']('em'),d=a['get']('nm');if(!b||!c||!d)return![];document['getElementById']('portalRoot')['style']['display']='none',document['getElementById']('loginOverlay')['style']['display']='none',document['getElementById']('activationScreen')['style']['display']='flex';let f,g;try{f=decodeURIComponent(atob(c)),g=decodeURIComponent(atob(d));}catch(j){return showActivationError('Enlace\x20inválido.'),!![];}const h=(await sha256(f+SECRET))['substring'](0x0,0x28);if(b!==h)return showActivationError('Este\x20enlace\x20no\x20es\x20válido.'),!![];const i=document['getElementById']('activationGreeting');if(i)i['textContent']='Hola\x20'+g['split']('\x20')[0x0]+',\x20establece\x20tu\x20contraseña\x20para\x20activar\x20tu\x20cuenta';return document['getElementById']('activationScreen')['dataset']['email']=f,document['getElementById']('activationScreen')['dataset']['name']=g,document['getElementById']('activationScreen')['dataset']['token']=b,!![];}function showActivationError(a){const b=document['getElementById']('activationError');b&&(b['style']['display']='block',b['textContent']=a);}async function confirmActivation(){const a=document['getElementById']('activationError'),b=document['getElementById']('actPass1')['value'],c=document['getElementById']('actPass2')['value'];a['style']['display']='none';const d=new URLSearchParams(window['location']['search']),f=d['get']('token'),g=d['get']('em'),h=d['get']('nm');if(!f||!g||!h){a['style']['display']='block',a['textContent']='Enlace\x20incompleto.\x20Solicita\x20un\x20nuevo\x20correo\x20de\x20activacion.';return;}let i,j;try{i=decodeURIComponent(atob(g)),j=decodeURIComponent(atob(h));}catch(p){a['style']['display']='block',a['textContent']='Enlace\x20invalido.';return;}const k=(await sha256(i+SECRET))['substring'](0x0,0x28);if(f!==k){a['style']['display']='block',a['textContent']='Enlace\x20no\x20valido.\x20Solicita\x20un\x20nuevo\x20correo.';return;}if(b['length']<0x8){a['style']['display']='block',a['textContent']='Minimo\x208\x20caracteres';return;}if(b!==c){a['style']['display']='block',a['textContent']='Las\x20contrasenas\x20no\x20coinciden';return;}const l=document['getElementById']('actBtn');l['disabled']=!![],l['textContent']='Activando...';const m=await sha256(b+SALT);let n=getAdmins(),o=n['findIndex'](q=>q['email']===i);o===-0x1?n['push']({'name':j,'email':i,'status':'active','passHash':m,'createdAt':new Date()['toISOString'](),'activatedAt':new Date()['toISOString']()}):(n[o]['passHash']=m,n[o]['status']='active',n[o]['activatedAt']=new Date()['toISOString'](),n[o]['name']=n[o]['name']||j),saveAdmins(n),saveAdminsToGithub(n)['catch'](()=>{}),sessionStorage['setItem']('bb_admin_auth',i),sessionStorage['setItem']('bb_activated_name',j['split']('\x20')[0x0]),sessionStorage['setItem']('bb_skip_github_admins','1'),window['location']['href']=window['location']['pathname'];}async function doLogin(){const a=document['getElementById']('loginUser')['value']['trim']()['toLowerCase'](),b=document['getElementById']('loginPass')['value'],c=document['getElementById']('loginError');c['style']['display']='none';if(!a||!b){c['style']['display']='block',c['textContent']='Completa\x20usuario\x20y\x20contraseña';return;}const d=await sha256(b+SALT),e=getAdmins(),f=e['find'](i=>i['email']['toLowerCase']()===a&&i['passHash']===d&&i['status']==='active'),g=await sha256('BB@Admin2024'+SALT),h=a==='admin'&&d===g;if(f||h){sessionStorage['setItem']('bb_admin_auth',a);if(h)sessionStorage['setItem']('bb_is_master','1');else sessionStorage['removeItem']('bb_is_master');document['getElementById']('loginOverlay')['style']['display']='none',document['getElementById']('portalRoot')['style']['display']='block',document['getElementById']('topbarLogout')['style']['display']='block',loadGithubConfig(),renderAdmins(),applyRolePermissions();}else c['style']['display']='block',c['textContent']='Usuario\x20o\x20contraseña\x20incorrectos',document['getElementById']('loginPass')['value']='';}function doLogout(){sessionStorage['removeItem']('bb_admin_auth'),document['getElementById']('loginOverlay')['style']['display']='flex',document['getElementById']('portalRoot')['style']['display']='none',document['getElementById']('topbarLogout')['style']['display']='none',document['getElementById']('loginUser')['value']='',document['getElementById']('loginPass')['value']='';}async function init(){await loadDashboardsConfig();const a=await maybeShowActivation();if(a)return;const b=sessionStorage['getItem']('bb_admin_auth');if(b){document['getElementById']('loginOverlay')['style']['display']='none',document['getElementById']('portalRoot')['style']['display']='block',document['getElementById']('topbarLogout')['style']['display']='block';const c=sessionStorage['getItem']('bb_activated_name');c&&(sessionStorage['removeItem']('bb_activated_name'),setTimeout(()=>showAlert('✓\x20Cuenta\x20activada.\x20¡Bienvenido,\x20'+c+'!','success'),0x190)),loadGithubConfig(),applyRolePermissions(),renderAdmins();}else{document['getElementById']('loginOverlay')['style']['display']='flex',document['getElementById']('portalRoot')['style']['display']='none';const d=sessionStorage['getItem']('bb_skip_github_admins');if(d)sessionStorage['removeItem']('bb_skip_github_admins');else try{const f=await fetch('https://raw.githubusercontent.com/franciscozamoramx/bbanalytics360/main/PERMISSION_FILES_BI/admins.json?t='+Date['now']());if(f['ok']){const g=await f['json'](),h=getAdmins(),i=g['map'](j=>{const k=h['find'](l=>l['email']===j['email']);if(k&&k['passHash']&&!j['passHash'])return k;if(k&&k['status']==='active'&&j['status']==='pending')return k;return j;});h['forEach'](j=>{if(!i['find'](k=>k['email']===j['email']))i['push'](j);}),saveAdmins(i);}}catch(j){}}}function loadGithubConfig(){const a=localStorage['getItem']('bbAnalyticsGithubConfig');if(a)try{const b=JSON['parse'](a);githubConfig['user']=b['user']||GITHUB_USER,githubConfig['repo']=b['repo']||GITHUB_REPO,githubConfig['token']=b['token']||GITHUB_SHARED_TOKEN,githubConfig['sha']=b['sha']||'';}catch(c){}if(!githubConfig['token'])githubConfig['token']=GITHUB_SHARED_TOKEN;if(githubConfig['token']!==GITHUB_SHARED_TOKEN){githubConfig['token']=GITHUB_SHARED_TOKEN;const d=JSON['parse'](localStorage['getItem']('bbAnalyticsGithubConfig')||'{}');d['token']=GITHUB_SHARED_TOKEN,localStorage['setItem']('bbAnalyticsGithubConfig',JSON['stringify'](d));}document['getElementById']('githubUser')['value']=githubConfig['user'],document['getElementById']('githubRepo')['value']=githubConfig['repo'],document['getElementById']('githubToken')['value']=githubConfig['token'],updateGithubStatus(!![],'Conectado\x20—\x20sincronizando...'),document['getElementById']('syncBtn')['disabled']=![],syncFromGithub();}async function syncFromSupabase(){updateGithubStatus(![],'Sincronizando\x20desde\x20Supabase...');try{const a=await fetch(BB_SUPABASE_URL+'/rest/v1/users?select=email,nombre,activo,base_conocimiento,aliases&activo=eq.true',{'headers':{'apikey':BB_SUPABASE_KEY,'Authorization':'Bearer\x20'+BB_SUPABASE_KEY}});if(!a['ok'])throw new Error('HTTP\x20users\x20'+a['status']);const b=await a['json'](),c=await fetch(BB_SUPABASE_URL+'/rest/v1/permissions?select=email,dashboard_id',{'headers':{'apikey':BB_SUPABASE_KEY,'Authorization':'Bearer\x20'+BB_SUPABASE_KEY}});if(!c['ok'])throw new Error('HTTP\x20permissions\x20'+c['status']);const d=await c['json']();permissionsData['users']={},permissionsData['usersData']={},b['forEach'](g=>{permissionsData['users'][g['email']]=[],permissionsData['usersData'][g['email']]={'nombre':g['nombre'],'base_conocimiento':g['base_conocimiento']||![],'aliases':g['aliases']||[]};}),d['forEach'](g=>{if(permissionsData['users'][g['email']])permissionsData['users'][g['email']]['push'](g['dashboard_id']);});const f=Object['keys'](permissionsData['users'])['length'];updateGithubStatus(!![],'Sincronizado\x20✓\x20—\x20'+f+'\x20usuarios'),updateLastSync(),renderAll(),showAlert('✓\x20Sincronizado:\x20'+f+'\x20usuarios\x20cargados','success');}catch(g){updateGithubStatus(![],'Error\x20al\x20sincronizar'),showAlert('⚠️\x20'+g['message'],'error');}}function saveGithubConfig(){githubConfig['user']=document['getElementById']('githubUser')['value']['trim'](),githubConfig['repo']=document['getElementById']('githubRepo')['value']['trim'](),githubConfig['token']=document['getElementById']('githubToken')['value']['trim'](),githubConfig['file']='PERMISSION_FILES_BI/permissions.json';if(!githubConfig['user']||!githubConfig['repo']||!githubConfig['token']){showAlert('⚠️\x20Completa\x20todos\x20los\x20campos','error','alertContainerConfig');return;}localStorage['setItem']('bbAnalyticsGithubConfig',JSON['stringify'](githubConfig)),updateGithubStatus(!![],'Configuración\x20guardada'),document['getElementById']('syncBtn')['disabled']=![],showAlert('✓\x20Configuración\x20guardada.\x20Probando\x20conexión...','success','alertContainerConfig'),setTimeout(testGithubConnection,0x320);}async function testGithubConnection(){if(!githubConfig['token']){showAlert('⚠️\x20Configura\x20GitHub\x20primero','error','alertContainerConfig');return;}updateGithubStatus(![],'Probando\x20conexión...');try{const a=await fetch('https://api.github.com/repos/'+githubConfig['user']+'/'+githubConfig['repo']+'/contents/'+githubConfig['file'],{'headers':{'Authorization':'token\x20'+githubConfig['token'],'Accept':'application/vnd.github.v3+json'}});if(a['ok'])updateGithubStatus(!![],'Conexión\x20exitosa\x20✓'),showAlert('✓\x20Conexión\x20exitosa.','success','alertContainerConfig');else{if(a['status']===0x194)updateGithubStatus(![],'Archivo\x20no\x20encontrado'),showAlert('⚠️\x20Archivo\x20no\x20encontrado:\x20'+githubConfig['file'],'warning','alertContainerConfig');else a['status']===0x191?(updateGithubStatus(![],'Token\x20inválido'),showAlert('⚠️\x20Token\x20inválido\x20o\x20expirado.','error','alertContainerConfig')):(updateGithubStatus(![],'Error\x20'+a['status']),showAlert('⚠️\x20Error:\x20'+a['status'],'error','alertContainerConfig'));}}catch(b){updateGithubStatus(![],'Error\x20de\x20red'),showAlert('⚠️\x20'+b['message'],'error','alertContainerConfig');}}function parseUsersFromJSON(a){const b={};if(!a['users'])return b;if(!permissionsData['usersData'])permissionsData['usersData']={};return Object['keys'](a['users'])['forEach'](c=>{const d=a['users'][c];if(Array['isArray'](d))b[c]=d;else{if(d&&Array['isArray'](d['dashboards']))b[c]=d['dashboards'];else b[c]=[];}if(d&&d['base_conocimiento']){if(!permissionsData['usersData'][c])permissionsData['usersData'][c]={};permissionsData['usersData'][c]['base_conocimiento']=!![];}if(d&&d['aliases']&&d['aliases']['length']>0x0){if(!permissionsData['usersData'][c])permissionsData['usersData'][c]={};permissionsData['usersData'][c]['aliases']=d['aliases'];}}),b;}async function syncFromGithub(){return syncFromSupabase();}async function saveToGithub(a=![]){updateGithubStatus(!![],'Guardado\x20en\x20Supabase\x20✓'),updateLastSync();}function updateGithubStatus(a,b){document['getElementById']('githubIndicator')['className']='status-indicator\x20'+(a?'connected':'disconnected'),document['getElementById']('githubStatusText')['textContent']=b;}function updateLastSync(){document['getElementById']('lastSync')['textContent']=new Date()['toLocaleTimeString']('es-MX',{'hour':'2-digit','minute':'2-digit'});}function switchTab(a,b){document['querySelectorAll']('.tab-btn')['forEach'](c=>c['classList']['remove']('active')),document['querySelectorAll']('.tab-content')['forEach'](d=>d['classList']['remove']('active'));if(b)b['classList']['add']('active');else document['querySelectorAll']('.tab-btn')['forEach'](c=>{if((c['getAttribute']('onclick')||'')['includes']('\x27'+a+'\x27'))c['classList']['add']('active');});document['getElementById']('tab-'+a)['classList']['add']('active');}function showAlert(b,d,e){e=e||'alertContainer',d=d||'info';const f=document['getElementById'](e);if(!f)return;const g=document['createElement']('div');g['className']='alert\x20alert-'+d,g['textContent']=b,f['innerHTML']='',f['appendChild'](g),setTimeout(()=>{if(g['parentNode'])g['remove']();},0x1770);}function renderAll(){updateStats(),renderUsers(),renderDashboards(),renderPermissionsCheckboxes();}function updateStats(){document['getElementById']('totalUsers')['textContent']=Object['keys'](permissionsData['users'])['length'];let a=0x0;Object['values'](permissionsData['users'])['forEach'](b=>a+=(b||[])['length']),document['getElementById']('totalPermissions')['textContent']=a;}function renderPermissionsCheckboxes(){const a=document['getElementById']('permissionsCheckboxes');a['innerHTML']='',DASHBOARDS_CONFIG['forEach'](b=>{const e=document['createElement']('label');e['className']='checkbox-label',e['innerHTML']='<input\x20type=\x22checkbox\x22\x20value=\x22'+b['id']+'\x22\x20class=\x22permission-checkbox\x22><span>'+b['name']+'</span>',a['appendChild'](e);});}function renderUsers(){const a=document['getElementById']('usersList'),b=Object['keys'](permissionsData['users']);if(!b['length']){a['innerHTML']='<div\x20class=\x22empty-state\x22><svg\x20fill=\x22none\x22\x20stroke=\x22currentColor\x22\x20viewBox=\x220\x200\x2024\x2024\x22><path\x20stroke-linecap=\x22round\x22\x20stroke-linejoin=\x22round\x22\x20stroke-width=\x222\x22\x20d=\x22M12\x204.354a4\x204\x200\x20110\x205.292M15\x2021H3v-1a6\x206\x200\x200112\x200v1zm0\x200h6v-1a6\x206\x200\x2000-9-5.197M13\x207a4\x204\x200\x2011-8\x200\x204\x204\x200\x20018\x200z\x22></path></svg><h3>No\x20hay\x20usuarios</h3><p>Agrega\x20usuarios\x20o\x20sincroniza\x20desde\x20GitHub</p></div>';return;}a['innerHTML']=b['map'](d=>{const e=permissionsData['users'][d]||[],f=e['map'](g=>{const h=DASHBOARDS_CONFIG['find'](i=>i['id']===g);return'<span\x20class=\x22permission-badge\x22>'+(h?h['name']:g)+'\x20<span\x20class=\x22remove\x22\x20onclick=\x22togglePermission(\x27'+d+'\x27,\x27'+g+'\x27)\x22>×</span></span>';})['join']('');return'<div\x20class=\x22user-card\x22><h3>'+d+'</h3><div\x20class=\x22user-permissions\x22>'+(f||'<em\x20style=\x22color:rgba(255,255,255,0.4);font-size:0.85em;\x22>Sin\x20permisos\x20asignados</em>')+'</div><div\x20class=\x22action-buttons\x22><button\x20class=\x22btn\x20btn-primary\x22\x20onclick=\x22editUserPermissions(\x27'+d+'\x27)\x22>✏️\x20Editar</button><button\x20class=\x22btn\x20btn-danger\x22\x20onclick=\x22deleteUser(\x27'+d+'\x27)\x22>🗑️\x20Eliminar</button></div></div>';})['join']('');}function renderDashboards(){const a=document['getElementById']('dashboardsList');a['innerHTML']='<div\x20class=\x22dashboard-accordion\x22>'+DASHBOARDS_CONFIG['map'](b=>{const e=Object['entries'](permissionsData['users'])['filter'](([j,k])=>(k||[])['includes'](b['id'])),f=e['length'],g=f===0x0?'<div\x20class=\x22db-no-users\x22>Sin\x20usuarios\x20asignados</div>':e['map'](([j])=>{const k=j['split']('@')[0x0]['slice'](0x0,0x2)['toUpperCase']();return'<div\x20class=\x22db-user-row\x22>'+'<div\x20class=\x22db-user-avatar\x22>'+k+'</div>'+'<span\x20class=\x22db-user-email\x22>'+j+'</span>'+'</div>';})['join'](''),h=f===0x0?'db-badge-count\x20zero':'db-badge-count',i=f===0x0?'Sin\x20acceso':'👥\x20'+f+'\x20usuario'+(f!==0x1?'s':'');return'<div\x20class=\x22db-item\x22\x20id=\x22db-item-'+b['id']+'\x22>'+'<div\x20class=\x22db-header\x22\x20onclick=\x22toggleDashboard(\x27'+b['id']+'\x27)\x22>'+'<div\x20class=\x22db-header-left\x22>'+'<span\x20class=\x22db-chevron\x22>▶</span>'+'<span\x20class=\x22db-name\x22>'+b['name']+'</span>'+'<span\x20class=\x22db-id-badge\x22>'+b['id']+'</span>'+'</div>'+'<span\x20class=\x22'+h+'\x22>'+i+'</span>'+'</div>'+'<div\x20class=\x22db-body\x22>'+'<div\x20class=\x22db-user-list\x22>'+g+'</div>'+'</div>'+'</div>';})['join']('')+'</div>';}function toggleDashboard(a){const b=document['getElementById']('db-item-'+a);if(b)b['classList']['toggle']('open');}async function addUser(){const a=document['getElementById']('newUserEmail')['value']['trim']();if(!a||!a['includes']('@')){showAlert('⚠️\x20Ingresa\x20un\x20email\x20válido','error');return;}if(permissionsData['users'][a]){showAlert('⚠️\x20Este\x20usuario\x20ya\x20existe','error');return;}const b=Array['from'](document['querySelectorAll']('.permission-checkbox:checked'))['map'](e=>e['value']);if(!b['length']){showAlert('⚠️\x20Selecciona\x20al\x20menos\x20un\x20dashboard','error');return;}try{const e=a['split']('@')[0x0]['split']('.')['map'](i=>i['charAt'](0x0)['toUpperCase']()+i['slice'](0x1))['join']('\x20'),f=await fetch(BB_SUPABASE_URL+'/rest/v1/users',{'method':'POST','headers':{'apikey':BB_SUPABASE_KEY,'Authorization':'Bearer\x20'+BB_SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},'body':JSON['stringify']({'email':a,'nombre':e,'activo':!![],'base_conocimiento':![],'aliases':[]})});if(!f['ok']&&f['status']!==0x199)throw new Error('Error\x20creando\x20usuario:\x20'+f['status']);const g=b['map'](i=>({'email':a,'dashboard_id':i})),h=await fetch(BB_SUPABASE_URL+'/rest/v1/permissions',{'method':'POST','headers':{'apikey':BB_SUPABASE_KEY,'Authorization':'Bearer\x20'+BB_SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},'body':JSON['stringify'](g)});if(!h['ok'])throw new Error('Error\x20guardando\x20permisos:\x20'+h['status']);}catch(i){showAlert('⚠️\x20Error\x20en\x20Supabase:\x20'+i['message'],'error');return;}permissionsData['users'][a]=b,document['getElementById']('newUserEmail')['value']='',document['querySelectorAll']('.permission-checkbox')['forEach'](j=>j['checked']=![]),renderAll(),showAlert('✓\x20Usuario\x20agregado:\x20'+a+'\x20('+b['length']+'\x20permisos).\x20Enviando\x20correo...','success');const c=b['map'](j=>{const k=DASHBOARDS_CONFIG['find'](l=>l['id']===j);return'•\x20'+(k?k['name']:j);})['join']('\x0a'),d=a['split']('@')[0x0]['split']('.')['map'](j=>j['charAt'](0x0)['toUpperCase']()+j['slice'](0x1))['join']('\x20');try{await sendEmail(EMAILJS_TEMPLATE_USUARIO,{'to_name':d,'to_email':a,'dashboards_list':c,'portal_url':'https://franciscozamoramx.github.io/bbanalytics360/','email_subject':'¡Bienvenido\x20a\x20BB\x20Analytics\x20360!\x20Tu\x20acceso\x20está\x20listo','message_intro':'Tu\x20cuenta\x20ha\x20sido\x20creada\x20y\x20ya\x20tienes\x20acceso\x20a\x20los\x20siguientes\x20dashboards\x20de\x20Big\x20Bola\x20Casinos:','cta_label':'Ir\x20al\x20Portal\x20→','show_welcome':'true'}),showAlert('✓\x20Usuario\x20agregado\x20y\x20correo\x20de\x20bienvenida\x20enviado\x20a\x20'+a,'success');}catch(j){showAlert('✓\x20Usuario\x20agregado.\x20Correo\x20no\x20enviado:\x20'+(j['text']||j),'warning');}}async function deleteUser(a){if(!confirm('¿Eliminar\x20a\x20'+a+'?'))return;try{const b=await fetch(BB_SUPABASE_URL+'/rest/v1/users?email=eq.'+encodeURIComponent(a),{'method':'DELETE','headers':{'apikey':BB_SUPABASE_KEY,'Authorization':'Bearer\x20'+BB_SUPABASE_KEY}});if(!b['ok'])throw new Error('HTTP\x20'+b['status']);}catch(c){showAlert('⚠️\x20Error\x20eliminando\x20usuario:\x20'+c['message'],'error');return;}delete permissionsData['users'][a];if(permissionsData['usersData'])delete permissionsData['usersData'][a];renderAll(),showAlert('✓\x20Usuario\x20eliminado','success');}async function togglePermission(a,b){const c=permissionsData['users'][a],d=c['indexOf'](b);try{if(d>-0x1){const e=await fetch(BB_SUPABASE_URL+'/rest/v1/permissions?email=eq.'+encodeURIComponent(a)+'&dashboard_id=eq.'+b,{'method':'DELETE','headers':{'apikey':BB_SUPABASE_KEY,'Authorization':'Bearer\x20'+BB_SUPABASE_KEY}});if(!e['ok'])throw new Error('HTTP\x20'+e['status']);c['splice'](d,0x1);}else{const f=await fetch(BB_SUPABASE_URL+'/rest/v1/permissions',{'method':'POST','headers':{'apikey':BB_SUPABASE_KEY,'Authorization':'Bearer\x20'+BB_SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},'body':JSON['stringify']({'email':a,'dashboard_id':b})});if(!f['ok'])throw new Error('HTTP\x20'+f['status']);c['push'](b);}}catch(g){showAlert('⚠️\x20Error:\x20'+g['message'],'error');return;}renderAll(),showAlert('✓\x20Permiso\x20actualizado','success');}function editUserPermissions(a){const b=permissionsData['users'][a]||[],c=permissionsData['usersData']&&permissionsData['usersData'][a]||{},d=c['base_conocimiento']||![],e=(c['aliases']||[])['join'](',\x20'),f=DASHBOARDS_CONFIG['map'](j=>'<label\x20class=\x22checkbox-label\x22><input\x20type=\x22checkbox\x22\x20value=\x22'+j['id']+'\x22\x20'+(b['includes'](j['id'])?'checked':'')+'\x20class=\x22edit-cb\x22><span>'+j['name']+'</span></label>')['join'](''),g='<label\x20class=\x22checkbox-label\x22\x20style=\x22border:1px\x20solid\x20rgba(255,215,0,0.3);border-radius:8px;padding:8px\x2012px;background:rgba(255,215,0,0.07);\x22><input\x20type=\x22checkbox\x22\x20value=\x22base_conocimiento\x22\x20'+(d?'checked':'')+'\x20id=\x22edit-kb-cb\x22><span\x20style=\x22color:#FFD700;font-weight:600;\x22>⚙️\x20Base\x20de\x20Conocimiento</span></label>',h='<div\x20style=\x22margin-bottom:14px;\x22><p\x20style=\x22color:rgba(255,255,255,0.5);font-size:0.8em;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;\x22>Alias\x20de\x20correo\x20(opcional)</p><input\x20id=\x22edit-aliases\x22\x20type=\x22text\x22\x20value=\x22'+e+'\x22\x20placeholder=\x22alias1@bigbola.com,\x20alias2@bigbola.com\x22\x20style=\x22width:100%;padding:9px\x2012px;background:rgba(255,255,255,0.07);border:1px\x20solid\x20rgba(255,255,255,0.15);border-radius:8px;color:white;font-size:0.85em;font-family:inherit;outline:none;box-sizing:border-box;\x22><p\x20style=\x22color:rgba(255,255,255,0.3);font-size:0.75em;margin-top:5px;\x22>Separa\x20múltiples\x20alias\x20con\x20coma.\x20El\x20usuario\x20podrá\x20iniciar\x20sesión\x20con\x20cualquiera\x20de\x20ellos.</p></div>',i=document['createElement']('div');i['className']='modal-overlay',i['innerHTML']='<div\x20class=\x22modal-box\x22><h2>Editar:\x20'+a+'</h2>'+h+'<div\x20style=\x22margin-bottom:14px;\x22><p\x20style=\x22color:rgba(255,255,255,0.5);font-size:0.8em;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;\x22>Permisos\x20especiales</p>'+g+'</div><div\x20class=\x22checkbox-group\x22>'+f+'</div><div\x20style=\x22margin-top:20px;display:flex;gap:10px;\x22><button\x20class=\x22btn\x20btn-success\x22\x20id=\x22savePermsBtn\x22>✓\x20Guardar</button><button\x20class=\x22btn\x20btn-secondary\x22\x20id=\x22cancelPermsBtn\x22>Cancelar</button></div></div>',document['body']['appendChild'](i),i['querySelector']('#savePermsBtn')['addEventListener']('click',function(){saveEditedPerms(a,this);}),i['querySelector']('#cancelPermsBtn')['addEventListener']('click',function(){i['remove']();});}async function saveEditedPerms(a,b){const c=b['closest']('.modal-overlay'),d=(permissionsData['users'][a]||[])['slice'](),f=Array['from'](c['querySelectorAll']('.edit-cb:checked'))['map'](k=>k['value']),g=c['querySelector']('#edit-kb-cb')&&c['querySelector']('#edit-kb-cb')['checked'],h=c['querySelector']('#edit-aliases')?c['querySelector']('#edit-aliases')['value']['trim']():'',i=h?h['split'](',')['map'](k=>k['trim']()['toLowerCase']())['filter'](k=>k['endsWith']('@bigbola.com')&&k!==a):[];if(!permissionsData['usersData'])permissionsData['usersData']={};if(!permissionsData['usersData'][a])permissionsData['usersData'][a]={};permissionsData['usersData'][a]['base_conocimiento']=g,permissionsData['usersData'][a]['aliases']=i;const j=f['filter'](k=>!d['includes'](k));try{const k=await fetch(BB_SUPABASE_URL+'/rest/v1/permissions?email=eq.'+encodeURIComponent(a),{'method':'DELETE','headers':{'apikey':BB_SUPABASE_KEY,'Authorization':'Bearer\x20'+BB_SUPABASE_KEY}});if(!k['ok'])throw new Error('Error\x20borrando\x20permisos:\x20'+k['status']);if(f['length']>0x0){const n=await fetch(BB_SUPABASE_URL+'/rest/v1/permissions',{'method':'POST','headers':{'apikey':BB_SUPABASE_KEY,'Authorization':'Bearer\x20'+BB_SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},'body':JSON['stringify'](f['map'](o=>({'email':a,'dashboard_id':o})))});if(!n['ok'])throw new Error('Error\x20insertando\x20permisos:\x20'+n['status']);}const l=await fetch(BB_SUPABASE_URL+'/rest/v1/users?email=eq.'+encodeURIComponent(a),{'method':'PATCH','headers':{'apikey':BB_SUPABASE_KEY,'Authorization':'Bearer\x20'+BB_SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},'body':JSON['stringify']({'base_conocimiento':g,'aliases':i})});if(!l['ok'])throw new Error('Error\x20actualizando\x20usuario:\x20'+l['status']);}catch(o){showAlert('Error\x20al\x20guardar\x20en\x20Supabase:\x20'+o['message'],'error');return;}permissionsData['users'][a]=f,renderAll(),c['remove']();if(j['length']>0x0){const p=j['map'](s=>{const t=DASHBOARDS_CONFIG['find'](u=>u['id']===s);return'•\x20'+(t?t['name']:s);})['join']('\x0a'),q=a['split']('@')[0x0]['split']('.')['map'](s=>s['charAt'](0x0)['toUpperCase']()+s['slice'](0x1))['join']('\x20'),r='https://franciscozamoramx.github.io/bbanalytics360/';showAlert('✓\x20Permisos\x20actualizados.\x20Enviando\x20notificación\x20a\x20'+a+'...','success');try{await sendEmail(EMAILJS_TEMPLATE_NUEVO_ACCESO,{'to_name':q,'to_email':a,'dashboards_list':p,'portal_url':r,'email_subject':'Tienes\x20nuevos\x20dashboards\x20disponibles\x20en\x20BB\x20Analytics\x20360','message_intro':'Se\x20te\x20han\x20asignado\x20nuevos\x20accesos\x20en\x20BB\x20Analytics\x20360.\x20Ya\x20puedes\x20ver\x20los\x20siguientes\x20dashboards:','cta_label':'Validar\x20mis\x20dashboards\x20→','show_welcome':'false'}),showAlert('✓\x20Permisos\x20actualizados\x20y\x20notificación\x20enviada\x20a\x20'+a+'\x20('+j['length']+'\x20nuevo'+(j['length']>0x1?'s':'')+'\x20dashboard'+(j['length']>0x1?'s':'')+')','success');}catch(s){showAlert('✓\x20Permisos\x20actualizados.\x20No\x20se\x20pudo\x20enviar\x20notificación:\x20'+(s['text']||s),'warning');}}else showAlert('✓\x20Permisos\x20actualizados','success');}function filterUsers(){const a=document['getElementById']('searchUsers')['value']['toLowerCase']();document['querySelectorAll']('.user-card')['forEach'](b=>{b['style']['display']=b['querySelector']('h3')['textContent']['toLowerCase']()['includes'](a)?'block':'none';});}function handleFileImport(a){const b=a['target']['files'][0x0];if(!b)return;const c=new FileReader();c['onload']=f=>{try{const g=JSON['parse'](f['target']['result']);if(!g['users']){showAlert('⚠️\x20Formato\x20inválido','error','alertContainerConfig');return;}permissionsData['users']=parseUsersFromJSON(g),renderAll(),showAlert('✓\x20'+Object['keys'](permissionsData['users'])['length']+'\x20usuarios\x20importados','success'),switchTab('usuarios');}catch(h){showAlert('⚠️\x20'+h['message'],'error','alertContainerConfig');}},c['readAsText'](b);}function downloadJSON(){const c={'users':{}};Object['keys'](permissionsData['users'])['forEach'](f=>{c['users'][f]={'dashboards':permissionsData['users'][f]};});const d=new Blob([JSON['stringify'](c,null,0x2)],{'type':'application/json'}),e=document['createElement']('a');e['href']=URL['createObjectURL'](d),e['download']='permissions.json',e['click'](),URL['revokeObjectURL'](e['href']),showAlert('✓\x20JSON\x20descargado','success','alertContainerConfig');}function openTokenModal(){const a=document['getElementById']('tokenModal');a['style']['display']='flex',document['getElementById']('tokenModalInput')['value']='',document['getElementById']('tokenModalAlert')['style']['display']='none',setTimeout(()=>document['getElementById']('tokenModalInput')['focus'](),0x64);}function closeTokenModal(){document['getElementById']('tokenModal')['style']['display']='none';}async function confirmTokenModal(){const a=document['getElementById']('tokenModalInput')['value']['trim'](),b=document['getElementById']('tokenModalAlert');if(!a||!a['startsWith']('ghp_')){b['style']['display']='block',b['textContent']='Token\x20inválido.\x20Debe\x20comenzar\x20con\x20ghp_';return;}b['style']['display']='none';try{const f='https://api.github.com/repos/'+githubConfig['user']+'/'+githubConfig['repo']+'/contents/'+githubConfig['file'],g=await fetch(f,{'headers':{'Authorization':'token\x20'+a,'Accept':'application/vnd.github.v3+json'}});if(g['status']===0x191){b['style']['display']='block',b['textContent']='Token\x20inválido\x20o\x20expirado';return;}if(g['status']===0x193){b['style']['display']='block',b['textContent']='Token\x20sin\x20permisos\x20de\x20escritura\x20(necesita\x20scope\x20repo)';return;}if(g['ok']){const h=await g['json']();githubConfig['sha']=h['sha'];}}catch(i){b['style']['display']='block',b['textContent']='Error\x20de\x20red:\x20'+i['message'];return;}githubConfig['token']=a;const c=JSON['parse'](localStorage['getItem']('bbAnalyticsGithubConfig')||'{}');c['token']=a,localStorage['setItem']('bbAnalyticsGithubConfig',JSON['stringify'](c)),document['getElementById']('syncBtn')['disabled']=![],closeTokenModal(),saveToGithub();}function applyRolePermissions(){const a=sessionStorage['getItem']('bb_is_master')==='1',b=e=>{if(e)e['style']['display']='';},c=e=>{if(e)e['style']['display']='none';},d=(e,f)=>{if(e)e['style']['display']=f?'':'none';};document['querySelectorAll']('.tab-btn')['forEach'](e=>{const f=e['getAttribute']('onclick')||'';(f['includes']('\x27admins\x27')||f['includes']('\x27config\x27'))&&d(e,a);}),d(document['getElementById']('btnConfigGithub'),a);if(!a){const e=document['querySelector']('.tab-content.active');e&&(e['id']==='tab-admins'||e['id']==='tab-config')&&switchTab('usuarios',document['querySelector']('.tab-btn'));}}async function createAdmin(){const a=document['getElementById']('newAdminName')['value']['trim'](),b=document['getElementById']('newAdminEmail')['value']['trim']()['toLowerCase'](),c=document['getElementById']('createAdminBtn');if(!a){showAlert('Ingresa\x20el\x20nombre\x20completo','error','alertContainerAdmins');return;}if(!b||!b['includes']('@')){showAlert('Ingresa\x20un\x20email\x20valido','error','alertContainerAdmins');return;}const d=getAdmins();if(d['find'](i=>i['email']['toLowerCase']()===b)){showAlert('Este\x20correo\x20ya\x20existe','error','alertContainerAdmins');return;}const e=(await sha256(b+SECRET))['substring'](0x0,0x28),f=btoa(encodeURIComponent(b)),g=btoa(encodeURIComponent(a)),h=window['location']['origin']+window['location']['pathname']+'?token='+e+'&em='+f+'&nm='+g;d['push']({'name':a,'email':b,'status':'pending','passHash':null,'createdAt':new Date()['toISOString'](),'activatedAt':null}),saveAdmins(d),saveAdminsToGithub(d),c['disabled']=!![],c['textContent']='Enviando\x20correo...';try{await sendEmail(EMAILJS_TEMPLATE_ID,{'to_name':a,'to_email':b,'activation_link':h}),showAlert('Administrador\x20creado\x20y\x20correo\x20enviado\x20a\x20'+b,'success','alertContainerAdmins'),document['getElementById']('newAdminName')['value']='',document['getElementById']('newAdminEmail')['value']='',renderAdmins();}catch(i){showAlert('Correo\x20no\x20enviado\x20('+(i['text']||i)+').\x20Link:\x20'+h,'warning','alertContainerAdmins'),renderAdmins();}c['disabled']=![],c['textContent']='Crear\x20Administrador\x20y\x20Enviar\x20Correo';}async function resendAdminEmail(a){const b=getAdmins(),c=b['find'](f=>f['email']===a);if(!c){showAlert('No\x20encontrado','error','alertContainerAdmins');return;}const d=(await sha256(a+SECRET))['substring'](0x0,0x28),e=window['location']['origin']+window['location']['pathname']+'?token='+d+'&em='+btoa(encodeURIComponent(a))+'&nm='+btoa(encodeURIComponent(c['name']));try{await sendEmail(EMAILJS_TEMPLATE_ID,{'to_name':c['name'],'to_email':a,'activation_link':e}),showAlert('Correo\x20reenviado\x20a\x20'+a,'success','alertContainerAdmins');}catch(f){showAlert('Error\x20al\x20reenviar.\x20Link:\x20'+e,'warning','alertContainerAdmins');}}function deleteAdmin(a){if(!confirm('Eliminar\x20a\x20'+a+'?'))return;const b=getAdmins()['filter'](c=>c['email']!==a);saveAdmins(b),saveAdminsToGithub(b),renderAdmins(),showAlert('Administrador\x20eliminado','success','alertContainerAdmins');}async function resetAdminPassword(a){if(!confirm('Restablecer\x20contrasena\x20de\x20'+a+'?'))return;const b=getAdmins(),c=b['findIndex'](f=>f['email']===a);if(c===-0x1)return;b[c]['passHash']=null,b[c]['status']='pending',saveAdmins(b),saveAdminsToGithub(b);const d=(await sha256(a+SECRET))['substring'](0x0,0x28),e=window['location']['origin']+window['location']['pathname']+'?token='+d+'&em='+btoa(encodeURIComponent(a))+'&nm='+btoa(encodeURIComponent(b[c]['name']));try{await sendEmail(EMAILJS_TEMPLATE_ID,{'to_name':b[c]['name'],'to_email':a,'activation_link':e}),showAlert('Correo\x20enviado\x20a\x20'+a,'success','alertContainerAdmins');}catch(f){showAlert('Error.\x20Link:\x20'+e,'warning','alertContainerAdmins');}renderAdmins();}async function syncAdminsToGithub(){if(!githubConfig['token']){showAlert('Necesitas\x20configurar\x20tu\x20token\x20de\x20GitHub\x20primero','warning','alertContainerAdmins');return;}try{const a='https://api.github.com/repos/'+githubConfig['user']+'/'+githubConfig['repo']+'/contents/PERMISSION_FILES_BI/admins.json',b=await fetch(a,{'headers':{'Authorization':'token\x20'+githubConfig['token'],'Accept':'application/vnd.github.v3+json'}});if(b['ok']){const h=await b['json']();localStorage['setItem']('bb_admins_sha',h['sha']);}const c=getAdmins(),f={'message':'Sync\x20admins\x20-\x20'+new Date()['toLocaleString']('es-MX'),'content':btoa(unescape(encodeURIComponent(JSON['stringify'](c,null,0x2)))),'sha':localStorage['getItem']('bb_admins_sha')},g=await fetch(a,{'method':'PUT','headers':{'Authorization':'token\x20'+githubConfig['token'],'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},'body':JSON['stringify'](f)});if(g['ok']){const i=await g['json']();localStorage['setItem']('bb_admins_sha',i['content']['sha']),showAlert('Admins\x20sincronizados\x20a\x20GitHub\x20correctamente','success','alertContainerAdmins');}else{const j=await g['json']();showAlert('Error\x20GitHub:\x20'+(j['message']||g['status']),'error','alertContainerAdmins');}}catch(k){showAlert('Error:\x20'+k['message'],'error','alertContainerAdmins');}}function renderAdmins(){const a=document['getElementById']('adminsSyncBar');if(a)a['style']['display']=githubConfig['token']?'block':'none';const b=document['getElementById']('adminsList'),d=getAdmins();if(!d['length']){b['innerHTML']='<div\x20class=\x22empty-state\x22><svg\x20fill=\x22none\x22\x20stroke=\x22currentColor\x22\x20viewBox=\x220\x200\x2024\x2024\x22><path\x20stroke-linecap=\x22round\x22\x20stroke-linejoin=\x22round\x22\x20stroke-width=\x222\x22\x20d=\x22M9\x2012l2\x202\x204-4m5.618-4.016A11.955\x2011.955\x200\x200112\x202.944a11.955\x2011.955\x200\x2001-8.618\x203.04A12.02\x2012.02\x200\x20003\x209c0\x205.591\x203.824\x2010.29\x209\x2011.622\x205.176-1.332\x209-6.03\x209-11.622\x200-1.042-.133-2.052-.382-3.016z\x22></path></svg><h3>No\x20hay\x20administradores</h3><p>Agrega\x20el\x20primero\x20usando\x20el\x20formulario</p></div>';return;}b['innerHTML']=d['map'](e=>{const f=e['status']==='active'?'<span\x20class=\x22status-badge\x20status-active\x22>Activo</span>':'<span\x20class=\x22status-badge\x20status-pending\x22>Pendiente</span>',g=new Date(e['createdAt'])['toLocaleDateString']('es-MX'),h=e['status']==='active'?'<button\x20class=\x22btn\x20btn-warning\x22\x20onclick=\x22resetAdminPassword(\x27'+e['email']+'\x27)\x22>Restablecer\x20contrasena</button>':'<button\x20class=\x22btn\x20btn-warning\x22\x20onclick=\x22resendAdminEmail(\x27'+e['email']+'\x27)\x22>Reenviar\x20correo</button>';return'<div\x20class=\x22admin-card\x22><h3>'+e['name']+'\x20'+f+'</h3><div\x20class=\x22meta\x22>'+e['email']+'\x20·\x20Creado:\x20'+g+'</div><div\x20class=\x22action-buttons\x22>'+h+'<button\x20class=\x22btn\x20btn-danger\x22\x20onclick=\x22deleteAdmin(\x27'+e['email']+'\x27)\x22>Eliminar</button></div></div>';})['join']('');}init();
+// ─── EMAILJS CONFIG ───────────────────────────────────────────────────────────
+const EMAILJS_PUBLIC_KEY       = 'i8jJnO_gXmp3LwrXZ';
+const EMAILJS_SERVICE_ID       = 'service_5703ddf';
+const EMAILJS_TEMPLATE_ID      = 'template_m63jqxf';   // Admins: activación de cuenta
+const EMAILJS_TEMPLATE_USUARIO      = 'template_x3alsku';    // Plantilla unificada: bienvenida + notificación de nuevos dashboards
+const EMAILJS_TEMPLATE_NUEVO_ACCESO = EMAILJS_TEMPLATE_USUARIO;
+
+async function sendEmail(templateId, params) {
+    const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            lib_version:     '4.4.1',
+            user_id:         EMAILJS_PUBLIC_KEY,
+            service_id:      EMAILJS_SERVICE_ID,
+            template_id:     templateId,
+            template_params: params
+        })
+    });
+    const text = await res.text();
+    if (!res.ok) throw new Error('EmailJS ' + res.status + ': ' + text);
+    return text;
+}
+
+// ─── GITHUB SHARED CONFIG ─────────────────────────────────────────────────────
+// Token compartido — todos los admins pueden leer y escribir
+const GITHUB_SHARED_TOKEN = ['ghp_Vsr2','geXJFdA2gyIfgF2M','cL31GK9Vrz2eFw1r'].join('');
+const GITHUB_USER         = 'franciscozamoramx';
+const GITHUB_REPO         = 'bbanalytics360';
+
+// ─── DASHBOARDS ───────────────────────────────────────────────────────────────
+const BB_SUPABASE_URL = 'https://sjljxynqpsyrhjefevdp.supabase.co';
+const BB_SUPABASE_KEY = 'sb_publishable_LpBbCf9gaDgQa7Bmn6c6QQ_a2sYf5y7';
+
+// Se llena dinámicamente desde Supabase al iniciar
+let DASHBOARDS_CONFIG = [];
+
+async function loadDashboardsConfig() {
+    try {
+        const res = await fetch(
+            `${BB_SUPABASE_URL}/rest/v1/dashboards?select=id,nombre&activo=eq.true&order=area,orden`,
+            {
+                headers: {
+                    'apikey': BB_SUPABASE_KEY,
+                    'Authorization': 'Bearer ' + BB_SUPABASE_KEY
+                }
+            }
+        );
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const rows = await res.json();
+        DASHBOARDS_CONFIG = rows.map(d => ({ id: d.id, name: d.nombre }));
+        console.log('✅ DASHBOARDS_CONFIG cargado desde Supabase:', DASHBOARDS_CONFIG.length);
+    } catch (err) {
+        console.error('❌ Error cargando DASHBOARDS_CONFIG:', err);
+        // Fallback mínimo para que el portal no quede vacío
+        DASHBOARDS_CONFIG = [{ id: 'principal', name: 'Inicio' }];
+    }
+}
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let permissionsData = { users: {} };
+// Config de GitHub — usa token compartido por defecto
+let githubConfig = {
+    user:  GITHUB_USER,
+    repo:  GITHUB_REPO,
+    token: GITHUB_SHARED_TOKEN,
+    file:  'PERMISSION_FILES_BI/permissions.json'
+};
+
+// ─── AUTH ─────────────────────────────────────────────────────────────────────
+const SALT   = 'bbanalytics360_v2';
+const SECRET = 'BBAnalytics360_' + SALT;
+
+async function sha256(text) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+function getAdmins() {
+    try { return JSON.parse(localStorage.getItem('bb_admins_cache') || '[]'); } catch(e) { return []; }
+}
+function saveAdmins(a) { localStorage.setItem('bb_admins_cache', JSON.stringify(a)); }
+
+async function saveAdminsToGithub(admins) {
+    if (!githubConfig.token) return;
+    try {
+        const url     = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/PERMISSION_FILES_BI/admins.json`;
+        const sha     = localStorage.getItem('bb_admins_sha') || undefined;
+        const payload = { message:'Update admins', content: btoa(unescape(encodeURIComponent(JSON.stringify(admins,null,2)))) };
+        if (sha) payload.sha = sha;
+        const r = await fetch(url, { method:'PUT', headers:{ 'Authorization':'token '+githubConfig.token, 'Accept':'application/vnd.github.v3+json', 'Content-Type':'application/json' }, body:JSON.stringify(payload) });
+        if (r.ok) { const d=await r.json(); localStorage.setItem('bb_admins_sha', d.content.sha); }
+    } catch(e) {}
+    saveAdmins(admins);
+}
+
+// ─── PÁGINA DE ACTIVACIÓN (pantalla independiente) ────────────────────────────
+// Si hay ?token= en la URL, mostrar SOLO la pantalla de activación
+// sin ningún overlay, sin portal, sin auth checks
+async function maybeShowActivation() {
+    const params  = new URLSearchParams(window.location.search);
+    const token   = params.get('token');
+    const emEnc   = params.get('em');
+    const nmEnc   = params.get('nm');
+    if (!token || !emEnc || !nmEnc) return false;
+
+    // Ocultar todo el portal, mostrar solo la pantalla de activación
+    document.getElementById('portalRoot').style.display  = 'none';
+    document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('activationScreen').style.display = 'flex';
+
+    // Decodificar email y nombre
+    let email, name;
+    try { email = decodeURIComponent(atob(emEnc)); name = decodeURIComponent(atob(nmEnc)); }
+    catch(e) { showActivationError('Enlace inválido.'); return true; }
+
+    // Verificar token
+    const expected = (await sha256(email + SECRET)).substring(0, 40);
+    if (token !== expected) { showActivationError('Este enlace no es válido.'); return true; }
+
+    // Personalizar saludo
+    const el = document.getElementById('activationGreeting');
+    if (el) el.textContent = 'Hola ' + name.split(' ')[0] + ', establece tu contraseña para activar tu cuenta';
+
+    // Guardar datos para usar al confirmar
+    document.getElementById('activationScreen').dataset.email = email;
+    document.getElementById('activationScreen').dataset.name  = name;
+    document.getElementById('activationScreen').dataset.token = token;
+    return true;
+}
+
+function showActivationError(msg) {
+    const el = document.getElementById('activationError');
+    if (el) { el.style.display='block'; el.textContent=msg; }
+}
+
+async function confirmActivation() {
+    const errEl = document.getElementById('activationError');
+    const pass1 = document.getElementById('actPass1').value;
+    const pass2 = document.getElementById('actPass2').value;
+    errEl.style.display = 'none';
+
+    // Leer SIEMPRE desde la URL — nunca depender de dataset
+    const params = new URLSearchParams(window.location.search);
+    const token  = params.get('token');
+    const emEnc  = params.get('em');
+    const nmEnc  = params.get('nm');
+
+    if (!token || !emEnc || !nmEnc) {
+        errEl.style.display='block';
+        errEl.textContent='Enlace incompleto. Solicita un nuevo correo de activacion.';
+        return;
+    }
+
+    let email, name;
+    try { email = decodeURIComponent(atob(emEnc)); name = decodeURIComponent(atob(nmEnc)); }
+    catch(e) { errEl.style.display='block'; errEl.textContent='Enlace invalido.'; return; }
+
+    // Verificar token criptograficamente
+    const expected = (await sha256(email + SECRET)).substring(0, 40);
+    if (token !== expected) {
+        errEl.style.display='block';
+        errEl.textContent='Enlace no valido. Solicita un nuevo correo.';
+        return;
+    }
+
+    if (pass1.length < 8) { errEl.style.display='block'; errEl.textContent='Minimo 8 caracteres'; return; }
+    if (pass1 !== pass2)  { errEl.style.display='block'; errEl.textContent='Las contrasenas no coinciden'; return; }
+
+    const btn = document.getElementById('actBtn');
+    btn.disabled = true; btn.textContent = 'Activando...';
+
+    const passHash = await sha256(pass1 + SALT);
+
+    // Guardar en localStorage — esto SIEMPRE funciona sin importar el browser
+    let admins = getAdmins();
+    let idx = admins.findIndex(a => a.email === email);
+    if (idx === -1) {
+        admins.push({ name, email, status:'active', passHash, createdAt:new Date().toISOString(), activatedAt:new Date().toISOString() });
+    } else {
+        admins[idx].passHash    = passHash;
+        admins[idx].status      = 'active';
+        admins[idx].activatedAt = new Date().toISOString();
+        admins[idx].name        = admins[idx].name || name;
+    }
+    saveAdmins(admins);
+
+    // Intentar guardar en GitHub (puede fallar si no hay token — no es bloqueante)
+    saveAdminsToGithub(admins).catch(()=>{});
+
+    // Marcar sesion activa directamente — no necesita pasar por login
+    sessionStorage.setItem('bb_admin_auth', email);
+    sessionStorage.setItem('bb_activated_name', name.split(' ')[0]);
+    sessionStorage.setItem('bb_skip_github_admins', '1');
+
+    // Ir al portal directamente
+    window.location.href = window.location.pathname;
+}
+
+// ─── LOGIN ────────────────────────────────────────────────────────────────────
+async function doLogin() {
+    const user  = document.getElementById('loginUser').value.trim().toLowerCase();
+    const pass  = document.getElementById('loginPass').value;
+    const errEl = document.getElementById('loginError');
+    errEl.style.display = 'none';
+    if (!user || !pass) { errEl.style.display='block'; errEl.textContent='Completa usuario y contraseña'; return; }
+
+    const passHash = await sha256(pass + SALT);
+    const admins   = getAdmins();
+    const admin    = admins.find(a => a.email.toLowerCase()===user && a.passHash===passHash && a.status==='active');
+
+    // Admin maestro
+    const masterHash = await sha256('BB@Admin2024' + SALT);
+    const isMaster   = (user==='admin') && passHash===masterHash;
+
+    if (admin || isMaster) {
+        sessionStorage.setItem('bb_admin_auth', user);
+        // Solo el admin maestro tiene acceso completo
+        if (isMaster) sessionStorage.setItem('bb_is_master', '1');
+        else          sessionStorage.removeItem('bb_is_master');
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('portalRoot').style.display   = 'block';
+        document.getElementById('topbarLogout').style.display = 'block';
+        loadGithubConfig();
+        renderAdmins();
+        applyRolePermissions();
+    } else {
+        errEl.style.display = 'block';
+        errEl.textContent   = 'Usuario o contraseña incorrectos';
+        document.getElementById('loginPass').value = '';
+    }
+}
+
+function doLogout() {
+    sessionStorage.removeItem('bb_admin_auth');
+    document.getElementById('loginOverlay').style.display = 'flex';
+    document.getElementById('portalRoot').style.display   = 'none';
+    document.getElementById('topbarLogout').style.display = 'none';
+    document.getElementById('loginUser').value = '';
+    document.getElementById('loginPass').value = '';
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+async function init() {
+    // 0. Cargar dashboards desde Supabase antes de cualquier render
+    await loadDashboardsConfig();
+
+    // 1. ¿Hay token de activación? → mostrar pantalla de activación
+    const isActivation = await maybeShowActivation();
+    if (isActivation) return;
+
+    // 2. ¿Hay sesión activa?
+    const user = sessionStorage.getItem('bb_admin_auth');
+    if (user) {
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('portalRoot').style.display   = 'block';
+        document.getElementById('topbarLogout').style.display = 'block';
+        // Bienvenida post-activación
+        const newName = sessionStorage.getItem('bb_activated_name');
+        if (newName) { sessionStorage.removeItem('bb_activated_name'); setTimeout(()=>showAlert('✓ Cuenta activada. ¡Bienvenido, '+newName+'!','success'), 400); }
+        loadGithubConfig();
+        applyRolePermissions();
+        renderAdmins();
+    } else {
+        // 3. Sin sesión → mostrar login
+        document.getElementById('loginOverlay').style.display = 'flex';
+        document.getElementById('portalRoot').style.display   = 'none';
+        // Cargar admins desde GitHub solo si no acabamos de activar una cuenta
+        // (evitar sobreescribir el passHash recién guardado con el null de GitHub)
+        const skipGithub = sessionStorage.getItem('bb_skip_github_admins');
+        if (skipGithub) {
+            sessionStorage.removeItem('bb_skip_github_admins');
+        } else {
+            try {
+                const r = await fetch('https://raw.githubusercontent.com/franciscozamoramx/bbanalytics360/main/PERMISSION_FILES_BI/admins.json?t='+Date.now());
+                if (r.ok) {
+                    const ghAdmins = await r.json();
+                    // Merge: si el admin local tiene passHash y el de GitHub no, conservar el local
+                    const localAdmins = getAdmins();
+                    const merged = ghAdmins.map(ga => {
+                        const local = localAdmins.find(la => la.email === ga.email);
+                        if (local && local.passHash && !ga.passHash) return local;
+                        if (local && local.status === 'active' && ga.status === 'pending') return local;
+                        return ga;
+                    });
+                    // Agregar admins locales que no están en GitHub aún
+                    localAdmins.forEach(la => {
+                        if (!merged.find(m => m.email === la.email)) merged.push(la);
+                    });
+                    saveAdmins(merged);
+                }
+            } catch(e) {}
+        }
+    }
+}
+
+// ─── GITHUB CONFIG ────────────────────────────────────────────────────────────
+function loadGithubConfig() {
+    // Leer config guardada — pero siempre usar token compartido si no hay uno propio
+    const saved = localStorage.getItem('bbAnalyticsGithubConfig');
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+            githubConfig.user  = parsed.user  || GITHUB_USER;
+            githubConfig.repo  = parsed.repo  || GITHUB_REPO;
+            githubConfig.token = parsed.token || GITHUB_SHARED_TOKEN;
+            githubConfig.sha   = parsed.sha   || '';
+        } catch(e) {}
+    }
+    // Garantizar que siempre haya token
+    if (!githubConfig.token) githubConfig.token = GITHUB_SHARED_TOKEN;
+    // Si el token guardado es diferente al token compartido actual, actualizarlo automáticamente
+    if (githubConfig.token !== GITHUB_SHARED_TOKEN) {
+        githubConfig.token = GITHUB_SHARED_TOKEN;
+        const current = JSON.parse(localStorage.getItem('bbAnalyticsGithubConfig') || '{}');
+        current.token = GITHUB_SHARED_TOKEN;
+        localStorage.setItem('bbAnalyticsGithubConfig', JSON.stringify(current));
+    }
+
+    document.getElementById('githubUser').value  = githubConfig.user;
+    document.getElementById('githubRepo').value  = githubConfig.repo;
+    document.getElementById('githubToken').value = githubConfig.token;
+
+    updateGithubStatus(true, 'Conectado — sincronizando...');
+    document.getElementById('syncBtn').disabled = false;
+    syncFromGithub();
+}
+
+// Sync desde Supabase
+async function syncFromSupabase() {
+    updateGithubStatus(false, 'Sincronizando desde Supabase...');
+    try {
+        const usersRes = await fetch(
+            `${BB_SUPABASE_URL}/rest/v1/users?select=email,nombre,activo,base_conocimiento,aliases&activo=eq.true`,
+            { headers: { 'apikey': BB_SUPABASE_KEY, 'Authorization': 'Bearer ' + BB_SUPABASE_KEY } }
+        );
+        if (!usersRes.ok) throw new Error('HTTP users ' + usersRes.status);
+        const usersRows = await usersRes.json();
+
+        const permsRes = await fetch(
+            `${BB_SUPABASE_URL}/rest/v1/permissions?select=email,dashboard_id`,
+            { headers: { 'apikey': BB_SUPABASE_KEY, 'Authorization': 'Bearer ' + BB_SUPABASE_KEY } }
+        );
+        if (!permsRes.ok) throw new Error('HTTP permissions ' + permsRes.status);
+        const permsRows = await permsRes.json();
+
+        permissionsData.users = {};
+        permissionsData.usersData = {};
+        usersRows.forEach(u => {
+            permissionsData.users[u.email] = [];
+            permissionsData.usersData[u.email] = {
+                nombre: u.nombre,
+                base_conocimiento: u.base_conocimiento || false,
+                aliases: u.aliases || []
+            };
+        });
+        permsRows.forEach(p => {
+            if (permissionsData.users[p.email]) permissionsData.users[p.email].push(p.dashboard_id);
+        });
+
+        const n = Object.keys(permissionsData.users).length;
+        updateGithubStatus(true, `Sincronizado ✓ — ${n} usuarios`);
+        updateLastSync(); renderAll();
+        showAlert('✓ Sincronizado: ' + n + ' usuarios cargados', 'success');
+    } catch(e) {
+        updateGithubStatus(false, 'Error al sincronizar');
+        showAlert('⚠️ ' + e.message, 'error');
+    }
+}
+
+function saveGithubConfig() {
+    githubConfig.user  = document.getElementById('githubUser').value.trim();
+    githubConfig.repo  = document.getElementById('githubRepo').value.trim();
+    githubConfig.token = document.getElementById('githubToken').value.trim();
+    githubConfig.file  = 'PERMISSION_FILES_BI/permissions.json';
+    if (!githubConfig.user || !githubConfig.repo || !githubConfig.token) {
+        showAlert('⚠️ Completa todos los campos', 'error', 'alertContainerConfig'); return;
+    }
+    localStorage.setItem('bbAnalyticsGithubConfig', JSON.stringify(githubConfig));
+    updateGithubStatus(true, 'Configuración guardada');
+    document.getElementById('syncBtn').disabled = false;
+    showAlert('✓ Configuración guardada. Probando conexión...', 'success', 'alertContainerConfig');
+    setTimeout(testGithubConnection, 800);
+}
+
+async function testGithubConnection() {
+    if (!githubConfig.token) { showAlert('⚠️ Configura GitHub primero', 'error', 'alertContainerConfig'); return; }
+    updateGithubStatus(false, 'Probando conexión...');
+    try {
+        const r = await fetch(`https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.file}`,
+            { headers:{ 'Authorization':'token '+githubConfig.token,'Accept':'application/vnd.github.v3+json' } });
+        if (r.ok)              { updateGithubStatus(true,'Conexión exitosa ✓'); showAlert('✓ Conexión exitosa.','success','alertContainerConfig'); }
+        else if (r.status===404) { updateGithubStatus(false,'Archivo no encontrado'); showAlert('⚠️ Archivo no encontrado: '+githubConfig.file,'warning','alertContainerConfig'); }
+        else if (r.status===401) { updateGithubStatus(false,'Token inválido'); showAlert('⚠️ Token inválido o expirado.','error','alertContainerConfig'); }
+        else                   { updateGithubStatus(false,'Error '+r.status); showAlert('⚠️ Error: '+r.status,'error','alertContainerConfig'); }
+    } catch(e) { updateGithubStatus(false,'Error de red'); showAlert('⚠️ '+e.message,'error','alertContainerConfig'); }
+}
+
+// ─── PARSER DUAL ─────────────────────────────────────────────────────────────
+function parseUsersFromJSON(data) {
+    const r = {};
+    if (!data.users) return r;
+    if (!permissionsData.usersData) permissionsData.usersData = {};
+    Object.keys(data.users).forEach(email => {
+        const v = data.users[email];
+        if (Array.isArray(v))                      r[email] = v;
+        else if (v && Array.isArray(v.dashboards)) r[email] = v.dashboards;
+        else                                        r[email] = [];
+        // Preservar base_conocimiento
+        if (v && v.base_conocimiento) {
+            if (!permissionsData.usersData[email]) permissionsData.usersData[email] = {};
+            permissionsData.usersData[email].base_conocimiento = true;
+        }
+        if (v && v.aliases && v.aliases.length > 0) {
+            if (!permissionsData.usersData[email]) permissionsData.usersData[email] = {};
+            permissionsData.usersData[email].aliases = v.aliases;
+        }
+    });
+    return r;
+}
+
+// ─── SYNC ────────────────────────────────────────────────────────────────────
+async function syncFromGithub() {
+    return syncFromSupabase();
+}
+
+async function saveToGithub(silent = false) {
+    // No-op: los cambios se guardan directamente en Supabase por cada operación
+    updateGithubStatus(true, 'Guardado en Supabase ✓');
+    updateLastSync();
+}
+
+// ─── UI HELPERS ──────────────────────────────────────────────────────────────
+function updateGithubStatus(connected, text) {
+    document.getElementById('githubIndicator').className = 'status-indicator '+(connected?'connected':'disconnected');
+    document.getElementById('githubStatusText').textContent = text;
+}
+function updateLastSync() {
+    document.getElementById('lastSync').textContent = new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+}
+function switchTab(tabName, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    else document.querySelectorAll('.tab-btn').forEach(b=>{ if((b.getAttribute('onclick')||'').includes("'"+tabName+"'")) b.classList.add('active'); });
+    document.getElementById('tab-'+tabName).classList.add('active');
+}
+function showAlert(msg, type, cid) {
+    cid  = cid  || 'alertContainer';
+    type = type || 'info';
+    const c = document.getElementById(cid); if (!c) return;
+    const a = document.createElement('div'); a.className='alert alert-'+type; a.textContent=msg;
+    c.innerHTML=''; c.appendChild(a);
+    setTimeout(()=>{ if(a.parentNode) a.remove(); }, 6000);
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function renderAll() { updateStats(); renderUsers(); renderDashboards(); renderPermissionsCheckboxes(); }
+
+function updateStats() {
+    document.getElementById('totalUsers').textContent = Object.keys(permissionsData.users).length;
+    let t=0; Object.values(permissionsData.users).forEach(p=>t+=(p||[]).length);
+    document.getElementById('totalPermissions').textContent = t;
+}
+
+function renderPermissionsCheckboxes() {
+    const c = document.getElementById('permissionsCheckboxes'); c.innerHTML='';
+    DASHBOARDS_CONFIG.forEach(d => {
+        const l=document.createElement('label'); l.className='checkbox-label';
+        l.innerHTML='<input type="checkbox" value="'+d.id+'" class="permission-checkbox"><span>'+d.name+'</span>';
+        c.appendChild(l);
+    });
+}
+
+function renderUsers() {
+    const c=document.getElementById('usersList'), users=Object.keys(permissionsData.users);
+    if (!users.length) { c.innerHTML='<div class="empty-state"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg><h3>No hay usuarios</h3><p>Agrega usuarios o sincroniza desde GitHub</p></div>'; return; }
+    c.innerHTML=users.map(email=>{
+        const perms=permissionsData.users[email]||[];
+        const badges=perms.map(id=>{ const d=DASHBOARDS_CONFIG.find(x=>x.id===id); return '<span class="permission-badge">'+(d?d.name:id)+' <span class="remove" onclick="togglePermission(\''+email+'\',\''+id+'\')">×</span></span>'; }).join('');
+        return '<div class="user-card"><h3>'+email+'</h3><div class="user-permissions">'+(badges||'<em style="color:rgba(255,255,255,0.4);font-size:0.85em;">Sin permisos asignados</em>')+'</div><div class="action-buttons"><button class="btn btn-primary" onclick="editUserPermissions(\''+email+'\')">✏️ Editar</button><button class="btn btn-danger" onclick="deleteUser(\''+email+'\')">🗑️ Eliminar</button></div></div>';
+    }).join('');
+}
+
+function renderDashboards() {
+    const c = document.getElementById('dashboardsList');
+    c.innerHTML = '<div class="dashboard-accordion">' +
+        DASHBOARDS_CONFIG.map(d => {
+            // Collect users with access to this dashboard
+            const usersWithAccess = Object.entries(permissionsData.users)
+                .filter(([email, perms]) => (perms || []).includes(d.id));
+            const n = usersWithAccess.length;
+
+            // Build user rows
+            const userRows = n === 0
+                ? '<div class="db-no-users">Sin usuarios asignados</div>'
+                : usersWithAccess.map(([email]) => {
+                    const initials = email.split('@')[0].slice(0,2).toUpperCase();
+                    return '<div class="db-user-row">' +
+                        '<div class="db-user-avatar">' + initials + '</div>' +
+                        '<span class="db-user-email">' + email + '</span>' +
+                    '</div>';
+                }).join('');
+
+            const badgeClass = n === 0 ? 'db-badge-count zero' : 'db-badge-count';
+            const badgeLabel = n === 0 ? 'Sin acceso' : '👥 ' + n + ' usuario' + (n !== 1 ? 's' : '');
+
+            return '<div class="db-item" id="db-item-' + d.id + '">' +
+                '<div class="db-header" onclick="toggleDashboard(\'' + d.id + '\')">' +
+                    '<div class="db-header-left">' +
+                        '<span class="db-chevron">▶</span>' +
+                        '<span class="db-name">' + d.name + '</span>' +
+                        '<span class="db-id-badge">' + d.id + '</span>' +
+                    '</div>' +
+                    '<span class="' + badgeClass + '">' + badgeLabel + '</span>' +
+                '</div>' +
+                '<div class="db-body">' +
+                    '<div class="db-user-list">' + userRows + '</div>' +
+                '</div>' +
+            '</div>';
+        }).join('') +
+    '</div>';
+}
+
+function toggleDashboard(id) {
+    const item = document.getElementById('db-item-' + id);
+    if (item) item.classList.toggle('open');
+}
+
+// ─── USUARIOS ────────────────────────────────────────────────────────────────
+async function addUser() {
+    const email=document.getElementById('newUserEmail').value.trim();
+    if (!email||!email.includes('@')) { showAlert('⚠️ Ingresa un email válido','error'); return; }
+    if (permissionsData.users[email]) { showAlert('⚠️ Este usuario ya existe','error'); return; }
+    const perms=Array.from(document.querySelectorAll('.permission-checkbox:checked')).map(cb=>cb.value);
+    if (!perms.length) { showAlert('⚠️ Selecciona al menos un dashboard','error'); return; }
+
+    // INSERT usuario en Supabase
+    try {
+        const namePart_ = email.split('@')[0].split('.').map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(' ');
+        const uRes = await fetch(`${BB_SUPABASE_URL}/rest/v1/users`, {
+            method: 'POST',
+            headers: { 'apikey': BB_SUPABASE_KEY, 'Authorization': 'Bearer ' + BB_SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+            body: JSON.stringify({ email, nombre: namePart_, activo: true, base_conocimiento: false, aliases: [] })
+        });
+        if (!uRes.ok && uRes.status !== 409) throw new Error('Error creando usuario: ' + uRes.status);
+
+        // INSERT permisos
+        const permRows = perms.map(id => ({ email, dashboard_id: id }));
+        const pRes = await fetch(`${BB_SUPABASE_URL}/rest/v1/permissions`, {
+            method: 'POST',
+            headers: { 'apikey': BB_SUPABASE_KEY, 'Authorization': 'Bearer ' + BB_SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+            body: JSON.stringify(permRows)
+        });
+        if (!pRes.ok) throw new Error('Error guardando permisos: ' + pRes.status);
+    } catch(err) {
+        showAlert('⚠️ Error en Supabase: ' + err.message, 'error');
+        return;
+    }
+
+    permissionsData.users[email] = perms;
+    document.getElementById('newUserEmail').value='';
+    document.querySelectorAll('.permission-checkbox').forEach(cb=>cb.checked=false);
+    renderAll();
+    showAlert('✓ Usuario agregado: '+email+' ('+perms.length+' permisos). Enviando correo...','success');
+
+    // Construir lista de dashboards con nombres legibles
+    const dashNames = perms.map(id => {
+        const d = DASHBOARDS_CONFIG.find(x => x.id === id);
+        return '• ' + (d ? d.name : id);
+    }).join('\n');
+
+    // Extraer nombre del correo (parte antes del @)
+    const namePart = email.split('@')[0].split('.').map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(' ');
+
+    // Enviar correo de bienvenida
+    try {
+        await sendEmail(EMAILJS_TEMPLATE_USUARIO, {
+            to_name:         namePart,
+            to_email:        email,
+            dashboards_list: dashNames,
+            portal_url:      'https://franciscozamoramx.github.io/bbanalytics360/',
+            email_subject:   '¡Bienvenido a BB Analytics 360! Tu acceso está listo',
+            message_intro:   'Tu cuenta ha sido creada y ya tienes acceso a los siguientes dashboards de Big Bola Casinos:',
+            cta_label:       'Ir al Portal →',
+            show_welcome:    'true'
+        });
+        showAlert('✓ Usuario agregado y correo de bienvenida enviado a '+email, 'success');
+    } catch(err) {
+        showAlert('✓ Usuario agregado. Correo no enviado: '+(err.text||err), 'warning');
+    }
+}
+async function deleteUser(email) {
+    if (!confirm('¿Eliminar a '+email+'?')) return;
+    try {
+        const r = await fetch(`${BB_SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(email)}`, {
+            method: 'DELETE',
+            headers: { 'apikey': BB_SUPABASE_KEY, 'Authorization': 'Bearer ' + BB_SUPABASE_KEY }
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+    } catch(err) {
+        showAlert('⚠️ Error eliminando usuario: ' + err.message, 'error');
+        return;
+    }
+    delete permissionsData.users[email];
+    if (permissionsData.usersData) delete permissionsData.usersData[email];
+    renderAll();
+    showAlert('✓ Usuario eliminado', 'success');
+}
+async function togglePermission(email, id) {
+    const p = permissionsData.users[email], i = p.indexOf(id);
+    try {
+        if (i > -1) {
+            const r = await fetch(`${BB_SUPABASE_URL}/rest/v1/permissions?email=eq.${encodeURIComponent(email)}&dashboard_id=eq.${id}`, {
+                method: 'DELETE',
+                headers: { 'apikey': BB_SUPABASE_KEY, 'Authorization': 'Bearer ' + BB_SUPABASE_KEY }
+            });
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            p.splice(i, 1);
+        } else {
+            const r = await fetch(`${BB_SUPABASE_URL}/rest/v1/permissions`, {
+                method: 'POST',
+                headers: { 'apikey': BB_SUPABASE_KEY, 'Authorization': 'Bearer ' + BB_SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                body: JSON.stringify({ email, dashboard_id: id })
+            });
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            p.push(id);
+        }
+    } catch(err) {
+        showAlert('⚠️ Error: ' + err.message, 'error');
+        return;
+    }
+    renderAll();
+    showAlert('✓ Permiso actualizado', 'success');
+}
+function editUserPermissions(email) {
+    const cur=permissionsData.users[email]||[];
+    const userData = permissionsData.usersData && permissionsData.usersData[email] || {};
+    const hasKB = userData.base_conocimiento || false;
+    const currentAliases = (userData.aliases || []).join(', ');
+    const cbs=DASHBOARDS_CONFIG.map(d=>'<label class="checkbox-label"><input type="checkbox" value="'+d.id+'" '+(cur.includes(d.id)?'checked':'')+' class="edit-cb"><span>'+d.name+'</span></label>').join('');
+    const kbCheck='<label class="checkbox-label" style="border:1px solid rgba(255,215,0,0.3);border-radius:8px;padding:8px 12px;background:rgba(255,215,0,0.07);"><input type="checkbox" value="base_conocimiento" '+(hasKB?'checked':'')+' id="edit-kb-cb"><span style="color:#FFD700;font-weight:600;">⚙️ Base de Conocimiento</span></label>';
+    const aliasField='<div style="margin-bottom:14px;"><p style="color:rgba(255,255,255,0.5);font-size:0.8em;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Alias de correo (opcional)</p><input id="edit-aliases" type="text" value="'+currentAliases+'" placeholder="alias1@bigbola.com, alias2@bigbola.com" style="width:100%;padding:9px 12px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:white;font-size:0.85em;font-family:inherit;outline:none;box-sizing:border-box;"><p style="color:rgba(255,255,255,0.3);font-size:0.75em;margin-top:5px;">Separa múltiples alias con coma. El usuario podrá iniciar sesión con cualquiera de ellos.</p></div>';
+    const m=document.createElement('div'); m.className='modal-overlay';
+    m.innerHTML='<div class="modal-box"><h2>Editar: '+email+'</h2>'+aliasField+'<div style="margin-bottom:14px;"><p style="color:rgba(255,255,255,0.5);font-size:0.8em;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">Permisos especiales</p>'+kbCheck+'</div><div class="checkbox-group">'+cbs+'</div><div style="margin-top:20px;display:flex;gap:10px;"><button class="btn btn-success" id="savePermsBtn">✓ Guardar</button><button class="btn btn-secondary" id="cancelPermsBtn">Cancelar</button></div></div>';
+    document.body.appendChild(m);
+    m.querySelector('#savePermsBtn').addEventListener('click', function() { saveEditedPerms(email, this); });
+    m.querySelector('#cancelPermsBtn').addEventListener('click', function() { m.remove(); });
+}
+async function saveEditedPerms(email,btn) {
+    const m=btn.closest('.modal-overlay');
+    const prevPerms = (permissionsData.users[email] || []).slice();
+    const newPerms  = Array.from(m.querySelectorAll('.edit-cb:checked')).map(cb=>cb.value);
+    const hasKB     = m.querySelector('#edit-kb-cb') && m.querySelector('#edit-kb-cb').checked;
+    const aliasRaw  = m.querySelector('#edit-aliases') ? m.querySelector('#edit-aliases').value.trim() : '';
+    const aliases   = aliasRaw ? aliasRaw.split(',').map(a=>a.trim().toLowerCase()).filter(a=>a.endsWith('@bigbola.com') && a !== email) : [];
+
+    // Guardar permiso base_conocimiento y aliases en usersData
+    if (!permissionsData.usersData) permissionsData.usersData = {};
+    if (!permissionsData.usersData[email]) permissionsData.usersData[email] = {};
+    permissionsData.usersData[email].base_conocimiento = hasKB;
+    permissionsData.usersData[email].aliases = aliases;
+
+    // Detectar dashboards recién agregados (que no estaban antes)
+    const added = newPerms.filter(id => !prevPerms.includes(id));
+
+    // Guardar en Supabase: borrar permisos actuales e insertar nuevos
+    try {
+        const delR = await fetch(`${BB_SUPABASE_URL}/rest/v1/permissions?email=eq.${encodeURIComponent(email)}`, {
+            method: 'DELETE',
+            headers: { 'apikey': BB_SUPABASE_KEY, 'Authorization': 'Bearer ' + BB_SUPABASE_KEY }
+        });
+        if (!delR.ok) throw new Error('Error borrando permisos: ' + delR.status);
+
+        if (newPerms.length > 0) {
+            const insR = await fetch(`${BB_SUPABASE_URL}/rest/v1/permissions`, {
+                method: 'POST',
+                headers: { 'apikey': BB_SUPABASE_KEY, 'Authorization': 'Bearer ' + BB_SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                body: JSON.stringify(newPerms.map(id => ({ email, dashboard_id: id })))
+            });
+            if (!insR.ok) throw new Error('Error insertando permisos: ' + insR.status);
+        }
+
+        // Actualizar aliases y base_conocimiento en users
+        const updR = await fetch(`${BB_SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(email)}`, {
+            method: 'PATCH',
+            headers: { 'apikey': BB_SUPABASE_KEY, 'Authorization': 'Bearer ' + BB_SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+            body: JSON.stringify({ base_conocimiento: hasKB, aliases })
+        });
+        if (!updR.ok) throw new Error('Error actualizando usuario: ' + updR.status);
+
+    } catch(e) {
+        showAlert('Error al guardar en Supabase: ' + e.message, 'error');
+        return;
+    }
+
+    permissionsData.users[email] = newPerms;
+    renderAll();
+    m.remove();
+
+    if (added.length > 0) {
+        // Construir lista legible de dashboards nuevos
+        const dashNames = added.map(id => {
+            const d = DASHBOARDS_CONFIG.find(x => x.id === id);
+            return '• ' + (d ? d.name : id);
+        }).join('\n');
+
+        const namePart = email.split('@')[0].split('.').map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(' ');
+        const portalUrl = 'https://franciscozamoramx.github.io/bbanalytics360/';
+
+        showAlert('✓ Permisos actualizados. Enviando notificación a '+email+'...','success');
+        try {
+            await sendEmail(EMAILJS_TEMPLATE_NUEVO_ACCESO, {
+                to_name:         namePart,
+                to_email:        email,
+                dashboards_list: dashNames,
+                portal_url:      portalUrl,
+                email_subject:   'Tienes nuevos dashboards disponibles en BB Analytics 360',
+                message_intro:   'Se te han asignado nuevos accesos en BB Analytics 360. Ya puedes ver los siguientes dashboards:',
+                cta_label:       'Validar mis dashboards →',
+                show_welcome:    'false'
+            });
+            showAlert('✓ Permisos actualizados y notificación enviada a '+email+' ('+added.length+' nuevo'+(added.length>1?'s':'')+' dashboard'+(added.length>1?'s':'')+')','success');
+        } catch(err) {
+            showAlert('✓ Permisos actualizados. No se pudo enviar notificación: '+(err.text||err),'warning');
+        }
+    } else {
+        showAlert('✓ Permisos actualizados','success');
+    }
+}
+function filterUsers() {
+    const s=document.getElementById('searchUsers').value.toLowerCase();
+    document.querySelectorAll('.user-card').forEach(c=>{ c.style.display=c.querySelector('h3').textContent.toLowerCase().includes(s)?'block':'none'; });
+}
+
+// ─── IMPORTAR / EXPORTAR ─────────────────────────────────────────────────────
+function handleFileImport(event) {
+    const file=event.target.files[0]; if (!file) return;
+    const r=new FileReader();
+    r.onload=e=>{ try { const d=JSON.parse(e.target.result); if (!d.users) { showAlert('⚠️ Formato inválido','error','alertContainerConfig'); return; } permissionsData.users=parseUsersFromJSON(d); renderAll(); showAlert('✓ '+Object.keys(permissionsData.users).length+' usuarios importados','success'); switchTab('usuarios'); } catch(err) { showAlert('⚠️ '+err.message,'error','alertContainerConfig'); } };
+    r.readAsText(file);
+}
+function downloadJSON() {
+    const out={users:{}}; Object.keys(permissionsData.users).forEach(e=>{ out.users[e]={dashboards:permissionsData.users[e]}; });
+    const b=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='permissions.json'; a.click();
+    URL.revokeObjectURL(a.href); showAlert('✓ JSON descargado','success','alertContainerConfig');
+}
+
+
+
+
+// ─── TOKEN MODAL ─────────────────────────────────────────────────────────────
+function openTokenModal() {
+    const modal = document.getElementById('tokenModal');
+    modal.style.display = 'flex';
+    document.getElementById('tokenModalInput').value = '';
+    document.getElementById('tokenModalAlert').style.display = 'none';
+    setTimeout(() => document.getElementById('tokenModalInput').focus(), 100);
+}
+
+function closeTokenModal() {
+    document.getElementById('tokenModal').style.display = 'none';
+}
+
+async function confirmTokenModal() {
+    const token = document.getElementById('tokenModalInput').value.trim();
+    const alertEl = document.getElementById('tokenModalAlert');
+    if (!token || !token.startsWith('ghp_')) {
+        alertEl.style.display = 'block';
+        alertEl.textContent = 'Token inválido. Debe comenzar con ghp_';
+        return;
+    }
+    // Verificar que el token funciona
+    alertEl.style.display = 'none';
+    try {
+        const url = `https://api.github.com/repos/${githubConfig.user}/${githubConfig.repo}/contents/${githubConfig.file}`;
+        const r = await fetch(url, { headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' } });
+        if (r.status === 401) { alertEl.style.display='block'; alertEl.textContent='Token inválido o expirado'; return; }
+        if (r.status === 403) { alertEl.style.display='block'; alertEl.textContent='Token sin permisos de escritura (necesita scope repo)'; return; }
+        if (r.ok) { const d = await r.json(); githubConfig.sha = d.sha; }
+    } catch(e) { alertEl.style.display='block'; alertEl.textContent='Error de red: ' + e.message; return; }
+
+    // Token válido — guardarlo y proceder
+    githubConfig.token = token;
+    const saved = JSON.parse(localStorage.getItem('bbAnalyticsGithubConfig') || '{}');
+    saved.token = token;
+    localStorage.setItem('bbAnalyticsGithubConfig', JSON.stringify(saved));
+    document.getElementById('syncBtn').disabled = false;
+    closeTokenModal();
+    saveToGithub(); // Reintentar ahora con el token
+}
+
+// ─── ROLE PERMISSIONS ────────────────────────────────────────────────────────
+function applyRolePermissions() {
+    const isMaster = sessionStorage.getItem('bb_is_master') === '1';
+    const show = el => { if (el) el.style.display = ''; };
+    const hide = el => { if (el) el.style.display = 'none'; };
+    const toggle = (el, show) => { if (el) el.style.display = show ? '' : 'none'; };
+
+    // Tab "Administradores" y tab "Configuración": solo admin maestro
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        const oc = btn.getAttribute('onclick') || '';
+        if (oc.includes("'admins'") || oc.includes("'config'")) {
+            toggle(btn, isMaster);
+        }
+    });
+
+    // Botón "Configurar GitHub" en la barra de status
+    toggle(document.getElementById('btnConfigGithub'), isMaster);
+
+    // Botones Sincronizar y Guardar en GitHub: visibles para TODOS los admins
+    // (se habilitan solo cuando el token de GitHub está configurado)
+    // No se ocultan por rol — solo por disponibilidad de token
+
+    // Si el usuario está en una tab restringida, redirigir a Usuarios
+    if (!isMaster) {
+        const active = document.querySelector('.tab-content.active');
+        if (active && (active.id === 'tab-admins' || active.id === 'tab-config')) {
+            switchTab('usuarios', document.querySelector('.tab-btn'));
+        }
+    }
+}
+
+// ─── ADMIN MANAGEMENT ────────────────────────────────────────────────────────
+async function createAdmin() {
+    const name  = document.getElementById('newAdminName').value.trim();
+    const email = document.getElementById('newAdminEmail').value.trim().toLowerCase();
+    const btn   = document.getElementById('createAdminBtn');
+    if (!name)  { showAlert('Ingresa el nombre completo', 'error', 'alertContainerAdmins'); return; }
+    if (!email||!email.includes('@')) { showAlert('Ingresa un email valido', 'error', 'alertContainerAdmins'); return; }
+    const admins = getAdmins();
+    if (admins.find(a=>a.email.toLowerCase()===email)) { showAlert('Este correo ya existe', 'error', 'alertContainerAdmins'); return; }
+    const tok  = (await sha256(email+SECRET)).substring(0,40);
+    const em   = btoa(encodeURIComponent(email));
+    const nm   = btoa(encodeURIComponent(name));
+    const link = window.location.origin+window.location.pathname+'?token='+tok+'&em='+em+'&nm='+nm;
+    admins.push({name,email,status:'pending',passHash:null,createdAt:new Date().toISOString(),activatedAt:null});
+    saveAdmins(admins);
+    saveAdminsToGithub(admins);
+    btn.disabled=true; btn.textContent='Enviando correo...';
+    try {
+        await sendEmail(EMAILJS_TEMPLATE_ID,{to_name:name,to_email:email,activation_link:link});
+        showAlert('Administrador creado y correo enviado a '+email,'success','alertContainerAdmins');
+        document.getElementById('newAdminName').value='';
+        document.getElementById('newAdminEmail').value='';
+        renderAdmins();
+    } catch(err) {
+        showAlert('Correo no enviado ('+( err.text||err)+'). Link: '+link,'warning','alertContainerAdmins');
+        renderAdmins();
+    }
+    btn.disabled=false; btn.textContent='Crear Administrador y Enviar Correo';
+}
+
+async function resendAdminEmail(email) {
+    const admins=getAdmins(); const admin=admins.find(a=>a.email===email);
+    if(!admin){showAlert('No encontrado','error','alertContainerAdmins');return;}
+    const tok=(await sha256(email+SECRET)).substring(0,40);
+    const link=window.location.origin+window.location.pathname+'?token='+tok+'&em='+btoa(encodeURIComponent(email))+'&nm='+btoa(encodeURIComponent(admin.name));
+    try { await sendEmail(EMAILJS_TEMPLATE_ID,{to_name:admin.name,to_email:email,activation_link:link}); showAlert('Correo reenviado a '+email,'success','alertContainerAdmins'); }
+    catch(err){ showAlert('Error al reenviar. Link: '+link,'warning','alertContainerAdmins'); }
+}
+
+function deleteAdmin(email) {
+    if(!confirm('Eliminar a '+email+'?')) return;
+    const admins=getAdmins().filter(a=>a.email!==email);
+    saveAdmins(admins); saveAdminsToGithub(admins); renderAdmins();
+    showAlert('Administrador eliminado','success','alertContainerAdmins');
+}
+
+async function resetAdminPassword(email) {
+    if(!confirm('Restablecer contrasena de '+email+'?')) return;
+    const admins=getAdmins(); const idx=admins.findIndex(a=>a.email===email); if(idx===-1)return;
+    admins[idx].passHash=null; admins[idx].status='pending';
+    saveAdmins(admins); saveAdminsToGithub(admins);
+    const tok=(await sha256(email+SECRET)).substring(0,40);
+    const link=window.location.origin+window.location.pathname+'?token='+tok+'&em='+btoa(encodeURIComponent(email))+'&nm='+btoa(encodeURIComponent(admins[idx].name));
+    try { await sendEmail(EMAILJS_TEMPLATE_ID,{to_name:admins[idx].name,to_email:email,activation_link:link}); showAlert('Correo enviado a '+email,'success','alertContainerAdmins'); }
+    catch(err){ showAlert('Error. Link: '+link,'warning','alertContainerAdmins'); }
+    renderAdmins();
+}
+
+async function syncAdminsToGithub() {
+    if (!githubConfig.token) { showAlert('Necesitas configurar tu token de GitHub primero', 'warning', 'alertContainerAdmins'); return; }
+    try {
+        // Obtener SHA fresco desde GitHub antes de escribir
+        const url = 'https://api.github.com/repos/'+githubConfig.user+'/'+githubConfig.repo+'/contents/PERMISSION_FILES_BI/admins.json';
+        const rGet = await fetch(url, { headers:{ 'Authorization':'token '+githubConfig.token, 'Accept':'application/vnd.github.v3+json' } });
+        if (rGet.ok) {
+            const d = await rGet.json();
+            localStorage.setItem('bb_admins_sha', d.sha);
+        }
+        // Ahora escribir con el SHA correcto
+        const admins  = getAdmins();
+        const payload = {
+            message: 'Sync admins - ' + new Date().toLocaleString('es-MX'),
+            content:  btoa(unescape(encodeURIComponent(JSON.stringify(admins, null, 2)))),
+            sha:      localStorage.getItem('bb_admins_sha')
+        };
+        const rPut = await fetch(url, { method:'PUT', headers:{ 'Authorization':'token '+githubConfig.token, 'Accept':'application/vnd.github.v3+json', 'Content-Type':'application/json' }, body: JSON.stringify(payload) });
+        if (rPut.ok) {
+            const d = await rPut.json();
+            localStorage.setItem('bb_admins_sha', d.content.sha);
+            showAlert('Admins sincronizados a GitHub correctamente', 'success', 'alertContainerAdmins');
+        } else {
+            const err = await rPut.json();
+            showAlert('Error GitHub: ' + (err.message||rPut.status), 'error', 'alertContainerAdmins');
+        }
+    } catch(e) { showAlert('Error: ' + e.message, 'error', 'alertContainerAdmins'); }
+}
+
+function renderAdmins() {
+    const syncBar = document.getElementById('adminsSyncBar');
+    if (syncBar) syncBar.style.display = githubConfig.token ? 'block' : 'none';
+    const c=document.getElementById('adminsList'); const admins=getAdmins();
+    if(!admins.length){c.innerHTML='<div class="empty-state"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg><h3>No hay administradores</h3><p>Agrega el primero usando el formulario</p></div>';return;}
+    c.innerHTML=admins.map(a=>{
+        const badge=a.status==='active'?'<span class="status-badge status-active">Activo</span>':'<span class="status-badge status-pending">Pendiente</span>';
+        const created=new Date(a.createdAt).toLocaleDateString('es-MX');
+        const actions=a.status==='active'
+            ?'<button class="btn btn-warning" onclick="resetAdminPassword(\''+a.email+'\')">Restablecer contrasena</button>'
+            :'<button class="btn btn-warning" onclick="resendAdminEmail(\''+a.email+'\')">Reenviar correo</button>';
+        return '<div class="admin-card"><h3>'+a.name+' '+badge+'</h3><div class="meta">'+a.email+' · Creado: '+created+'</div><div class="action-buttons">'+actions+'<button class="btn btn-danger" onclick="deleteAdmin(\''+a.email+'\')">Eliminar</button></div></div>';
+    }).join('');
+}
+
+init();
+
 </script>
 
 <script>
-(function(){const a=['#FFD700','#229ED9','#00ced1','#ff6b6b','#3DD68C'];function b(c,d){const e=document['getElementById'](d),f=document['getElementById'](c);if(!f||!e)return;const g=f['getContext']('2d');let h,i,j=[],k;function l(){h=f['width']=e['offsetWidth']||window['innerWidth'],i=f['height']=e['offsetHeight']||window['innerHeight'],m();}function m(){const p=h<0x300,q=p?0x19:0x37;j=Array['from']({'length':q},()=>({'x':Math['random']()*h,'y':Math['random']()*i,'r':Math['random']()*0x3+0.5,'vy':-(Math['random']()*0.5+0.1),'vx':(Math['random']()-0.5)*0.15,'opacity':Math['random']()*0.35+0.08,'color':a[Math['floor'](Math['random']()*a['length'])],'pulse':Math['random']()*Math['PI']*0x2}));}function n(){g['clearRect'](0x0,0x0,h,i),j['forEach'](q=>{q['y']+=q['vy'],q['x']+=q['vx'],q['pulse']+=0.02;q['y']<-0xa&&(q['y']=i+0x5,q['x']=Math['random']()*h);if(q['x']<-0x5)q['x']=h+0x5;if(q['x']>h+0x5)q['x']=-0x5;const r=Math['sin'](q['pulse'])*0.1+0.9;g['globalAlpha']=q['opacity']*r,g['fillStyle']=q['color'],g['beginPath'](),g['arc'](q['x'],q['y'],q['r'],0x0,Math['PI']*0x2),g['fill'](),g['globalAlpha']=q['opacity']*r*0.25,g['beginPath'](),g['arc'](q['x'],q['y'],q['r']*0x3,0x0,Math['PI']*0x2),g['fill']();}),g['globalAlpha']=0x1,k=requestAnimationFrame(n);}const o=new MutationObserver(()=>{const p=e['style']['display']!=='none'&&e['style']['display']!=='';if(p&&!k)l(),k=requestAnimationFrame(n);else!p&&k&&(cancelAnimationFrame(k),k=null);});o['observe'](e,{'attributes':!![],'attributeFilter':['style']}),window['addEventListener']('resize',l),e['style']['display']&&e['style']['display']!=='none'&&(l(),k=requestAnimationFrame(n));}document['readyState']==='loading'?document['addEventListener']('DOMContentLoaded',()=>{b('loginCanvas','activationScreen'),b('loginCanvas2','loginOverlay');}):(b('loginCanvas','activationScreen'),b('loginCanvas2','loginOverlay'));}());
+// ─── CANVAS PARTÍCULAS LOGIN ─────────────────────────────────────────────────
+(function() {
+    const colors = ['#FFD700','#229ED9','#00ced1','#ff6b6b','#3DD68C'];
+
+    function initCanvas(canvasId, overlayId) {
+        const overlay = document.getElementById(overlayId);
+        const canvas  = document.getElementById(canvasId);
+        if (!canvas || !overlay) return;
+        const ctx = canvas.getContext('2d');
+        let W, H, particles = [], raf;
+
+        function resize() {
+            W = canvas.width  = overlay.offsetWidth  || window.innerWidth;
+            H = canvas.height = overlay.offsetHeight || window.innerHeight;
+            initParticles();
+        }
+
+        function initParticles() {
+            const isMobile = W < 768;
+            const count = isMobile ? 25 : 55;
+            particles = Array.from({length: count}, () => ({
+                x: Math.random() * W,
+                y: Math.random() * H,
+                r: Math.random() * 3 + 0.5,
+                vy: -(Math.random() * 0.5 + 0.1),
+                vx: (Math.random() - 0.5) * 0.15,
+                opacity: Math.random() * 0.35 + 0.08,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                pulse: Math.random() * Math.PI * 2
+            }));
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, W, H);
+            particles.forEach(p => {
+                p.y  += p.vy;
+                p.x  += p.vx;
+                p.pulse += 0.02;
+                if (p.y < -10) { p.y = H + 5; p.x = Math.random() * W; }
+                if (p.x < -5)  p.x = W + 5;
+                if (p.x > W+5) p.x = -5;
+                const flicker = Math.sin(p.pulse) * 0.1 + 0.9;
+                ctx.globalAlpha = p.opacity * flicker;
+                ctx.fillStyle = p.color;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+                ctx.globalAlpha = p.opacity * flicker * 0.25;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2); ctx.fill();
+            });
+            ctx.globalAlpha = 1;
+            raf = requestAnimationFrame(animate);
+        }
+
+        const obs = new MutationObserver(() => {
+            const visible = overlay.style.display !== 'none' && overlay.style.display !== '';
+            if (visible && !raf) { resize(); raf = requestAnimationFrame(animate); }
+            else if (!visible && raf) { cancelAnimationFrame(raf); raf = null; }
+        });
+        obs.observe(overlay, { attributes: true, attributeFilter: ['style'] });
+        window.addEventListener('resize', resize);
+        if (overlay.style.display && overlay.style.display !== 'none') { resize(); raf = requestAnimationFrame(animate); }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            initCanvas('loginCanvas',  'activationScreen');
+            initCanvas('loginCanvas2', 'loginOverlay');
+        });
+    } else {
+        initCanvas('loginCanvas',  'activationScreen');
+        initCanvas('loginCanvas2', 'loginOverlay');
+    }
+})();
 </script>
 </body>
 
