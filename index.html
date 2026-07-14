@@ -22,7 +22,59 @@
             });
         }
 
+        // Capturar evento de instalación PWA
+        let _pwaInstallPrompt = null;
+        window.addEventListener('beforeinstallprompt', function(e) {
+            e.preventDefault();
+            _pwaInstallPrompt = e;
 
+            // Toast flotante automático
+            var prev = document.getElementById('pwaReadyToast');
+            if (prev) prev.remove();
+            var toast = document.createElement('div');
+            toast.id = 'pwaReadyToast';
+            toast.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:99999;background:#152c6e;border:2px solid #FFD700;border-radius:16px;padding:14px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 20px rgba(0,0,0,0.5);min-width:280px;max-width:90vw;';
+            var text = document.createElement('div');
+            text.style.cssText = 'flex:1;';
+            var title = document.createElement('div');
+            title.style.cssText = 'color:#FFD700;font-weight:700;font-size:13px;';
+            title.textContent = 'BB Analytics 360 listo para instalar';
+            var sub = document.createElement('div');
+            sub.style.cssText = 'color:rgba(255,255,255,0.7);font-size:11px;margin-top:2px;';
+            sub.textContent = 'Instala la aplicacion ahora';
+            var btnInstall = document.createElement('button');
+            btnInstall.style.cssText = 'background:linear-gradient(to right,#FFD700,#FF8C00);color:#152c6e;border:none;border-radius:50px;padding:8px 16px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;';
+            btnInstall.textContent = 'Instalar';
+            var btnClose = document.createElement('button');
+            btnClose.style.cssText = 'background:none;border:none;color:rgba(255,255,255,0.5);font-size:18px;cursor:pointer;padding:0 4px;line-height:1;';
+            btnClose.textContent = 'x';
+            text.appendChild(title);
+            text.appendChild(sub);
+            toast.appendChild(text);
+            toast.appendChild(btnInstall);
+            toast.appendChild(btnClose);
+            document.body.appendChild(toast);
+            btnInstall.addEventListener('click', function() { toast.remove(); triggerPwaInstall(); });
+            btnClose.addEventListener('click', function() { toast.remove(); });
+        });
+
+        window.addEventListener('appinstalled', function() {
+            _pwaInstallPrompt = null;
+            var toast = document.getElementById('pwaReadyToast');
+            if (toast) toast.remove();
+        });
+
+        function triggerPwaInstall() {
+            if (_pwaInstallPrompt) {
+                _pwaInstallPrompt.prompt();
+                _pwaInstallPrompt.userChoice.then(function(result) {
+                    if (result.outcome === 'accepted') {
+                        _pwaInstallPrompt = null;
+
+                    }
+                });
+            }
+        }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -1623,6 +1675,644 @@
             document.getElementById('statusMessage').style.display = 'none';
         }
 
+        // ── WIDGET CHATBOT IA EN PANTALLA PRINCIPAL ─────────────────────────
+        function buildMainTelegramWidget(tgUser) {
+            if (document.getElementById('tgWidgetMain')) return;
+            if (!document.body) { setTimeout(function(){ buildMainTelegramWidget(tgUser); }, 200); return; }
+            const TG_BOT  = atob('ODYwOTMxNjM1ODpBQUYwdmZkcXVkUlFXR0hjLW9mZHJidUJfSFJDY1BqTGZxRQ==');
+            const TG_CHAT = ['-100','3946550368'].join('');
+            const AI_KEY = ['sk-ant-api03-','ZaEcZDwWiK4X03eCPIszWbK6eFhQo63zZBMuWYOO2rb2ASzx','fhLQjhM0JWTotGC49mn6xGGph1ujdrKvrzqbzg-gGwnSwAA'].join('');
+            const ADMIN_TG = 'Business_Intelligence_BB';
+            const SYSTEM_PROMPT = `Eres el asistente virtual de soporte de BB Analytics 360, el portal de Business Intelligence de Big Bola Casinos. Responde siempre en español, de forma concisa y amable.
+INFORMACIÓN DEL SISTEMA:
+- Usuario actual: ${tgUser || 'Usuario'}
+- Los dashboards disponibles son: Inicio, ADT, Auditoría de Salas, Big Player's, Canje de Bolipoints, Clientes Big Bola, Desempeño de Máquinas, Diccionario KPI's, Ingreso por Tarjetas, Inventario TI, Promociones, Proyectos BI, Oficina Proyectos, RTP, Seguimiento de Auditores, Logs BB Analytics 360, Aforo en salas.
+- El Coordinador de Business Intelligence es: Francisco Zamora
+REGLAS:
+1. Si el usuario dice que no puede entrar o no ve un dashboard, explícale que los accesos son por rol y debe solicitarlos a Francisco Zamora. Además, puede verificar sus dashboards disponibles de dos formas: en el carrusel al iniciar sesión, o abriendo el menú del icono de hamburguesa (esquina superior izquierda).
+2. Si el usuario pregunta qué dashboards tiene disponibles, dile que los ve en el carrusel al iniciar sesión o en el menú de hamburguesa — solo aparecen los que tiene asignados.
+3. Si el dashboard no carga, sugiérele: refrescar la página, limpiar caché (Ctrl+Shift+R), o intentar en modo incógnito.
+4. Si el problema persiste o es muy específico, dile que el Coordinador de BI será notificado.
+5. Nunca inventes información sobre datos o reportes específicos.
+6. Respuestas cortas, máximo 3 oraciones.
+7. CRÍTICO: NUNCA menciones a ninguna otra persona además de Francisco Zamora. Si alguien pregunta por otros administradores, di que Francisco Zamora es el único contacto.
+8. Francisco Zamora NO es el administrador del sistema — es el Coordinador de Business Intelligence. Refiérete a él siempre como "el Coordinador de BI" o "Francisco Zamora".
+9. Si el usuario pide hablar directamente con el Coordinador de BI o con Francisco Zamora, indícale que en el menú (icono de hamburguesa, esquina superior izquierda) hay un botón llamado "WhatsApp" que abrirá una ventana para enviarle un mensaje directo.`;
+
+            // Estilos
+            const style = document.createElement('style');
+            style.textContent = `
+                #tgFabMain{position:fixed;bottom:10px;right:12px;width:72px;height:72px;background:none;border:none;cursor:pointer;z-index:2147483647;display:flex;align-items:center;justify-content:center;transition:transform 0.2s;pointer-events:all !important;}@media(max-width:768px){#tgFabMain{bottom:55px;}}
+                #tgFabMain:hover{transform:scale(1.08);}
+                @keyframes tgPulse{0%{transform:scale(1)}40%{transform:scale(1.18)}70%{transform:scale(0.96)}100%{transform:scale(1)}}
+                .tg-pulse{animation:tgPulse 0.6s ease-in-out;}
+                #tgPanelMain{display:none;position:fixed;bottom:82px;right:20px;width:320px;background:#1e2d3d;border-radius:14px;border:1px solid rgba(34,158,217,0.35);overflow:hidden;z-index:2147483647;box-shadow:0 8px 32px rgba(0,0,0,0.5);font-family:inherit;pointer-events:all !important;}
+                #tgPanelMain .tg-head{background:#229ED9;padding:12px 14px;display:flex;align-items:center;gap:10px;}
+                #tgMessagesMain{height:220px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;}
+                #tgMessagesMain::-webkit-scrollbar{width:4px;}
+                #tgMessagesMain::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:4px;}
+                .tg-msg-bot-m,.tg-msg-user-m{max-width:85%;padding:8px 12px;border-radius:12px;font-size:12px;line-height:1.5;word-wrap:break-word;}
+                .tg-msg-bot-m{background:rgba(34,158,217,0.2);color:rgba(255,255,255,0.9);align-self:flex-start;border-bottom-left-radius:3px;}
+                .tg-msg-user-m{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.85);align-self:flex-end;border-bottom-right-radius:3px;}
+                .tg-typing-m{display:flex;gap:4px;align-items:center;padding:8px 12px;}
+                .tg-typing-m span{width:6px;height:6px;background:#229ED9;border-radius:50%;animation:tgBounce 1.2s infinite;}
+                .tg-typing-m span:nth-child(2){animation-delay:0.2s;}
+                .tg-typing-m span:nth-child(3){animation-delay:0.4s;}
+                #tgInputAreaMain{display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(255,255,255,0.08);}
+                #tgInputMain{flex:1;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:white;font-size:12px;padding:8px 10px;outline:none;font-family:inherit;}
+                #tgInputMain:focus{border-color:#229ED9;}
+                #tgSendBtnMain{width:36px;height:36px;background:#229ED9;border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+                #tgFabMain.tg-fade{opacity:0.3 !important;transition:opacity 0.3s ease-in-out !important;}
+                .tg-msg-initial.tg-fade{opacity:0.3 !important;transition:opacity 0.3s ease-in-out !important;}
+                #tgPanelMain{opacity:1 !important;}
+            `;
+            document.head.appendChild(style);
+
+            const div = document.createElement('div');
+            div.id = 'tgWidgetMain';
+            div.style.cssText = 'position:fixed;z-index:2147483647;pointer-events:none;';
+            div.innerHTML = `
+                <button id="tgFabMain" title="Ayuda" style="background:none;border:none;padding:0;cursor:pointer;filter:drop-shadow(0 4px 12px rgba(34,158,217,0.6));">
+                    <svg viewBox="0 0 80 80" width="72" height="72" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Globo Hola -->
+                        <rect x="38" y="2" width="36" height="18" rx="9" fill="white"/>
+                        <polygon points="42,20 50,20 44,28" fill="white"/>
+                        <text x="56" y="15" font-size="9" font-weight="bold" fill="#229ED9" text-anchor="middle" font-family="Arial">Hola!</text>
+                        <!-- Antena -->
+                        <rect x="37" y="26" width="4" height="7" rx="2" fill="#b0d4f1"/>
+                        <circle cx="39" cy="24" r="3.5" fill="#229ED9"/>
+                        <!-- Cabeza -->
+                        <rect x="20" y="32" width="38" height="28" rx="10" fill="white"/>
+                        <rect x="21" y="33" width="36" height="26" rx="9" fill="#1a2a4a"/>
+                        <!-- Ojos brillantes -->
+                        <circle cx="32" cy="44" r="5" fill="#00e5ff"/>
+                        <circle cx="32" cy="44" r="3" fill="#00bcd4"/>
+                        <circle cx="30.5" cy="42.5" r="1.2" fill="white" opacity="0.8"/>
+                        <circle cx="46" cy="44" r="5" fill="#00e5ff"/>
+                        <circle cx="46" cy="44" r="3" fill="#00bcd4"/>
+                        <circle cx="44.5" cy="42.5" r="1.2" fill="white" opacity="0.8"/>
+                        <!-- Sonrisa -->
+                        <path d="M32 52 Q39 57 46 52" stroke="#00e5ff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                        <!-- Auriculares -->
+                        <rect x="13" y="38" width="8" height="14" rx="4" fill="#229ED9"/>
+                        <rect x="57" y="38" width="8" height="14" rx="4" fill="#229ED9"/>
+                        <path d="M17 38 Q39 26 61 38" stroke="#5b8fd4" stroke-width="3" fill="none"/>
+                        <!-- Cuerpo pequeño -->
+                        
+                    </svg>
+                </button>
+                <div id="tgPanelMain">
+                    <div class="tg-head">
+                        <svg viewBox="0 0 64 64" style="width:28px;height:28px;fill:white;flex-shrink:0;"><rect x="16" y="20" width="32" height="24" rx="6" ry="6"/><rect x="22" y="28" width="6" height="6" rx="2" ry="2" fill="#229ED9"/><rect x="36" y="28" width="6" height="6" rx="2" ry="2" fill="#229ED9"/><rect x="26" y="37" width="12" height="3" rx="1.5" ry="1.5" fill="#229ED9"/><rect x="30" y="13" width="4" height="8" rx="2" ry="2"/><circle cx="32" cy="11" r="3"/><rect x="8" y="26" width="5" height="10" rx="2.5" ry="2.5"/><rect x="51" y="26" width="5" height="10" rx="2.5" ry="2.5"/><rect x="22" y="44" width="5" height="8" rx="2.5" ry="2.5"/><rect x="37" y="44" width="5" height="8" rx="2.5" ry="2.5"/></svg>
+                        <div style="flex:1;"><div style="color:white;font-size:13px;font-weight:700;">Soporte BB Analytics 360</div><div style="color:rgba(255,255,255,0.75);font-size:11px;">Asistente IA · Business Intelligence</div></div>
+                        <span id="tgCloseMain" style="color:rgba(255,255,255,0.8);cursor:pointer;font-size:20px;padding:4px 8px;">&times;</span>
+                    </div>
+                    <div id="tgMessagesMain"></div>
+                    <div id="tgInputAreaMain">
+                        <input id="tgInputMain" type="text" placeholder="Escribe tu pregunta...">
+                        <button id="tgSendBtnMain"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:white;"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(div);
+
+            let chatHistory = [], repeatCount = {}, interactionCount = 0;
+            let knowledgeBase = [];
+
+            // Cargar base de conocimiento desde GitHub
+            fetch('https://raw.githubusercontent.com/franciscozamoramx/bbanalytics360/main/knowledge.json?t=' + Date.now())
+                .then(r => r.json()).then(d => { knowledgeBase = d.casos || []; }).catch(() => {});
+
+            function searchKnowledge(query) {
+                if (!knowledgeBase.length) return null;
+                const q = query.toLowerCase();
+                let best = null, bestScore = 0;
+                knowledgeBase.forEach(caso => {
+                    let score = 0;
+                    caso.keywords.forEach(kw => { if (q.includes(kw.toLowerCase())) score++; });
+                    if (score > bestScore) { bestScore = score; best = caso; }
+                });
+                return bestScore > 0 ? best : null;
+            }
+
+            function addMsg(text, type) {
+                const msgs = document.getElementById('tgMessagesMain');
+                const d = document.createElement('div');
+                d.className = type === 'user' ? 'tg-msg-user-m' : 'tg-msg-bot-m';
+                d.textContent = text;
+                msgs.appendChild(d);
+                msgs.scrollTop = msgs.scrollHeight;
+            }
+            function showTyping() {
+                const msgs = document.getElementById('tgMessagesMain');
+                const d = document.createElement('div');
+                d.id = 'tgTypingMain'; d.className = 'tg-typing-m';
+                d.innerHTML = '<span></span><span></span><span></span>';
+                msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight;
+            }
+            function hideTyping() { const t = document.getElementById('tgTypingMain'); if(t) t.remove(); }
+
+            function notifyTelegram(userMsg, botReply) {
+                const text = '🔔 Escalación BB Analytics 360\n👤 Usuario: ' + tgUser + '\n\n❓ Pregunta repetida 5 veces:\n' + userMsg + '\n\n🤖 Última respuesta:\n' + botReply;
+                const img = new Image();
+                img.src = 'https://api.telegram.org/bot' + TG_BOT + '/sendMessage?chat_id=' + encodeURIComponent(TG_CHAT) + '&text=' + encodeURIComponent(text);
+            }
+
+            function showContactOptions() {
+                if (document.getElementById('tgContactMain')) return;
+                const msgs = document.getElementById('tgMessagesMain');
+                const div = document.createElement('div');
+                div.id = 'tgContactMain';
+                div.innerHTML = `
+                    <div style="text-align:center;margin-top:6px;"><a href="https://t.me/${ADMIN_TG}" target="_blank" style="display:inline-block;padding:8px 16px;background:linear-gradient(135deg,#229ED9,#1a7fb5);color:white;font-size:12px;font-weight:600;border-radius:20px;text-decoration:none;">📲 Escribir al administrador</a></div>
+                    <div style="background:rgba(34,158,217,0.12);border:1px solid rgba(34,158,217,0.3);border-radius:10px;padding:10px 12px;margin-top:8px;">
+                        <p style="color:rgba(255,255,255,0.8);font-size:12px;margin:0 0 8px;">¿Prefieres que te llamemos? Déjanos tu número:</p>
+                        <div style="display:flex;gap:6px;">
+                            <input id="tgPhoneMain" type="tel" placeholder="Ej. 4421234567" style="flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:6px;color:white;font-size:12px;padding:7px 10px;outline:none;font-family:inherit;">
+                            <button id="tgPhoneBtnMain" style="padding:7px 12px;background:#229ED9;color:white;font-size:12px;font-weight:600;border:none;border-radius:6px;cursor:pointer;">Enviar</button>
+                        </div>
+                        <div id="tgPhoneStatusMain" style="font-size:11px;margin-top:6px;min-height:14px;color:white;"></div>
+                    </div>
+                `;
+                msgs.appendChild(div);
+                msgs.scrollTop = msgs.scrollHeight;
+                document.getElementById('tgPhoneBtnMain').addEventListener('click', function() {
+                    const phone = document.getElementById('tgPhoneMain').value.trim();
+                    const st = document.getElementById('tgPhoneStatusMain');
+                    if (!phone) { st.style.color='#fca5a5'; st.textContent='Ingresa un número válido.'; return; }
+                    st.style.color='#93c5fd'; st.textContent='Enviando...';
+                    const text = '📞 Solicitud de llamada — BB Analytics 360\n👤 Usuario: ' + tgUser + '\n📱 Teléfono: ' + phone;
+                    const img = new Image();
+                    img.onload = img.onerror = function() { st.style.color='#6ee7b7'; st.textContent='✓ Recibido. El administrador te contactará pronto.'; document.getElementById('tgPhoneMain').disabled=true; document.getElementById('tgPhoneBtnMain').disabled=true; };
+                    img.src = 'https://api.telegram.org/bot' + TG_BOT + '/sendMessage?chat_id=' + encodeURIComponent(TG_CHAT) + '&text=' + encodeURIComponent(text);
+                });
+            }
+
+            async function sendMessage() {
+                const input = document.getElementById('tgInputMain');
+                const text = input.value.trim();
+                if (!text) return;
+                input.value = '';
+                addMsg(text, 'user');
+                interactionCount++;
+                const key = text.toLowerCase().substring(0, 30);
+                repeatCount[key] = (repeatCount[key] || 0) + 1;
+                chatHistory.push({role: 'user', content: text});
+                showTyping();
+                try {
+                    const kbMatch = searchKnowledge(text);
+                    const systemWithKB = kbMatch
+                        ? SYSTEM_PROMPT + '\n\nCASOCONOCIDO: ' + kbMatch.problema + '\nSOLUCION PROBADA: ' + kbMatch.solucion
+                        : SYSTEM_PROMPT;
+                    const res = await fetch(atob('aHR0cHM6Ly9hcGkuYW50aHJvcGljLmNvbS92MS9tZXNzYWdlcw=='), {
+                        method: 'POST',
+                        headers: {'Content-Type':'application/json','x-api-key':AI_KEY,[atob('YW50aHJvcGljLXZlcnNpb24=')]:'2023-06-01',[atob('YW50aHJvcGljLWRhbmdlcm91cy1kaXJlY3QtYnJvd3Nlci1hY2Nlc3M=')]:'true'},
+                        body: JSON.stringify({model:atob('Y2xhdWRlLWhhaWt1LTQtNS0yMDI1MTAwMQ=='),max_tokens:300,system:systemWithKB,messages:chatHistory.slice(-6)})
+                    });
+                    const data = await res.json();
+                    const reply = data.content && data.content[0] ? data.content[0].text : 'Lo siento, no pude procesar tu pregunta. Intenta de nuevo.';
+                    hideTyping();
+                    addMsg(reply, 'bot');
+                    chatHistory.push({role:'assistant', content:reply});
+                    // Log a Telegram
+                    const logImg = new Image();
+                    logImg.src = 'https://api.telegram.org/bot' + TG_BOT + '/sendMessage?chat_id=' + encodeURIComponent(TG_CHAT) + '&text=' + encodeURIComponent('\uD83D\uDCAC ' + tgUser + ':\n' + text + '\n\n\uD83E\uDD16 Bot:\n' + reply);
+                    if (interactionCount === 10) { addMsg('Veo que llevamos un buen rato conversando. Si prefieres hablar directamente con el administrador, usa las opciones de abajo.', 'bot'); showContactOptions(); }
+                    if (repeatCount[key] >= 5) { notifyTelegram(text, reply); repeatCount[key] = 0; }
+                } catch(e) { hideTyping(); addMsg('Ocurrió un error. Por favor intenta de nuevo.', 'bot'); }
+            }
+
+            setTimeout(() => addMsg('Hola! Soy el asistente de BB Analytics 360. ¿En qué puedo ayudarte?', 'bot'), 400);
+            document.getElementById('tgFabMain').addEventListener('click', function() { const p = document.getElementById('tgPanelMain'); p.style.display = p.style.display === 'block' ? 'none' : 'block'; });
+
+            // Pulso cada 1 minuto si no hay interacción
+            let tgLastInteraction = Date.now();
+            document.addEventListener('mousemove', () => tgLastInteraction = Date.now());
+            document.addEventListener('keydown',   () => tgLastInteraction = Date.now());
+            setInterval(function() {
+                const panel = document.getElementById('tgPanelMain');
+                const fab   = document.getElementById('tgFabMain');
+                if (!fab || (panel && panel.style.display === 'block')) return;
+                if (Date.now() - tgLastInteraction >= 55000) {
+                    fab.classList.add('tg-pulse');
+                    setTimeout(() => fab.classList.remove('tg-pulse'), 700);
+                }
+            }, 60000);
+            document.getElementById('tgCloseMain').addEventListener('click', function() {
+                document.getElementById('tgPanelMain').style.display = 'none';
+            });
+            document.getElementById('tgSendBtnMain').addEventListener('click', sendMessage);
+            document.getElementById('tgInputMain').addEventListener('keydown', function(e) { if (e.key === 'Enter') sendMessage(); });
+        }
+        // ── FIN WIDGET PANTALLA PRINCIPAL ────────────────────────────────────
+
+        async function handleLogin() {
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            
+            if (!email) {
+                showStatus('Por favor ingresa tu correo electrónico', 'error');
+                return;
+            }
+
+            if (!email.endsWith('@bigbola.com')) {
+                showStatus('Solo se permiten correos corporativos @bigbola.com. Si eres colaborador externo, contacta a tu administrador.', 'error');
+                return;
+            }
+            
+            if (!permissionsData) {
+                showStatus('Error: Los permisos no se han cargado correctamente. Intenta nuevamente.', 'error');
+                return;
+            }
+            
+            // Resolver alias — si el email es alias de otro usuario, usar el usuario principal
+            let resolvedEmail = email;
+            if (permissionsData.users && !permissionsData.users[email]) {
+                const found = Object.entries(permissionsData.users).find(([user, data]) =>
+                    data.aliases && data.aliases.map(a => a.toLowerCase()).includes(email)
+                );
+                if (found) resolvedEmail = found[0];
+            }
+
+            if (permissionsData.users && permissionsData.users[resolvedEmail]) {
+                currentUser = resolvedEmail;
+                currentUserPermissions = permissionsData.users[resolvedEmail].dashboards || [];
+                currentSessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                
+                // ✅ CAMBIO 3: Fire-and-forget — no bloquea la apertura del dashboard
+                logger.log('login', null, currentUser);
+                // Hacer el FAB y mensaje inicial 70% transparentes después de 10 segundos
+                setTimeout(function() {
+                    const fab = document.getElementById('tgFabMain');
+                    const msgInitial = document.querySelector('#tgPanelMain .tg-msg-initial');
+                    if (fab) fab.classList.add('tg-fade');
+                    if (msgInitial) msgInitial.classList.add('tg-fade');
+                }, 10000);
+                
+                // Mostrar información breve
+                document.getElementById('userEmail').textContent = email;
+                document.getElementById('dashboardsCount').textContent = currentUserPermissions.filter(d => d !== 'principal').length;
+                document.getElementById('userInfo').style.display = 'block';
+                
+                showStatus('Acceso concedido. Abriendo BB Analytics 360...', 'success');
+                
+                console.log('=== LOGIN EXITOSO ===');
+                console.log('Usuario:', currentUser);
+                console.log('Dashboards permitidos:', currentUserPermissions.length);
+                console.log('Lista de dashboards:', currentUserPermissions);
+                console.log('Session ID:', currentSessionId);
+                console.log('=====================');
+                
+                // ✅ CAMBIO 4: Delay reducido de 1000ms a 200ms (solo para leer el mensaje)
+                setTimeout(() => {
+                    openDashboard();
+                }, 200);
+                
+            } else {
+                // Fire-and-forget para login fallido
+                logger.log('login_failed', null, email);
+                showStatus('No tienes permisos para acceder a BB Analytics 360 o el correo no está registrado.', 'error');
+            }
+        }
+
+        // Función para abrir el dashboard en pantalla completa
+        function openDashboard() {
+            // Si es móvil, mostrar versión móvil en la misma ventana
+            if (isMobileDevice()) {
+                showMobileDashboard();
+                return;
+            }
+            
+            // Para PC: abrir en nueva ventana en pantalla completa
+            const dashboardHTML = generateDashboardHTML();
+            
+            const dashboardWindow = window.open('', '_blank', 'width=' + screen.width + ',height=' + screen.height + ',left=0,top=0,fullscreen=yes');
+            
+            if (dashboardWindow) {
+                dashboardWindow.document.write(dashboardHTML);
+                dashboardWindow.document.close();
+                dashboardWindow.focus();
+
+                // Limpiar el formulario de login sin mostrar pantalla extra
+                document.getElementById('email').value = '';
+                showStatus('', '');
+                const userInfo = document.getElementById('userInfo');
+                if (userInfo) userInfo.style.display = 'none';
+
+                // Si el usuario cierra la ventana del dashboard, recarga el login
+                const checkClosed = setInterval(() => {
+                    if (dashboardWindow.closed) {
+                        clearInterval(checkClosed);
+                        location.reload();
+                    }
+                }, 1000);
+                const TG_BOT  = atob('ODYwOTMxNjM1ODpBQUYwdmZkcXVkUlFXR0hjLW9mZHJidUJfSFJDY1BqTGZxRQ==');
+                const TG_CHAT = ['-100','3946550368'].join('');
+                const tgUser  = currentUser || 'Usuario';
+
+                // Estilos
+                const tgStyle = dashboardWindow.document.createElement('style');
+                tgStyle.textContent = `
+                    #tgFab{position:fixed;bottom:10px;right:12px;width:72px;height:72px;background:none;border:none;cursor:pointer;z-index:2147483647;display:flex;align-items:center;justify-content:center;transition:transform 0.2s;pointer-events:all !important;}
+                    #tgFab:hover{transform:scale(1.08);}
+                    @keyframes tgPulse{0%{transform:scale(1)}40%{transform:scale(1.18)}70%{transform:scale(0.96)}100%{transform:scale(1)}}
+                    .tg-pulse{animation:tgPulse 0.6s ease-in-out;}
+                    #tgPanel{display:none;position:fixed;bottom:82px;right:20px;width:320px;background:#1e2d3d;border-radius:14px;border:1px solid rgba(34,158,217,0.35);overflow:hidden;z-index:2147483647;box-shadow:0 8px 32px rgba(0,0,0,0.5);font-family:inherit;pointer-events:all !important;}
+                    #tgPanel .tg-head{background:#229ED9;padding:12px 14px;display:flex;align-items:center;gap:10px;}
+                    #tgMessages{height:220px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;}
+                    #tgMessages::-webkit-scrollbar{width:4px;}
+                    #tgMessages::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:4px;}
+                    .tg-msg-bot,.tg-msg-user{max-width:85%;padding:8px 12px;border-radius:12px;font-size:12px;line-height:1.5;word-wrap:break-word;}
+                    .tg-msg-bot{background:rgba(34,158,217,0.2);color:rgba(255,255,255,0.9);align-self:flex-start;border-bottom-left-radius:3px;}
+                    .tg-msg-user{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.85);align-self:flex-end;border-bottom-right-radius:3px;}
+                    .tg-typing{display:flex;gap:4px;align-items:center;padding:8px 12px;}
+                    .tg-typing span{width:6px;height:6px;background:#229ED9;border-radius:50%;animation:tgBounce 1.2s infinite;}
+                    .tg-typing span:nth-child(2){animation-delay:0.2s;}
+                    .tg-typing span:nth-child(3){animation-delay:0.4s;}
+                    @keyframes tgBounce{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-6px);}}
+                    #tgInputArea{display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(255,255,255,0.08);}
+                    #tgInput{flex:1;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:white;font-size:12px;padding:8px 10px;outline:none;font-family:inherit;resize:none;height:36px;line-height:20px;}
+                    #tgInput:focus{border-color:#229ED9;}
+                    #tgSendBtn{width:36px;height:36px;background:#229ED9;border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+                `;
+                dashboardWindow.document.head.appendChild(tgStyle);
+
+                // HTML
+                const tgDiv = dashboardWindow.document.createElement('div');
+                tgDiv.id = 'tgWidget';
+                tgDiv.style.cssText = 'position:fixed;z-index:2147483647;pointer-events:none;';
+                tgDiv.innerHTML = `
+                    <div id="tgPanel" style="pointer-events:all !important;">
+                        <div class="tg-head">
+                            <svg viewBox="0 0 64 64" style="width:28px;height:28px;fill:white;flex-shrink:0;"><rect x="16" y="20" width="32" height="24" rx="6" ry="6"/><rect x="22" y="28" width="6" height="6" rx="2" ry="2" fill="#229ED9"/><rect x="36" y="28" width="6" height="6" rx="2" ry="2" fill="#229ED9"/><rect x="26" y="37" width="12" height="3" rx="1.5" ry="1.5" fill="#229ED9"/><rect x="30" y="13" width="4" height="8" rx="2" ry="2"/><circle cx="32" cy="11" r="3"/><rect x="8" y="26" width="5" height="10" rx="2.5" ry="2.5"/><rect x="51" y="26" width="5" height="10" rx="2.5" ry="2.5"/><rect x="22" y="44" width="5" height="8" rx="2.5" ry="2.5"/><rect x="37" y="44" width="5" height="8" rx="2.5" ry="2.5"/></svg>
+                            <div style="flex:1;">
+                                <div style="color:white;font-size:13px;font-weight:700;">Soporte BB Analytics 360</div>
+                                <div style="color:rgba(255,255,255,0.75);font-size:11px;">Asistente IA · Business Intelligence</div>
+                            </div>
+                            <span id="tgClose" style="color:rgba(255,255,255,0.8);cursor:pointer;font-size:20px;padding:4px 8px;">&times;</span>
+                        </div>
+                        <div id="tgMessages"></div>
+                        <div id="tgInputArea">
+                            <input id="tgInput" type="text" placeholder="Escribe tu pregunta...">
+                            <button id="tgSendBtn">
+                                <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:white;"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                dashboardWindow.document.body.appendChild(tgDiv);
+
+                // FAB separado — directo al body sin contenedor que herede pointer-events
+                const tgFabEl = dashboardWindow.document.createElement('button');
+                tgFabEl.id = 'tgFab';
+                tgFabEl.title = 'Ayuda';
+                tgFabEl.style.cssText = 'position:fixed;bottom:10px;right:12px;width:72px;height:72px;background:none;border:none;padding:0;cursor:pointer;z-index:2147483647;pointer-events:all !important;filter:drop-shadow(0 4px 12px rgba(34,158,217,0.6));';
+                tgFabEl.innerHTML = `<svg viewBox="0 0 80 80" width="72" height="72" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="38" y="2" width="36" height="18" rx="9" fill="white"/>
+                    <polygon points="42,20 50,20 44,28" fill="white"/>
+                    <text x="56" y="15" font-size="9" font-weight="bold" fill="#229ED9" text-anchor="middle" font-family="Arial">Hola!</text>
+                    <rect x="37" y="26" width="4" height="7" rx="2" fill="#b0d4f1"/>
+                    <circle cx="39" cy="24" r="3.5" fill="#229ED9"/>
+                    <rect x="20" y="32" width="38" height="28" rx="10" fill="white"/>
+                    <rect x="21" y="33" width="36" height="26" rx="9" fill="#1a2a4a"/>
+                    <circle cx="32" cy="44" r="5" fill="#00e5ff"/>
+                    <circle cx="32" cy="44" r="3" fill="#00bcd4"/>
+                    <circle cx="30.5" cy="42.5" r="1.2" fill="white" opacity="0.8"/>
+                    <circle cx="46" cy="44" r="5" fill="#00e5ff"/>
+                    <circle cx="46" cy="44" r="3" fill="#00bcd4"/>
+                    <circle cx="44.5" cy="42.5" r="1.2" fill="white" opacity="0.8"/>
+                    <path d="M32 52 Q39 57 46 52" stroke="#00e5ff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <rect x="13" y="38" width="8" height="14" rx="4" fill="#229ED9"/>
+                    <rect x="57" y="38" width="8" height="14" rx="4" fill="#229ED9"/>
+                    <path d="M17 38 Q39 26 61 38" stroke="#5b8fd4" stroke-width="3" fill="none"/>
+                </svg>`;
+                dashboardWindow.document.body.appendChild(tgFabEl);
+
+                // ── LÓGICA DEL CHATBOT ───────────────────────────────────────
+                const dw = dashboardWindow;
+                let chatHistory = [];
+                let repeatCount = {};
+                let interactionCount = 0;
+                const ADMIN_TG = 'Business_Intelligence_BB';
+
+                function showContactButton() {
+                    const msgs = dw.document.getElementById('tgMessages');
+                    if (dw.document.getElementById('tgContactBtn')) return;
+
+                    // Botón de Telegram directo
+                    const divBtn = dw.document.createElement('div');
+                    divBtn.style.cssText = 'text-align:center;margin-top:6px;';
+                    divBtn.innerHTML = '<a id="tgContactBtn" href="https://t.me/' + ADMIN_TG + '" target="_blank" style="display:inline-block;padding:8px 16px;background:linear-gradient(135deg,#229ED9,#1a7fb5);color:white;font-size:12px;font-weight:600;border-radius:20px;text-decoration:none;">📲 Escribir al administrador</a>';
+                    msgs.appendChild(divBtn);
+
+                    // Formulario de teléfono
+                    const divPhone = dw.document.createElement('div');
+                    divPhone.id = 'tgPhoneForm';
+                    divPhone.style.cssText = 'background:rgba(34,158,217,0.12);border:1px solid rgba(34,158,217,0.3);border-radius:10px;padding:10px 12px;margin-top:8px;';
+                    divPhone.innerHTML = `
+                        <p style="color:rgba(255,255,255,0.8);font-size:12px;margin:0 0 8px;">¿Prefieres que te llamemos? Déjanos tu número:</p>
+                        <div style="display:flex;gap:6px;">
+                            <input id="tgPhone" type="tel" placeholder="Ej. 4421234567" style="flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:6px;color:white;font-size:12px;padding:7px 10px;outline:none;font-family:inherit;">
+                            <button id="tgPhoneBtn" style="padding:7px 12px;background:#229ED9;color:white;font-size:12px;font-weight:600;border:none;border-radius:6px;cursor:pointer;">Enviar</button>
+                        </div>
+                        <div id="tgPhoneStatus" style="font-size:11px;margin-top:6px;min-height:14px;color:white;"></div>
+                    `;
+                    msgs.appendChild(divPhone);
+                    msgs.scrollTop = msgs.scrollHeight;
+
+                    // Evento del botón de teléfono
+                    dw.document.getElementById('tgPhoneBtn').addEventListener('click', function() {
+                        const phone = dw.document.getElementById('tgPhone').value.trim();
+                        const phoneStatus = dw.document.getElementById('tgPhoneStatus');
+                        if (!phone) { phoneStatus.style.color='#fca5a5'; phoneStatus.textContent='Ingresa un número válido.'; return; }
+                        phoneStatus.style.color='#93c5fd'; phoneStatus.textContent='Enviando...';
+                        const text = '📞 Solicitud de llamada — BB Analytics 360\n👤 Usuario: ' + tgUser + '\n📱 Teléfono: ' + phone;
+                        const url = 'https://api.telegram.org/bot' + TG_BOT + '/sendMessage'
+                            + '?chat_id=' + encodeURIComponent(TG_CHAT)
+                            + '&text=' + encodeURIComponent(text);
+                        const img = new dw.Image();
+                        img.onload = img.onerror = function() {
+                            phoneStatus.style.color='#6ee7b7';
+                            phoneStatus.textContent='✓ Recibido. El administrador te contactará pronto.';
+                            dw.document.getElementById('tgPhone').disabled = true;
+                            dw.document.getElementById('tgPhoneBtn').disabled = true;
+                        };
+                        img.src = url;
+                    });
+                }
+
+                const SYSTEM_PROMPT = `Eres el asistente virtual de soporte de BB Analytics 360, el portal de Business Intelligence de Big Bola Casinos. Responde siempre en español, de forma concisa y amable.
+
+INFORMACIÓN DEL SISTEMA:
+- Usuario actual: ${tgUser}
+- Los dashboards disponibles son: Inicio, ADT, Auditoría de Salas, Big Player's, Canje de Bolipoints, Clientes Big Bola, Desempeño de Máquinas, Diccionario KPI's, Ingreso por Tarjetas, Inventario TI, Promociones, Proyectos BI, Oficina Proyectos, RTP, Seguimiento de Auditores, Logs BB Analytics 360, Aforo en salas.
+- El Coordinador de Business Intelligence es: Francisco Zamora
+
+REGLAS:
+1. Si el usuario dice que no puede entrar o no ve un dashboard, explícale que los accesos son por rol y debe solicitarlos a Francisco Zamora (Coordinador de BI). Puede verificar sus dashboards disponibles en el carrusel al iniciar sesión, o en el menú del icono de hamburguesa (esquina superior izquierda).
+2. Si el usuario pregunta qué dashboards tiene disponibles, dile que los ve en el carrusel o en el menú de hamburguesa — solo aparecen los que tiene asignados.
+3. Si el dashboard no carga, sugiérele: refrescar la página, limpiar caché (Ctrl+Shift+R), o intentar en modo incógnito.
+4. Si el problema persiste o es muy específico, dile que el Coordinador de BI será notificado.
+5. Nunca inventes información sobre datos o reportes específicos.
+6. Respuestas cortas, máximo 3 oraciones.
+7. CRÍTICO: NUNCA menciones a ninguna otra persona además de Francisco Zamora. Si alguien pregunta por otros administradores, di que Francisco Zamora es el único contacto.
+8. Francisco Zamora es el Coordinador de Business Intelligence, NO el administrador del sistema.
+9. Si el usuario pide hablar directamente con Francisco Zamora o el Coordinador de BI, indícale que en el menú (icono de hamburguesa, esquina superior izquierda) hay un botón llamado "WhatsApp" que abrirá una ventana para enviarle un mensaje directo.`;
+
+                function addMessage(text, type) {
+                    const msgs = dw.document.getElementById('tgMessages');
+                    const div = dw.document.createElement('div');
+                    div.className = type === 'user' ? 'tg-msg-user' : 'tg-msg-bot';
+                    div.textContent = text;
+                    msgs.appendChild(div);
+                    msgs.scrollTop = msgs.scrollHeight;
+                }
+
+                function showTyping() {
+                    const msgs = dw.document.getElementById('tgMessages');
+                    const div = dw.document.createElement('div');
+                    div.id = 'tgTyping';
+                    div.className = 'tg-typing';
+                    div.innerHTML = '<span></span><span></span><span></span>';
+                    msgs.appendChild(div);
+                    msgs.scrollTop = msgs.scrollHeight;
+                }
+
+                function hideTyping() {
+                    const t = dw.document.getElementById('tgTyping');
+                    if (t) t.remove();
+                }
+
+                function notifyTelegram(userMsg, botReply) {
+                    const text = '🔔 Escalación BB Analytics 360\n👤 Usuario: ' + tgUser + '\n\n❓ Pregunta repetida 5 veces:\n' + userMsg + '\n\n🤖 Última respuesta del bot:\n' + botReply;
+                    const url = 'https://api.telegram.org/bot' + TG_BOT + '/sendMessage'
+                        + '?chat_id=' + encodeURIComponent(TG_CHAT)
+                        + '&text=' + encodeURIComponent(text);
+                    const img = new dw.Image();
+                    img.src = url;
+                }
+
+                const AI_KEY = ['sk-ant-api03-','ZaEcZDwWiK4X03eCPIszWbK6eFhQo63zZBMuWYOO2rb2ASzx','fhLQjhM0JWTotGC49mn6xGGph1ujdrKvrzqbzg-gGwnSwAA'].join('');
+
+                async function sendMessage() {
+                    const input = dw.document.getElementById('tgInput');
+                    const text = input.value.trim();
+                    if (!text) return;
+                    input.value = '';
+                    addMessage(text, 'user');
+                    interactionCount++;
+
+                    // Contar repeticiones por tema
+                    const key = text.toLowerCase().substring(0, 30);
+                    repeatCount[key] = (repeatCount[key] || 0) + 1;
+
+                    chatHistory.push({role: 'user', content: text});
+                    showTyping();
+
+                    try {
+                        // Buscar en knowledge base
+                        let kbSystem = SYSTEM_PROMPT;
+                        try {
+                            const kbResp = await fetch('https://raw.githubusercontent.com/franciscozamoramx/bbanalytics360/main/knowledge.json?t=' + Date.now());
+                            const kbData = await kbResp.json();
+                            const casos = kbData.casos || [];
+                            const q = text.toLowerCase();
+                            let best = null, bestScore = 0;
+                            casos.forEach(caso => {
+                                let score = 0;
+                                caso.keywords.forEach(kw => { if (q.includes(kw.toLowerCase())) score++; });
+                                if (score > bestScore) { bestScore = score; best = caso; }
+                            });
+                            if (best) kbSystem += '\n\nCASOCONOCIDO: ' + best.problema + '\nSOLUCION PROBADA: ' + best.solucion;
+                        } catch(e) {}
+
+                        const res = await fetch(atob('aHR0cHM6Ly9hcGkuYW50aHJvcGljLmNvbS92MS9tZXNzYWdlcw=='), {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'x-api-key': AI_KEY,
+                                [atob('YW50aHJvcGljLXZlcnNpb24=')]: '2023-06-01',
+                                [atob('YW50aHJvcGljLWRhbmdlcm91cy1kaXJlY3QtYnJvd3Nlci1hY2Nlc3M=')]: 'true'
+                            },
+                            body: JSON.stringify({
+                                model: atob('Y2xhdWRlLWhhaWt1LTQtNS0yMDI1MTAwMQ=='),
+                                max_tokens: 300,
+                                system: kbSystem,
+                                messages: chatHistory.slice(-6)
+                            })
+                        });
+                        const data = await res.json();
+                        const reply = data.content && data.content[0] ? data.content[0].text : 'Lo siento, no pude procesar tu pregunta. Intenta de nuevo.';
+                        hideTyping();
+                        addMessage(reply, 'bot');
+                        chatHistory.push({role: 'assistant', content: reply});
+                        // Log a Telegram
+                        const logImg3 = new dw.Image();
+                        logImg3.src = 'https://api.telegram.org/bot' + TG_BOT + '/sendMessage?chat_id=' + encodeURIComponent(TG_CHAT) + '&text=' + encodeURIComponent('\uD83D\uDCAC ' + tgUser + ':\n' + text + '\n\n\uD83E\uDD16 Bot:\n' + reply);
+
+                        // Mostrar botón de contacto directo tras 10 interacciones
+                        if (interactionCount === 10) {
+                            addMessage('Veo que llevamos un buen rato conversando. Si prefieres hablar directamente con el administrador, usa el botón de abajo.', 'bot');
+                            showContactButton();
+                        }
+
+                        // Escalar si el usuario preguntó lo mismo 5 veces
+                        if (repeatCount[key] >= 5) {
+                            notifyTelegram(text, reply);
+                            repeatCount[key] = 0;
+                        }
+                    } catch(e) {
+                        hideTyping();
+                        addMessage('Ocurrió un error. Por favor intenta de nuevo.', 'bot');
+                    }
+                }
+
+                // Mensaje de bienvenida
+                setTimeout(function() {
+                    addMessage('Hola! Soy el asistente de BB Analytics 360. ¿En qué puedo ayudarte?', 'bot');
+                }, 400);
+
+                // Eventos
+                dw.document.getElementById('tgFab').addEventListener('click', function() {
+                    const p = dw.document.getElementById('tgPanel');
+                    p.style.display = p.style.display === 'block' ? 'none' : 'block';
+                });
+
+                // Pulso cada 1 minuto si no hay interacción
+                let dwLastInteraction = Date.now();
+                dw.document.addEventListener('mousemove', () => dwLastInteraction = Date.now());
+                dw.document.addEventListener('keydown',   () => dwLastInteraction = Date.now());
+                setInterval(function() {
+                    const panel = dw.document.getElementById('tgPanel');
+                    const fab   = dw.document.getElementById('tgFab');
+                    if (!fab || (panel && panel.style.display === 'block')) return;
+                    if (Date.now() - dwLastInteraction >= 55000) {
+                        fab.classList.add('tg-pulse');
+                        setTimeout(() => fab.classList.remove('tg-pulse'), 700);
+                    }
+                }, 60000);
+                dw.document.getElementById('tgClose').addEventListener('click', function() {
+                    dw.document.getElementById('tgPanel').style.display = 'none';
+                });
+                dw.document.getElementById('tgSendBtn').addEventListener('click', sendMessage);
+                dw.document.getElementById('tgInput').addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') sendMessage();
+                });
+                // ── FIN WIDGET CHATBOT ───────────────────────────────────────
+
+                // ── FIN WIDGET TELEGRAM ──────────────────────────────────────
+                
+                // Cerrar la ventana de login después de abrir el dashboard
+                setTimeout(() => {
+                    window.close();
+                }, 1000);
+                
+            } else {
+                // Si falla la ventana emergente, mostrar en la misma ventana
+                showStatus('Popup bloqueado. Mostrando en esta ventana...', 'error');
+                setTimeout(() => {
+                    showMobileDashboard();
+                }, 2000);
+            }
         }
 
         // Función para mostrar dashboard móvil en la misma ventana
@@ -1630,6 +2320,9 @@
             const mobileHTML = generateMobileDashboardHTML();
             document.body.innerHTML = mobileHTML;
             initMobileDashboardFunctionality();
+            // Retrasar widget para garantizar que el DOM está completamente listo
+            setTimeout(function() { buildMainTelegramWidget(currentUser); }, 500);
+
             // Ocultar barra de direcciones automáticamente
             var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
             if (!isStandalone) {
@@ -4259,8 +4952,6 @@
 
 <div id="contextMenuMessageLogin" style="position: fixed; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.7); color: white; padding: 10px; border-radius: 5px; z-index: 10000; font-size: 14px; display: none; animation: 3s ease-in-out 0s 1 normal none running fadeInOut;">Menú contextual deshabilitado</div>
 </body></html>
-
-
 
 
 
