@@ -2563,7 +2563,7 @@ REGLAS:
                         border-radius: 50%;
                         transition: transform 0s;
                     }
-                    .mobile-sidebar-logo.spinning { animation: sidebarSpin 1s linear 1; }
+                    .mobile-sidebar-logo.spinning { }
                     
                     .mobile-sidebar-title {
                         font-size: 18px;
@@ -3788,7 +3788,7 @@ REGLAS:
                             border-radius: 50%;
                             transition: transform 0s;
                         }
-                        .sidebar-logo.spinning { animation: sidebarSpin 1s linear 1; }
+                        .sidebar-logo.spinning { }
                         @keyframes sidebarSpin {
                             from { transform: rotate(0deg); }
                             to   { transform: rotate(360deg); }
@@ -4842,7 +4842,7 @@ REGLAS:
                                 // Rotar isotipo al abrir
                                 if (isSidebarOpen) {
                                     const logo = sidebar.querySelector('.sidebar-logo');
-                                    if (logo) { logo.classList.remove('spinning'); void logo.offsetWidth; logo.classList.add('spinning'); }
+                                    
                                 }
                             }
 
