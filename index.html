@@ -3057,12 +3057,17 @@ REGLAS:
                     return;
                 }
                 
-                // areaLabels construido dinámicamente desde AREA_META + areaConfig cargado de Supabase
-                const areaLabels = {};
-                areaConfig.forEach(area => {
-                    area.dashboards.forEach(id => { areaLabels[id] = area.label; });
-                });
-                areaLabels['principal'] = 'Inicio';
+                const areaLabels = {
+                    adt:'Máquinas', desempeno:'Máquinas', rtp:'Máquinas', aforo:'Máquinas',
+                    auditoria:'Auditoría', seguimiento_auditores:'Auditoría', promociones:'Auditoría',
+                    bigplayers:'Comercial', bolipoits:'Comercial', clientes:'Comercial',
+                    ingreso_tarjetas:'Finanzas',
+                    ingresos_canal:'Finanzas',
+                    ventas:'Finanzas',
+                    inventario:'TI', proyectos:'TI', oficina_proyectos:'TI', logs_bi:'TI', quiniela:'TI', pruebas_qa:'TI',
+                    incidencias_cat:'Operaciones',
+                    principal:'Inicio'
+                };
 
                 const areaIcons = {
                     'Máquinas': 'fas fa-chart-line',
@@ -4411,12 +4416,17 @@ REGLAS:
                             }
                             
                             // Mapeo de áreas por dashboard key
-                            // areaLabels construido dinámicamente desde areaConfig cargado de Supabase
-                            const areaLabels = {};
-                            areaConfig.forEach(area => {
-                                area.dashboards.forEach(id => { areaLabels[id] = area.label; });
-                            });
-                            areaLabels['principal'] = 'Inicio';
+                            const areaLabels = {
+                                adt:'Máquinas', desempeno:'Máquinas', rtp:'Máquinas', aforo:'Máquinas',
+                                auditoria:'Auditoría', seguimiento_auditores:'Auditoría', promociones:'Auditoría',
+                                bigplayers:'Comercial', bolipoits:'Comercial', clientes:'Comercial',
+                                ingreso_tarjetas:'Finanzas',
+                                ingresos_canal:'Finanzas',
+                                ventas:'Finanzas',
+                                inventario:'TI', proyectos:'TI', oficina_proyectos:'TI', logs_bi:'TI', quiniela:'TI', pruebas_qa:'TI',
+                                incidencias_cat:'Operaciones',
+                                principal:'Inicio'
+                            };
 
                             // Ícono por área (coincide con los del menú lateral)
                             const areaIcons = {
