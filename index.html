@@ -2423,12 +2423,14 @@ REGLAS:
                                 Dashboards: ${currentUserPermissions.filter(d => d !== 'principal').length} disponibles
                             </div>
                         </div>
-                        <div class="sidebar-search-wrap">
-                            <i class="fas fa-search sidebar-search-icon"></i>
-                            <input type="text" class="sidebar-search-input" id="mobileSidebarSearch" placeholder="Buscar dashboard..." autocomplete="off">
-                            <button class="sidebar-search-clear" id="mobileSidebarClear" title="Limpiar">✕</button>
+                        <div style="position:relative;margin:0 -20px 8px;padding:6px 12px;background:rgba(255,255,255,0.06);border-top:1px solid rgba(255,255,255,0.08);border-bottom:1px solid rgba(255,255,255,0.08);">
+                            <i class="fas fa-search" style="position:absolute;left:22px;top:50%;transform:translateY(-50%);color:#FFD700;font-size:11px;pointer-events:none;"></i>
+                            <input type="text" id="mobileSidebarSearch" placeholder="Buscar dashboard..." autocomplete="off"
+                                style="width:100%;background:#152c6e;border:1px solid rgba(255,255,255,0.18);border-radius:5px;color:#fff;font-size:12px;font-family:Arial,sans-serif;padding:7px 28px 7px 28px;outline:none;box-sizing:border-box;">
+                            <button id="mobileSidebarClear" title="Limpiar"
+                                style="position:absolute;right:16px;top:50%;transform:translateY(-50%);color:#FFD700;background:none;border:none;font-size:13px;cursor:pointer;display:none;padding:2px 4px;line-height:1;">✕</button>
                         </div>
-                        <div id="mobileSidebarNoResults" class="sidebar-no-results">Sin resultados</div>
+                        <div id="mobileSidebarNoResults" style="color:rgba(255,255,255,0.3);font-size:11px;padding:3px 0 0 4px;display:none;">Sin resultados</div>
                         ${menuItemsHTML}
                         <div class="mobile-sidebar-footer">
                             <button class="mobile-exit-btn" id="mobileExitBtn">
@@ -4365,12 +4367,14 @@ REGLAS:
                                     Dashboards: ${currentUserPermissions.filter(d => d !== 'principal').length} disponibles
                                 </div>
                             </div>
-                            <div class="sidebar-search-wrap">
-                                <i class="fas fa-search sidebar-search-icon"></i>
-                                <input type="text" class="sidebar-search-input" id="desktopSidebarSearch" placeholder="Buscar dashboard..." autocomplete="off">
-                                <button class="sidebar-search-clear" id="desktopSidebarClear" title="Limpiar">✕</button>
+                            <div style="position:relative;margin:0 -15px 8px;padding:6px 12px;background:rgba(255,255,255,0.06);border-top:1px solid rgba(255,255,255,0.08);border-bottom:1px solid rgba(255,255,255,0.08);">
+                                <i class="fas fa-search" style="position:absolute;left:22px;top:50%;transform:translateY(-50%);color:#FFD700;font-size:11px;pointer-events:none;"></i>
+                                <input type="text" id="desktopSidebarSearch" placeholder="Buscar dashboard..." autocomplete="off"
+                                    style="width:100%;background:#152c6e;border:1px solid rgba(255,255,255,0.18);border-radius:5px;color:#fff;font-size:12px;font-family:Arial,sans-serif;padding:7px 28px 7px 28px;outline:none;box-sizing:border-box;">
+                                <button id="desktopSidebarClear" title="Limpiar"
+                                    style="position:absolute;right:16px;top:50%;transform:translateY(-50%);color:#FFD700;background:none;border:none;font-size:13px;cursor:pointer;display:none;padding:2px 4px;line-height:1;">✕</button>
                             </div>
-                            <div id="desktopSidebarNoResults" class="sidebar-no-results">Sin resultados</div>
+                            <div id="desktopSidebarNoResults" style="color:rgba(255,255,255,0.3);font-size:11px;padding:3px 0 0 4px;display:none;">Sin resultados</div>
                             ${menuItemsHTML}
                             <div class="sidebar-footer">
                                 <button class="exit-btn" id="exitBtn">
