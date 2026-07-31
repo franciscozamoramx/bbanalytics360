@@ -1578,67 +1578,6 @@
             });
 
             // Escuchar mensajes desde la ventana del dashboard
-        // ── BUSCADOR DE DASHBOARDS EN SIDEBAR ─────────────────────────────────
-        function initSidebarSearch(inputId, clearId, noResultsId, isMobile) {
-            const input     = document.getElementById(inputId);
-            const clearBtn  = document.getElementById(clearId);
-            const noResults = document.getElementById(noResultsId);
-            if (!input) return;
-
-            const groupSel = isMobile ? '.mobile-area-group' : '.area-group';
-            const itemSel  = isMobile ? '.mobile-menu-item.mobile-area-child' : '.menu-item.area-child';
-            const childSel = isMobile ? '.mobile-area-children' : '.area-children';
-
-            function filterMenu(query) {
-                const q = query.trim().toLowerCase();
-                clearBtn.style.display = q ? 'block' : 'none';
-
-                if (!q) {
-                    // Restaurar todo
-                    document.querySelectorAll(groupSel).forEach(g => g.style.display = '');
-                    document.querySelectorAll(itemSel).forEach(i => i.style.display = '');
-                    if (noResults) noResults.style.display = 'none';
-                    return;
-                }
-
-                let totalVisible = 0;
-                document.querySelectorAll(groupSel).forEach(group => {
-                    const items = group.querySelectorAll(itemSel);
-                    let groupVisible = 0;
-                    items.forEach(item => {
-                        const name = (item.textContent || '').trim().toLowerCase();
-                        const match = name.includes(q);
-                        item.style.display = match ? '' : 'none';
-                        if (match) groupVisible++;
-                    });
-                    group.style.display = groupVisible ? '' : 'none';
-                    // Si hay resultados, asegurarse que el collapse esté abierto
-                    if (groupVisible) {
-                        const children = group.querySelector(childSel);
-                        if (children) {
-                            if (isMobile) {
-                                children.style.display = 'block';
-                            } else {
-                                children.classList.add('open');
-                                children.style.maxHeight = '500px';
-                                children.style.opacity = '1';
-                            }
-                        }
-                    }
-                    totalVisible += groupVisible;
-                });
-
-                if (noResults) noResults.style.display = totalVisible === 0 ? 'block' : 'none';
-            }
-
-            input.addEventListener('input', function() { filterMenu(this.value); });
-            clearBtn.addEventListener('click', function() {
-                input.value = '';
-                filterMenu('');
-                input.focus();
-            });
-        }
-
             window.addEventListener('message', async function(event) {
                 if (event.data && event.data.type === 'logout') {
                     console.log('🚪 Logout recibido desde dashboard:', event.data.user);
@@ -2383,11 +2322,7 @@ REGLAS:
             initMobileDashboardFunctionality();
             // Retrasar widget para garantizar que el DOM está completamente listo
             setTimeout(function() { buildMainTelegramWidget(currentUser); }, 500);
-            // Inicializar buscadores del sidebar
-            setTimeout(function() {
-                initSidebarSearch('mobileSidebarSearch', 'mobileSidebarClear', 'mobileSidebarNoResults', true);
-                initSidebarSearch('desktopSidebarSearch', 'desktopSidebarClear', 'desktopSidebarNoResults', false);
-            }, 600);
+
 
             // Ocultar barra de direcciones automáticamente
             var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
@@ -2488,7 +2423,7 @@ REGLAS:
                                 Dashboards: ${currentUserPermissions.filter(d => d !== 'principal').length} disponibles
                             </div>
                         </div>
-                        <div class="sidebar-search-wrap" style="padding:10px 14px 6px;">
+                        <div class="sidebar-search-wrap" style="padding:4px 8px 2px;">
                             <input type="text" class="sidebar-search-input" id="mobileSidebarSearch" placeholder="🔍 Buscar dashboard..." autocomplete="off">
                             <button class="sidebar-search-clear" id="mobileSidebarClear" title="Limpiar">✕</button>
                         </div>
@@ -2694,38 +2629,35 @@ REGLAS:
             width: 100%;
             background: rgba(255,255,255,0.07);
             border: none;
-            border-bottom: 1px solid rgba(255,215,0,0.25);
-            border-radius: 6px 6px 0 0;
-            color: rgba(255,255,255,0.8);
-            font-size: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            border-radius: 0;
+            color: rgba(255,255,255,0.75);
+            font-size: 11px;
             font-family: Arial, sans-serif;
-            padding: 7px 28px 7px 10px;
+            padding: 6px 26px 6px 8px;
             outline: none;
             box-sizing: border-box;
-            transition: background 0.2s, border-color 0.2s;
         }
-        .sidebar-search-input::placeholder { color: rgba(255,255,255,0.3); font-size:11px; }
-        .sidebar-search-input:focus { background: rgba(255,255,255,0.12); border-color: rgba(255,215,0,0.5); }
+        .sidebar-search-input::placeholder { color: rgba(255,255,255,0.25); }
+        .sidebar-search-input:focus { border-bottom-color: rgba(255,215,0,0.4); background: rgba(255,255,255,0.1); }
         .sidebar-search-clear {
             position: absolute;
-            right: 16px;
+            right: 12px;
             top: 50%;
             transform: translateY(-50%);
             color: rgba(255,255,255,0.3);
             cursor: pointer;
-            font-size: 12px;
+            font-size: 11px;
             display: none;
-            line-height: 1;
             background: none;
             border: none;
-            padding: 2px;
+            padding: 2px 4px;
         }
-        .sidebar-search-clear:hover { color: #FFD700; }
+        .sidebar-search-clear:hover { color: rgba(255,215,0,0.7); }
         .sidebar-no-results {
-            text-align: center;
-            color: rgba(255,255,255,0.3);
-            font-size: 11px;
-            padding: 8px 0 4px;
+            color: rgba(255,255,255,0.25);
+            font-size: 10px;
+            padding: 4px 8px;
             display: none;
         }
         .mobile-sidebar-footer {
@@ -3123,6 +3055,37 @@ REGLAS:
             const mobileWhatsappBtn = document.getElementById('mobileWhatsappBtn');
             const mobileExitBtn = document.getElementById('mobileExitBtn');
             const mobileContentContainer = document.getElementById('mobileContentContainer');
+
+            // ── BUSCADOR SIDEBAR MÓVIL ──────────────────────────────────────
+            (function() {
+                const inp = document.getElementById('mobileSidebarSearch');
+                const clr = document.getElementById('mobileSidebarClear');
+                const nor = document.getElementById('mobileSidebarNoResults');
+                if (!inp) return;
+                function filter(q) {
+                    q = q.trim().toLowerCase();
+                    clr.style.display = q ? 'block' : 'none';
+                    let total = 0;
+                    document.querySelectorAll('.mobile-area-group').forEach(function(grp) {
+                        var items = grp.querySelectorAll('.mobile-menu-item.mobile-area-child');
+                        var visible = 0;
+                        items.forEach(function(it) {
+                            var match = !q || it.textContent.trim().toLowerCase().includes(q);
+                            it.style.display = match ? '' : 'none';
+                            if (match) visible++;
+                        });
+                        grp.style.display = visible ? '' : 'none';
+                        if (visible) {
+                            var ch = grp.querySelector('.mobile-area-children');
+                            if (ch) ch.style.display = 'block';
+                        }
+                        total += visible;
+                    });
+                    if (nor) nor.style.display = (!q || total) ? 'none' : 'block';
+                }
+                inp.addEventListener('input', function() { filter(this.value); });
+                clr.addEventListener('click', function() { inp.value = ''; filter(''); inp.focus(); });
+            })();
             
             let isSidebarOpen = false;
             let currentMobileSlide = 0;
@@ -4385,7 +4348,7 @@ REGLAS:
                                     Dashboards: ${currentUserPermissions.filter(d => d !== 'principal').length} disponibles
                                 </div>
                             </div>
-                            <div class="sidebar-search-wrap">
+                            <div class="sidebar-search-wrap" style="padding:4px 8px 2px;">
                                 <input type="text" class="sidebar-search-input" id="desktopSidebarSearch" placeholder="🔍 Buscar dashboard..." autocomplete="off">
                                 <button class="sidebar-search-clear" id="desktopSidebarClear" title="Limpiar">✕</button>
                             </div>
@@ -5041,6 +5004,37 @@ REGLAS:
                             
                             // Inicializar carrusel automáticamente
                             initCarrusel();
+
+                            // ── BUSCADOR SIDEBAR DESKTOP ────────────────────
+                            (function() {
+                                var inp = document.getElementById('desktopSidebarSearch');
+                                var clr = document.getElementById('desktopSidebarClear');
+                                var nor = document.getElementById('desktopSidebarNoResults');
+                                if (!inp) return;
+                                function filter(q) {
+                                    q = q.trim().toLowerCase();
+                                    clr.style.display = q ? 'block' : 'none';
+                                    var total = 0;
+                                    document.querySelectorAll('.area-group').forEach(function(grp) {
+                                        var items = grp.querySelectorAll('.menu-item.area-child');
+                                        var visible = 0;
+                                        items.forEach(function(it) {
+                                            var match = !q || it.textContent.trim().toLowerCase().includes(q);
+                                            it.style.display = match ? '' : 'none';
+                                            if (match) visible++;
+                                        });
+                                        grp.style.display = visible ? '' : 'none';
+                                        if (visible) {
+                                            var ch = grp.querySelector('.area-children');
+                                            if (ch) { ch.classList.add('open'); ch.style.maxHeight = '500px'; ch.style.opacity = '1'; }
+                                        }
+                                        total += visible;
+                                    });
+                                    if (nor) nor.style.display = (!q || total) ? 'none' : 'block';
+                                }
+                                inp.addEventListener('input', function() { filter(this.value); });
+                                clr.addEventListener('click', function() { inp.value = ''; filter(''); inp.focus(); });
+                            })();
                             
                             // Registrar cierre de ventana/pestaña
                             window.addEventListener('beforeunload', function(e) {
