@@ -1579,35 +1579,56 @@
 
             // Escuchar mensajes desde la ventana del dashboard
         // ── BUSCADOR DE DASHBOARDS EN SIDEBAR ─────────────────────────────────
-        function initSidebarSearch(inputId, clearId, noResultsId) {
+        function initSidebarSearch(inputId, clearId, noResultsId, isMobile) {
             const input     = document.getElementById(inputId);
             const clearBtn  = document.getElementById(clearId);
             const noResults = document.getElementById(noResultsId);
             if (!input) return;
 
+            const groupSel = isMobile ? '.mobile-area-group' : '.area-group';
+            const itemSel  = isMobile ? '.mobile-menu-item.mobile-area-child' : '.menu-item.area-child';
+            const childSel = isMobile ? '.mobile-area-children' : '.area-children';
+
             function filterMenu(query) {
                 const q = query.trim().toLowerCase();
                 clearBtn.style.display = q ? 'block' : 'none';
 
-                const sections = document.querySelectorAll('.mobile-menu-section, .menu-section');
-                let totalVisible = 0;
+                if (!q) {
+                    // Restaurar todo
+                    document.querySelectorAll(groupSel).forEach(g => g.style.display = '');
+                    document.querySelectorAll(itemSel).forEach(i => i.style.display = '');
+                    if (noResults) noResults.style.display = 'none';
+                    return;
+                }
 
-                sections.forEach(section => {
-                    const items = section.querySelectorAll('.mobile-menu-item, .menu-item');
-                    let sectionVisible = 0;
+                let totalVisible = 0;
+                document.querySelectorAll(groupSel).forEach(group => {
+                    const items = group.querySelectorAll(itemSel);
+                    let groupVisible = 0;
                     items.forEach(item => {
-                        const name = (item.textContent || '').toLowerCase();
-                        const match = !q || name.includes(q);
+                        const name = (item.textContent || '').trim().toLowerCase();
+                        const match = name.includes(q);
                         item.style.display = match ? '' : 'none';
-                        if (match) sectionVisible++;
+                        if (match) groupVisible++;
                     });
-                    const header = section.querySelector('.mobile-menu-area-header, .menu-area-header');
-                    if (header) header.style.display = sectionVisible ? '' : 'none';
-                    section.style.display = sectionVisible ? '' : 'none';
-                    totalVisible += sectionVisible;
+                    group.style.display = groupVisible ? '' : 'none';
+                    // Si hay resultados, asegurarse que el collapse esté abierto
+                    if (groupVisible) {
+                        const children = group.querySelector(childSel);
+                        if (children) {
+                            if (isMobile) {
+                                children.style.display = 'block';
+                            } else {
+                                children.classList.add('open');
+                                children.style.maxHeight = '500px';
+                                children.style.opacity = '1';
+                            }
+                        }
+                    }
+                    totalVisible += groupVisible;
                 });
 
-                if (noResults) noResults.style.display = totalVisible === 0 && q ? 'block' : 'none';
+                if (noResults) noResults.style.display = totalVisible === 0 ? 'block' : 'none';
             }
 
             input.addEventListener('input', function() { filterMenu(this.value); });
@@ -2364,8 +2385,8 @@ REGLAS:
             setTimeout(function() { buildMainTelegramWidget(currentUser); }, 500);
             // Inicializar buscadores del sidebar
             setTimeout(function() {
-                initSidebarSearch('mobileSidebarSearch', 'mobileSidebarClear', 'mobileSidebarNoResults');
-                initSidebarSearch('desktopSidebarSearch', 'desktopSidebarClear', 'desktopSidebarNoResults');
+                initSidebarSearch('mobileSidebarSearch', 'mobileSidebarClear', 'mobileSidebarNoResults', true);
+                initSidebarSearch('desktopSidebarSearch', 'desktopSidebarClear', 'desktopSidebarNoResults', false);
             }, 600);
 
             // Ocultar barra de direcciones automáticamente
@@ -2666,44 +2687,45 @@ REGLAS:
                     
                     /* Buscador de dashboards en sidebar */
         .sidebar-search-wrap {
-            padding: 10px 14px 6px;
+            padding: 6px 10px 4px;
             position: relative;
         }
         .sidebar-search-input {
             width: 100%;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,215,0,0.3);
-            border-radius: 20px;
-            color: #fff;
+            background: rgba(255,255,255,0.07);
+            border: none;
+            border-bottom: 1px solid rgba(255,215,0,0.25);
+            border-radius: 6px 6px 0 0;
+            color: rgba(255,255,255,0.8);
             font-size: 12px;
             font-family: Arial, sans-serif;
-            padding: 7px 32px 7px 14px;
+            padding: 7px 28px 7px 10px;
             outline: none;
             box-sizing: border-box;
-            transition: border 0.2s;
+            transition: background 0.2s, border-color 0.2s;
         }
-        .sidebar-search-input::placeholder { color: rgba(255,255,255,0.4); }
-        .sidebar-search-input:focus { border-color: rgba(255,215,0,0.7); }
+        .sidebar-search-input::placeholder { color: rgba(255,255,255,0.3); font-size:11px; }
+        .sidebar-search-input:focus { background: rgba(255,255,255,0.12); border-color: rgba(255,215,0,0.5); }
         .sidebar-search-clear {
             position: absolute;
-            right: 22px;
+            right: 16px;
             top: 50%;
             transform: translateY(-50%);
-            color: rgba(255,255,255,0.4);
+            color: rgba(255,255,255,0.3);
             cursor: pointer;
-            font-size: 14px;
+            font-size: 12px;
             display: none;
             line-height: 1;
             background: none;
             border: none;
-            padding: 0;
+            padding: 2px;
         }
         .sidebar-search-clear:hover { color: #FFD700; }
         .sidebar-no-results {
             text-align: center;
-            color: rgba(255,255,255,0.4);
+            color: rgba(255,255,255,0.3);
             font-size: 11px;
-            padding: 10px 0;
+            padding: 8px 0 4px;
             display: none;
         }
         .mobile-sidebar-footer {
