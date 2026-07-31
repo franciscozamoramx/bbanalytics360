@@ -2423,8 +2423,9 @@ REGLAS:
                                 Dashboards: ${currentUserPermissions.filter(d => d !== 'principal').length} disponibles
                             </div>
                         </div>
-                        <div class="sidebar-search-wrap" style="padding:4px 8px 2px;">
-                            <input type="text" class="sidebar-search-input" id="mobileSidebarSearch" placeholder="🔍 Buscar dashboard..." autocomplete="off">
+                        <div class="sidebar-search-wrap">
+                            <i class="fas fa-search sidebar-search-icon"></i>
+                            <input type="text" class="sidebar-search-input" id="mobileSidebarSearch" placeholder="Buscar dashboard..." autocomplete="off">
                             <button class="sidebar-search-clear" id="mobileSidebarClear" title="Limpiar">✕</button>
                         </div>
                         <div id="mobileSidebarNoResults" class="sidebar-no-results">Sin resultados</div>
@@ -2625,39 +2626,53 @@ REGLAS:
             padding: 6px 10px 4px;
             position: relative;
         }
-        .sidebar-search-input {
-            width: 100%;
-            background: rgba(255,255,255,0.07);
-            border: none;
-            border-bottom: 1px solid rgba(255,255,255,0.15);
-            border-radius: 0;
-            color: rgba(255,255,255,0.75);
-            font-size: 11px;
-            font-family: Arial, sans-serif;
-            padding: 6px 26px 6px 8px;
-            outline: none;
-            box-sizing: border-box;
+        .sidebar-search-wrap {
+            position: relative;
+            margin: 8px 10px 10px;
         }
-        .sidebar-search-input::placeholder { color: rgba(255,255,255,0.25); }
-        .sidebar-search-input:focus { border-bottom-color: rgba(255,215,0,0.4); background: rgba(255,255,255,0.1); }
-        .sidebar-search-clear {
+        .sidebar-search-icon {
             position: absolute;
-            right: 12px;
+            left: 10px;
             top: 50%;
             transform: translateY(-50%);
-            color: rgba(255,255,255,0.3);
-            cursor: pointer;
+            color: #FFD700;
             font-size: 11px;
+            pointer-events: none;
+        }
+        .sidebar-search-input {
+            width: 100%;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 12px;
+            font-family: Arial, sans-serif;
+            padding: 8px 28px 8px 30px;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        .sidebar-search-input::placeholder { color: rgba(255,255,255,0.35); }
+        .sidebar-search-input:focus { border-color: rgba(255,215,0,0.5); }
+        .sidebar-search-clear {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.35);
+            cursor: pointer;
+            font-size: 12px;
             display: none;
             background: none;
             border: none;
             padding: 2px 4px;
+            line-height: 1;
         }
-        .sidebar-search-clear:hover { color: rgba(255,215,0,0.7); }
+        .sidebar-search-clear:hover { color: #FFD700; }
         .sidebar-no-results {
-            color: rgba(255,255,255,0.25);
-            font-size: 10px;
-            padding: 4px 8px;
+            color: rgba(255,255,255,0.3);
+            font-size: 11px;
+            padding: 4px 10px 0;
             display: none;
         }
         .mobile-sidebar-footer {
@@ -4348,8 +4363,9 @@ REGLAS:
                                     Dashboards: ${currentUserPermissions.filter(d => d !== 'principal').length} disponibles
                                 </div>
                             </div>
-                            <div class="sidebar-search-wrap" style="padding:4px 8px 2px;">
-                                <input type="text" class="sidebar-search-input" id="desktopSidebarSearch" placeholder="🔍 Buscar dashboard..." autocomplete="off">
+                            <div class="sidebar-search-wrap">
+                                <i class="fas fa-search sidebar-search-icon"></i>
+                                <input type="text" class="sidebar-search-input" id="desktopSidebarSearch" placeholder="Buscar dashboard..." autocomplete="off">
                                 <button class="sidebar-search-clear" id="desktopSidebarClear" title="Limpiar">✕</button>
                             </div>
                             <div id="desktopSidebarNoResults" class="sidebar-no-results">Sin resultados</div>
