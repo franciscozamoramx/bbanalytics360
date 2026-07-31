@@ -1578,6 +1578,46 @@
             });
 
             // Escuchar mensajes desde la ventana del dashboard
+        // ── BUSCADOR DE DASHBOARDS EN SIDEBAR ─────────────────────────────────
+        function initSidebarSearch(inputId, clearId, noResultsId) {
+            const input     = document.getElementById(inputId);
+            const clearBtn  = document.getElementById(clearId);
+            const noResults = document.getElementById(noResultsId);
+            if (!input) return;
+
+            function filterMenu(query) {
+                const q = query.trim().toLowerCase();
+                clearBtn.style.display = q ? 'block' : 'none';
+
+                const sections = document.querySelectorAll('.mobile-menu-section, .menu-section');
+                let totalVisible = 0;
+
+                sections.forEach(section => {
+                    const items = section.querySelectorAll('.mobile-menu-item, .menu-item');
+                    let sectionVisible = 0;
+                    items.forEach(item => {
+                        const name = (item.textContent || '').toLowerCase();
+                        const match = !q || name.includes(q);
+                        item.style.display = match ? '' : 'none';
+                        if (match) sectionVisible++;
+                    });
+                    const header = section.querySelector('.mobile-menu-area-header, .menu-area-header');
+                    if (header) header.style.display = sectionVisible ? '' : 'none';
+                    section.style.display = sectionVisible ? '' : 'none';
+                    totalVisible += sectionVisible;
+                });
+
+                if (noResults) noResults.style.display = totalVisible === 0 && q ? 'block' : 'none';
+            }
+
+            input.addEventListener('input', function() { filterMenu(this.value); });
+            clearBtn.addEventListener('click', function() {
+                input.value = '';
+                filterMenu('');
+                input.focus();
+            });
+        }
+
             window.addEventListener('message', async function(event) {
                 if (event.data && event.data.type === 'logout') {
                     console.log('🚪 Logout recibido desde dashboard:', event.data.user);
@@ -2322,6 +2362,11 @@ REGLAS:
             initMobileDashboardFunctionality();
             // Retrasar widget para garantizar que el DOM está completamente listo
             setTimeout(function() { buildMainTelegramWidget(currentUser); }, 500);
+            // Inicializar buscadores del sidebar
+            setTimeout(function() {
+                initSidebarSearch('mobileSidebarSearch', 'mobileSidebarClear', 'mobileSidebarNoResults');
+                initSidebarSearch('desktopSidebarSearch', 'desktopSidebarClear', 'desktopSidebarNoResults');
+            }, 600);
 
             // Ocultar barra de direcciones automáticamente
             var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
@@ -2422,6 +2467,11 @@ REGLAS:
                                 Dashboards: ${currentUserPermissions.filter(d => d !== 'principal').length} disponibles
                             </div>
                         </div>
+                        <div class="sidebar-search-wrap" style="padding:10px 14px 6px;">
+                            <input type="text" class="sidebar-search-input" id="mobileSidebarSearch" placeholder="🔍 Buscar dashboard..." autocomplete="off">
+                            <button class="sidebar-search-clear" id="mobileSidebarClear" title="Limpiar">✕</button>
+                        </div>
+                        <div id="mobileSidebarNoResults" class="sidebar-no-results">Sin resultados</div>
                         ${menuItemsHTML}
                         <div class="mobile-sidebar-footer">
                             <button class="mobile-exit-btn" id="mobileExitBtn">
@@ -2614,7 +2664,49 @@ REGLAS:
                         text-align: center;
                     }
                     
-                    .mobile-sidebar-footer {
+                    /* Buscador de dashboards en sidebar */
+        .sidebar-search-wrap {
+            padding: 10px 14px 6px;
+            position: relative;
+        }
+        .sidebar-search-input {
+            width: 100%;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: 20px;
+            color: #fff;
+            font-size: 12px;
+            font-family: Arial, sans-serif;
+            padding: 7px 32px 7px 14px;
+            outline: none;
+            box-sizing: border-box;
+            transition: border 0.2s;
+        }
+        .sidebar-search-input::placeholder { color: rgba(255,255,255,0.4); }
+        .sidebar-search-input:focus { border-color: rgba(255,215,0,0.7); }
+        .sidebar-search-clear {
+            position: absolute;
+            right: 22px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.4);
+            cursor: pointer;
+            font-size: 14px;
+            display: none;
+            line-height: 1;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+        .sidebar-search-clear:hover { color: #FFD700; }
+        .sidebar-no-results {
+            text-align: center;
+            color: rgba(255,255,255,0.4);
+            font-size: 11px;
+            padding: 10px 0;
+            display: none;
+        }
+        .mobile-sidebar-footer {
                         margin-top: auto;
                         padding-top: 20px;
                         border-top: 1px solid rgba(255,255,255,0.2);
@@ -4271,6 +4363,11 @@ REGLAS:
                                     Dashboards: ${currentUserPermissions.filter(d => d !== 'principal').length} disponibles
                                 </div>
                             </div>
+                            <div class="sidebar-search-wrap">
+                                <input type="text" class="sidebar-search-input" id="desktopSidebarSearch" placeholder="🔍 Buscar dashboard..." autocomplete="off">
+                                <button class="sidebar-search-clear" id="desktopSidebarClear" title="Limpiar">✕</button>
+                            </div>
+                            <div id="desktopSidebarNoResults" class="sidebar-no-results">Sin resultados</div>
                             ${menuItemsHTML}
                             <div class="sidebar-footer">
                                 <button class="exit-btn" id="exitBtn">
@@ -4952,6 +5049,7 @@ REGLAS:
 
 <div id="contextMenuMessageLogin" style="position: fixed; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.7); color: white; padding: 10px; border-radius: 5px; z-index: 10000; font-size: 14px; display: none; animation: 3s ease-in-out 0s 1 normal none running fadeInOut;">Menú contextual deshabilitado</div>
 </body></html>
+
 
 
 
