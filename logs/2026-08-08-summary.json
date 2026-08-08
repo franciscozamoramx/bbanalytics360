@@ -150,5 +150,13 @@
     "unique_users": 0,
     "actions_summary": {},
     "device_summary": {}
+  },
+  "2026-08-08-21": {
+    "hour": "2026-08-08-21",
+    "generated_at": "2026-08-08T21:24:23.162Z",
+    "total_logs_in_hour": 0,
+    "unique_users": 0,
+    "actions_summary": {},
+    "device_summary": {}
   }
 }
