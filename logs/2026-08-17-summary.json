@@ -174,5 +174,13 @@
     "unique_users": 0,
     "actions_summary": {},
     "device_summary": {}
+  },
+  "2026-08-17-23": {
+    "hour": "2026-08-17-23",
+    "generated_at": "2026-08-17T23:18:03.484Z",
+    "total_logs_in_hour": 0,
+    "unique_users": 0,
+    "actions_summary": {},
+    "device_summary": {}
   }
 }
