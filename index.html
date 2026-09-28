@@ -970,6 +970,12 @@
             ti:          { label: 'TI',         color: '#FF7A6E' }
         };
 
+        // Resuelve ruta local de imagen de respaldo para un dashboard id
+        function _localImg(id){
+            const map={atencion_servicio_cat:'atencion_cat'};
+            return 'assets/img/dashboards/'+(map[id]||id)+'.webp';
+        }
+
         async function loadDashboardsFromSupabase() {
             try {
                 const res = await fetch(
@@ -3181,6 +3187,7 @@ REGLAS:
                             <i class="${areaIcons[areaLabels[slide.key]] || 'fas fa-chart-bar'}" style="font-size:10px;"></i> ${areaLabels[slide.key] || 'Dashboard'}
                         </span>
                         <img src="${slide.image}" alt="${slide.title}" data-key="${slide.key}"
+                            onerror="this.onerror=null;this.src=_localImg(this.dataset.key)||'https://i.postimg.cc/QCN4dPG1/analisis-de-datos.png';"
                             style="width:85%;max-height:32vh;object-fit:contain;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,0.5);cursor:pointer;">
                         <div class="dashboard-title" style="font-size:20px;font-weight:700;color:white;text-align:center;line-height:1.2;">${slide.title}</div>
                         <div class="dashboard-desc" style="font-size:13px;color:rgba(255,255,255,0.6);text-align:center;line-height:1.5;">${slide.description}</div>
@@ -4547,7 +4554,7 @@ REGLAS:
                             const slidesHTML = carruselData.map((slide, index) => \`
                                 <div class="carrusel-slide \${index === 0 ? 'active' : ''}" data-index="\${index}">
                                     <div class="slide-image-panel">
-                                        <img src="\${slide.image}" alt="\${slide.title}" data-key="\${slide.key}">
+                                        <img src="\${slide.image}" alt="\${slide.title}" data-key="\${slide.key}" onerror="this.onerror=null;this.src=_localImg(this.dataset.key)||'https://i.postimg.cc/QCN4dPG1/analisis-de-datos.png';">
                                     </div>
                                     <div class="slide-info-panel">
                                         <span class="slide-area-badge">
